@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Zen notification, expanded: larger illustration and the full message. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="8dp">
+
+    <FrameLayout
+        android:layout_width="72dp"
+        android:layout_height="72dp">
+
+        <ProgressBar
+            android:id="@+id/zen_art_day"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            android:indeterminateDrawable="@drawable/avd_zen_day"
+            android:importantForAccessibility="no"
+            android:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/zen_art_sunset"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            android:indeterminateDrawable="@drawable/avd_zen_sunset"
+            android:importantForAccessibility="no"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/zen_art_night"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            android:indeterminateDrawable="@drawable/avd_zen_night"
+            android:importantForAccessibility="no"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/zen_title"
+            style="@style/TextAppearance.Compat.Notification.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="3" />
+
+        <TextView
+            android:id="@+id/zen_text"
+            style="@style/TextAppearance.Compat.Notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:maxLines="2" />
+    </LinearLayout>
+</LinearLayout>

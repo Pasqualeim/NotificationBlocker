@@ -1,0 +1,34 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120"
+    android:tint="?android:attr/colorControlNormal">
+    <!-- Soft Background Halo -->
+    <path
+        android:fillColor="@android:color/white"
+        android:fillAlpha="0.12"
+        android:pathData="M60,15A45,45 0 1,0 60,105A45,45 0 1,0 60,15Z" />
+    <!-- Lens Rim -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M50,28A22,22 0 1,0 50,72A22,22 0 1,0 50,28ZM50,34A16,16 0 1,1 50,66A16,16 0 1,1 50,34Z" />
+    <!-- Magnifying Glass Handle -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M62.5,68.2L68.2,62.5L90.8,85.1C92.4,86.7 92.4,89.3 90.8,90.8C89.3,92.4 86.7,92.4 85.1,90.8Z" />
+    <!-- Empty Search Sparkle Accent 1 -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M85,28L86.2,32.8L91,34L86.2,35.2L85,40L83.8,35.2L79,34L83.8,32.8Z" />
+    <!-- Empty Search Sparkle Accent 2 -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M28,72L28.8,75.2L32,76L28.8,76.8L28,80L27.2,76.8L24,76L27.2,75.2Z" />
+    <!-- Interior Dash Line (No Results Indicator) -->
+    <path
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M42,50L58,50" />
+</vector>

@@ -1,0 +1,125 @@
+<resources>
+    <string name="app_name" translatable="false">NotificationBlocker</string>
+    <string name="service_label">Notification Blocker service</string>
+
+    <!-- Main Screen -->
+    <string name="main_title">Notification Blocker</string>
+
+    <!-- Hero Statuses -->
+    <string name="status_disabled">Disabled</string>
+    <string name="status_active_outside">Active outside off-hours</string>
+
+    <!-- Hero Subtitles -->
+    <string name="hero_subtitle_disabled">Notification blocking is turned off. All notifications will be delivered.</string>
+    <string name="hero_subtitle_outside">Outside scheduled off-hours. Work notifications are allowed.</string>
+    <string name="hero_subtitle_inside">Work notifications are silent. You are free.</string>
+
+    <!-- Warm Greetings & Quotes -->
+    <string name="greeting_welcome_life">Welcome back to your life</string>
+    <string name="greeting_time_breathe">Time to breathe</string>
+    <string name="greeting_enjoy_sun">Enjoy the sunshine</string>
+    <string name="greeting_time_begins">Your time begins now</string>
+
+    <!-- Master Switch -->
+    <string name="master_switch_label">Notification blocking</string>
+    <string name="master_switch_status_on">Blocking schedule is enabled</string>
+    <string name="master_switch_status_off">Blocking schedule is disabled</string>
+
+    <!-- Permission Warning -->
+    <string name="permission_warning_title">Permission required</string>
+    <string name="permission_warning_text">Notification Listener access is required for the app to detect and dismiss notifications from blocked apps during off-hours.</string>
+    <string name="permission_warning_button">Grant notification access</string>
+
+    <!-- Schedule Section -->
+    <string name="schedule_title">Off-hours schedule</string>
+    <string name="schedule_subtitle">Set your daily off-hours window when notifications will be blocked</string>
+    <string name="schedule_start_time">Start time</string>
+    <string name="schedule_end_time">End time</string>
+    <string name="schedule_from">From %1$s</string>
+    <string name="schedule_to">To %1$s</string>
+    <plurals name="schedule_hours_dedicated">
+        <item quantity="one">%1$d hour for yourself</item>
+        <item quantity="other">%1$d hours for yourself</item>
+    </plurals>
+    <string name="schedule_time_dedicated">%1$s for yourself</string>
+    <string name="duration_format">%1$d h %2$d min</string>
+    <string name="duration_hours_only">%1$d h quiet</string>
+
+    <!-- App Selection & Main Action -->
+    <string name="select_apps">Apps to silence</string>
+
+    <!-- Plurals -->
+    <plurals name="blocked_apps_count">
+        <item quantity="one">%1$d app blocked</item>
+        <item quantity="other">%1$d apps blocked</item>
+    </plurals>
+
+    <!-- App Selection Screen -->
+    <string name="app_selection_title">Apps to block</string>
+    <string name="search_apps">Search apps</string>
+    <string name="search_empty_title">No apps found</string>
+    <string name="search_empty_subtitle">Try searching with a different term or package name</string>
+    <string name="selected_empty_title">No apps selected yet</string>
+    <string name="selected_empty_subtitle">Switch to All and pick the work apps to silence.</string>
+    <string name="filter_all">All</string>
+    <string name="filter_selected">Selected</string>
+    <string name="section_selected">Selected (%1$d)</string>
+    <string name="section_all_apps">All apps (%1$d)</string>
+
+    <!-- Time Picker & Actions -->
+    <string name="time_picker_title">Select time</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Content Descriptions (Accessibility) -->
+    <string name="navigate_back">Navigate back</string>
+    <string name="cd_search_icon">Search icon</string>
+    <string name="cd_clear_search">Clear search text</string>
+    <string name="cd_start_time_picker">Select start time</string>
+    <string name="cd_end_time_picker">Select end time</string>
+    <string name="cd_master_switch">Toggle notification blocking</string>
+    <string name="cd_toggle_app_blocking">Toggle blocking for %1$s</string>
+
+    <!-- End of shift celebration -->
+    <string name="end_of_shift_title">Work is done</string>
+    <string name="end_of_shift_subtitle">Notifications from your work apps will wait until tomorrow. Enjoy your evening.</string>
+
+    <!-- Zen status notification (shade and lock screen) -->
+    <string name="zen_channel_name">Zen status</string>
+    <string name="zen_channel_description">A calm reminder in the notification shade while your work notifications are on hold.</string>
+    <string name="zen_msg_morning">The day starts slowly. Take your time.</string>
+    <string name="zen_msg_daylight">The sun is still high. Enjoy your free time!</string>
+    <string name="zen_msg_sunset">The sunset is just for you. Breathe and relax.</string>
+    <string name="zen_msg_night">The forest is resting. Treat yourself to a peaceful evening.</string>
+    <string name="zen_until">Until %1$s</string>
+    <string name="zen_all_day">All day</string>
+    <string name="zen_subtitle">%1$s · %2$s</string>
+    <string name="zen_filtered_none">no work notifications so far</string>
+    <plurals name="zen_filtered">
+        <item quantity="one">%1$d work notification on hold</item>
+        <item quantity="other">%1$d work notifications on hold</item>
+    </plurals>
+    <string name="zen_permission_title">Zen notification</string>
+    <string name="zen_permission_text">Allow notifications to see a calm reminder in the shade and on the lock screen while your work apps are paused.</string>
+    <string name="zen_permission_allow">Allow</string>
+    <string name="zen_permission_later">Not now</string>
+    <!-- Quick Settings tile -->
+    <string name="tile_name">Unplug &amp; Sun</string>
+    <string name="tile_label_day">Unplug &amp; Sun</string>
+    <string name="tile_label_evening">Zen time</string>
+    <string name="tile_subtitle_off">Off</string>
+    <string name="tile_subtitle_from">From %1$s</string>
+
+    <!-- Life copy: daylight and free time left in the day -->
+    <string name="life_turn_on">Turn blocking on and take your sunny hours back.</string>
+    <string name="life_sun_left">%1$s of sunshine left. Work can wait: go and enjoy it.</string>
+    <string name="life_evening_yours">The sun has set: the evening is all yours.</string>
+    <string name="life_day_beginning">A new day is starting: take your time.</string>
+    <string name="life_sun_after_work">You stop at %1$s: %2$s of sunshine will be waiting for you.</string>
+    <string name="life_evening_after_work">You stop at %1$s: the evening will be all yours.</string>
+    <string name="schedule_sunshine">Your off-hours include %1$s of daylight</string>
+    <string name="schedule_no_sunshine">Your off-hours start after dark: moonlight and lanterns</string>
+    <string name="life_duration_hours">%1$d h</string>
+    <string name="life_duration_minutes">%1$d min</string>
+
+</resources>

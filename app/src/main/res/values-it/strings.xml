@@ -1,0 +1,127 @@
+<resources>
+    <string name="service_label">Servizio Notification Blocker</string>
+
+    <!-- Main Screen -->
+    <string name="main_title">Notification Blocker</string>
+
+    <!-- Hero Statuses -->
+    <string name="status_disabled">Disattivato</string>
+    <string name="status_active_outside">Attivo fuori orario</string>
+
+    <!-- Hero Subtitles -->
+    <string name="hero_subtitle_disabled">Il blocco delle notifiche è disattivato. Tutte le notifiche saranno recapitate.</string>
+    <string name="hero_subtitle_outside">Fuori dall\'orario di blocco programmato. Le notifiche sono attualmente consentite.</string>
+    <string name="hero_subtitle_inside">Le notifiche di lavoro tacciono. Sei libero.</string>
+
+    <!-- Warm Greetings & Quotes -->
+    <string name="greeting_welcome_life">Bentornato alla tua vita</string>
+    <string name="greeting_time_breathe">È tempo di respirare</string>
+    <string name="greeting_enjoy_sun">Goditi il sole</string>
+    <string name="greeting_time_begins">Il tuo tempo comincia adesso</string>
+
+    <!-- Master Switch -->
+    <string name="master_switch_label">Blocco notifiche</string>
+    <string name="master_switch_status_on">Programmazione blocco attiva</string>
+    <string name="master_switch_status_off">Programmazione blocco disattivata</string>
+
+    <!-- Permission Warning -->
+    <string name="permission_warning_title">Permesso richiesto</string>
+    <string name="permission_warning_text">L\'accesso alle notifiche è necessario per consentire all\'app di rilevare e rimuovere le notifiche delle app selezionate fuori orario.</string>
+    <string name="permission_warning_button">Concedi l\'accesso alle notifiche</string>
+
+    <!-- Schedule Section -->
+    <string name="schedule_title">Orario di blocco</string>
+    <string name="schedule_subtitle">Imposta la fascia oraria giornaliera in cui le notifiche saranno bloccate</string>
+    <string name="schedule_start_time">Ora di inizio</string>
+    <string name="schedule_end_time">Ora di fine</string>
+    <string name="schedule_from">Dalle %1$s</string>
+    <string name="schedule_to">Alle %1$s</string>
+    <plurals name="schedule_hours_dedicated">
+        <item quantity="one">%1$d ora dedicata a te</item>
+        <item quantity="many">%1$d ore dedicate a te</item>
+        <item quantity="other">%1$d ore dedicate a te</item>
+    </plurals>
+    <string name="schedule_time_dedicated">%1$s dedicate a te</string>
+    <string name="duration_format">%1$d h %2$d min</string>
+    <string name="duration_hours_only">%1$d h di quiete</string>
+
+    <!-- App Selection & Main Action -->
+    <string name="select_apps">App da silenziare</string>
+
+    <!-- Plurals -->
+    <plurals name="blocked_apps_count">
+        <item quantity="one">%1$d app bloccata</item>
+        <item quantity="many">%1$d app bloccate</item>
+        <item quantity="other">%1$d app bloccate</item>
+    </plurals>
+
+    <!-- App Selection Screen -->
+    <string name="app_selection_title">App da bloccare</string>
+    <string name="search_apps">Cerca app</string>
+    <string name="search_empty_title">Nessuna app trovata</string>
+    <string name="search_empty_subtitle">Prova a cercare con un termine diverso o con il nome del pacchetto</string>
+    <string name="selected_empty_title">Nessuna app selezionata</string>
+    <string name="selected_empty_subtitle">Passa a Tutte e scegli le app di lavoro da silenziare.</string>
+    <string name="filter_all">Tutte</string>
+    <string name="filter_selected">Selezionate</string>
+    <string name="section_selected">Selezionate (%1$d)</string>
+    <string name="section_all_apps">Tutte le app (%1$d)</string>
+
+    <!-- Time Picker & Actions -->
+    <string name="time_picker_title">Seleziona orario</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Annulla</string>
+
+    <!-- Content Descriptions (Accessibility) -->
+    <string name="navigate_back">Indietro</string>
+    <string name="cd_search_icon">Icona di ricerca</string>
+    <string name="cd_clear_search">Cancella testo di ricerca</string>
+    <string name="cd_start_time_picker">Seleziona ora di inizio</string>
+    <string name="cd_end_time_picker">Seleziona ora di fine</string>
+    <string name="cd_master_switch">Attiva o disattiva blocco notifiche</string>
+    <string name="cd_toggle_app_blocking">Attiva/disattiva blocco per %1$s</string>
+
+    <!-- End of shift celebration -->
+    <string name="end_of_shift_title">Fine turno</string>
+    <string name="end_of_shift_subtitle">Le notifiche delle app di lavoro aspettano fino a domani. Buona serata.</string>
+
+    <!-- Notifica di stato zen (tendina e schermata di blocco) -->
+    <string name="zen_channel_name">Stato zen</string>
+    <string name="zen_channel_description">Un promemoria sereno nella tendina mentre le notifiche di lavoro sono in pausa.</string>
+    <string name="zen_msg_morning">Il giorno inizia piano. Prenditi il tuo tempo.</string>
+    <string name="zen_msg_daylight">Il sole è ancora alto. Goditi il tuo tempo libero!</string>
+    <string name="zen_msg_sunset">Il tramonto è solo per te. Respira e rilassati.</string>
+    <string name="zen_msg_night">La foresta riposa. Concediti una serata serena.</string>
+    <string name="zen_until">Fino alle %1$s</string>
+    <string name="zen_all_day">Tutto il giorno</string>
+    <string name="zen_subtitle">%1$s · %2$s</string>
+    <string name="zen_filtered_none">ancora nessuna notifica di lavoro</string>
+    <plurals name="zen_filtered">
+        <item quantity="one">%1$d notifica di lavoro filtrata</item>
+        <item quantity="many">%1$d notifiche di lavoro filtrate</item>
+        <item quantity="other">%1$d notifiche di lavoro filtrate</item>
+    </plurals>
+    <string name="zen_permission_title">Notifica zen</string>
+    <string name="zen_permission_text">Consenti le notifiche per vedere un promemoria sereno nella tendina e sulla schermata di blocco mentre le app di lavoro sono in pausa.</string>
+    <string name="zen_permission_allow">Consenti</string>
+    <string name="zen_permission_later">Non ora</string>
+    <!-- Riquadro Impostazioni rapide -->
+    <string name="tile_name">Stacco &amp; Sole</string>
+    <string name="tile_label_day">Stacco &amp; Sole</string>
+    <string name="tile_label_evening">Stacco zen</string>
+    <string name="tile_subtitle_off">Spento</string>
+    <string name="tile_subtitle_from">Dalle %1$s</string>
+
+    <!-- Testi "vita": luce e tempo libero rimasti nella giornata -->
+    <string name="life_turn_on">Attiva il blocco e riprenditi le tue ore di sole.</string>
+    <string name="life_sun_left">Ti restano %1$s di sole. Il lavoro può aspettare: goditeli.</string>
+    <string name="life_evening_yours">Il sole è tramontato: la serata è tutta tua.</string>
+    <string name="life_day_beginning">Un nuovo giorno sta iniziando: prenditi il tuo tempo.</string>
+    <string name="life_sun_after_work">Stacchi alle %1$s: ti aspettano %2$s di sole.</string>
+    <string name="life_evening_after_work">Stacchi alle %1$s: la serata sarà tutta tua.</string>
+    <string name="schedule_sunshine">La tua fascia include %1$s di luce del sole</string>
+    <string name="schedule_no_sunshine">La tua fascia inizia dopo il tramonto: luna e lanterne</string>
+    <string name="life_duration_hours">%1$d h</string>
+    <string name="life_duration_minutes">%1$d min</string>
+
+</resources>

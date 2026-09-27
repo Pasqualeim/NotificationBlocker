@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Zen notification, sunset: the sun sinks slowly behind the hills, shimmering on the water.
+     Used as the indeterminate drawable of a ProgressBar in the zen notification: ProgressBar starts
+     (and loops) an animated vector by itself, which a plain ImageView in RemoteViews would not. -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="48dp"
+            android:height="48dp"
+            android:viewportWidth="48"
+            android:viewportHeight="48">
+            <group android:name="frame">
+                <clip-path android:pathData="M10,0 H38 A10,10 0 0 1 48,10 V38 A10,10 0 0 1 38,48 H10 A10,10 0 0 1 0,38 V10 A10,10 0 0 1 10,0 Z" />
+                <path
+                    android:pathData="M10,0 H38 A10,10 0 0 1 48,10 V38 A10,10 0 0 1 38,48 H10 A10,10 0 0 1 0,38 V10 A10,10 0 0 1 10,0 Z">
+                    <aapt:attr name="android:fillColor">
+                        <gradient android:type="linear" android:startX="0" android:startY="0" android:endX="0" android:endY="48">
+                            <item android:color="#FF5B4C8E" android:offset="0" />
+                            <item android:color="#FFE2786A" android:offset="0.55" />
+                            <item android:color="#FFFFC77A" android:offset="1" />
+                        </gradient>
+                    </aapt:attr>
+                </path>
+            <group android:name="sunset">
+            <group android:name="sunGlow" android:pivotX="24" android:pivotY="29">
+                <path
+                    android:pathData="M12,29 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0"
+                    android:fillColor="#FFFFB070"
+                    android:fillAlpha="0.45" />
+            </group>
+                <path
+                    android:pathData="M17,29 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0"
+                    android:fillColor="#FFFFE3A3" />
+            </group>
+                <path
+                    android:pathData="M0,34 L9,27 L16,31 L27,22 L37,30 L48,25 V48 H0 Z"
+                    android:fillColor="#FF6B4A7A" />
+                <path
+                    android:pathData="M0,37 L12,32 L22,36 L34,31 L48,36 V48 H0 Z"
+                    android:fillColor="#FF4E3560" />
+                <path
+                    android:pathData="M0,39 H48 V48 H0 Z"
+                    android:fillColor="#FFC87A62" />
+            <group android:name="shimmer">
+                <path
+                    android:name="shimmerPaths"
+                    android:pathData="M17,41.5 H31 M19.5,44 H28.5 M22,46.5 H26"
+                    android:strokeColor="#FFFFE3A3"
+                    android:strokeWidth="1"
+                    android:strokeLineCap="round" />
+            </group>
+            <group android:name="birds">
+                <path
+                    android:pathData="M8,12 l2,1.2 l2,-1.2 M14,8.5 l1.6,1 l1.6,-1"
+                    android:strokeColor="#FF3A2E4A"
+                    android:strokeWidth="0.8"
+                    android:strokeLineCap="round" />
+            </group>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="sunset">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="translateY"
+                android:valueFrom="0"
+                android:valueTo="3"
+                android:valueType="floatType"
+                android:duration="7000"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:interpolator="@android:interpolator/accelerate_decelerate" />
+        </aapt:attr>
+    </target>
+    <target android:name="sunGlow">
+        <aapt:attr name="android:animation">
+            <set android:ordering="together">
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:valueFrom="0.92"
+                    android:valueTo="1.1"
+                    android:valueType="floatType"
+                    android:duration="3000"
+                    android:repeatCount="infinite"
+                    android:repeatMode="reverse"
+                    android:interpolator="@android:interpolator/accelerate_decelerate" />
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:valueFrom="0.92"
+                    android:valueTo="1.1"
+                    android:valueType="floatType"
+                    android:duration="3000"
+                    android:repeatCount="infinite"
+                    android:repeatMode="reverse"
+                    android:interpolator="@android:interpolator/accelerate_decelerate" />
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="shimmerPaths">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="strokeAlpha"
+                android:valueFrom="0.35"
+                android:valueTo="0.95"
+                android:valueType="floatType"
+                android:duration="1700"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:interpolator="@android:interpolator/accelerate_decelerate" />
+        </aapt:attr>
+    </target>
+    <target android:name="shimmer">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="translateX"
+                android:valueFrom="-1"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:duration="2300"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:interpolator="@android:interpolator/accelerate_decelerate" />
+        </aapt:attr>
+    </target>
+    <target android:name="birds">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="translateX"
+                android:valueFrom="0"
+                android:valueTo="8"
+                android:valueType="floatType"
+                android:duration="9000"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:interpolator="@android:interpolator/accelerate_decelerate" />
+        </aapt:attr>
+    </target>
+</animated-vector>

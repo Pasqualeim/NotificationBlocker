@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quick Settings tile, morning: a leaf. Monochrome (the system tints it). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M20.5,3.5C12,3.5 5,7.5 5,14.2C5,16.1 5.7,17.8 6.8,19.1L4.2,21.7L5.6,23.1L8.2,20.5C9.5,21.4 11,22 12.8,22C18.7,22 20.5,14.5 20.5,3.5ZM12.8,20C11.5,20 10.4,19.6 9.5,19.1L15.6,13L14.2,11.6L8.1,17.7C7.4,16.7 7,15.5 7,14.2C7,9.4 12,6 18.4,5.6C18.1,14.2 16.5,20 12.8,20Z" />
+</vector>

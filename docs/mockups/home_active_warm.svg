@@ -1,0 +1,222 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="412" height="892" viewBox="0 0 412 892" font-family="Manrope, 'Helvetica Neue', Arial, sans-serif">
+  <!-- Mock-up: Home "Notification Blocker" attiva, palette calda (crema / terracotta / arancio) -->
+  <defs>
+    <clipPath id="phone"><rect width="412" height="892" rx="40"/></clipPath>
+    <clipPath id="scene"><rect x="16" y="266" width="380" height="286" rx="28"/></clipPath>
+    <clipPath id="win"><rect x="138" y="290" width="136" height="82" rx="6"/></clipPath>
+    <linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6B4C9A"/>
+      <stop offset="0.35" stop-color="#C85C8E"/>
+      <stop offset="0.65" stop-color="#F28A5B"/>
+      <stop offset="1" stop-color="#FBC56B"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7D9BF"/>
+      <stop offset="1" stop-color="#F3C9A6"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFB27A" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFB27A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="timeline" x1="0" x2="1">
+      <stop offset="0" stop-color="#E8792B"/>
+      <stop offset="1" stop-color="#F2A65A"/>
+    </linearGradient>
+    <pattern id="weave" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#E9A15E"/>
+      <path d="M0 0 H8 M0 4 H8" stroke="#C97A3A" stroke-width="1.4"/>
+      <path d="M0 0 V8 M4 0 V8" stroke="#F6C58E" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <g clip-path="url(#phone)">
+    <!-- Sfondo crema -->
+    <rect width="412" height="892" fill="#FBF3E6"/>
+
+    <!-- Status bar -->
+    <text x="28" y="30" font-size="15" font-weight="600" fill="#3E2417">16:30</text>
+    <g fill="#3E2417">
+      <!-- segnale -->
+      <rect x="318" y="24" width="3" height="5" rx="1"/>
+      <rect x="323" y="21" width="3" height="8" rx="1"/>
+      <rect x="328" y="18" width="3" height="11" rx="1"/>
+      <rect x="333" y="15" width="3" height="14" rx="1"/>
+      <!-- wifi -->
+      <path d="M346 18 a12 12 0 0 1 16 0 l-2 2 a9 9 0 0 0 -12 0z M349 22 a7 7 0 0 1 10 0 l-5 6z"/>
+      <!-- batteria -->
+      <rect x="370" y="15" width="22" height="13" rx="3" fill="none" stroke="#3E2417" stroke-width="1.6"/>
+      <rect x="373" y="18" width="15" height="7" rx="1.5"/>
+      <rect x="393" y="19" width="2" height="5" rx="1"/>
+    </g>
+
+    <!-- Header: lucchetto + titolo -->
+    <rect x="20" y="56" width="44" height="44" rx="14" fill="#E8792B"/>
+    <g fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round">
+      <path d="M35 76 v-5 a7 7 0 0 1 14 0 v5"/>
+    </g>
+    <rect x="31" y="75" width="22" height="16" rx="4" fill="#FFFFFF"/>
+    <circle cx="42" cy="82" r="2.4" fill="#E8792B"/>
+    <rect x="41" y="83" width="2" height="4" rx="1" fill="#E8792B"/>
+    <text x="76" y="85" font-size="22" font-weight="800" fill="#3E2417">Notification Blocker</text>
+
+    <!-- Modulo di stato (terracotta chiaro) -->
+    <rect x="16" y="116" width="380" height="134" rx="28" fill="#F0B899"/>
+    <circle cx="54" cy="152" r="22" fill="#FBE3D2"/>
+    <!-- campana senza sbarra -->
+    <g fill="#8A6A5A">
+      <path d="M54 139 c-7 0 -11 5 -11 12 v6 l-3 4 h28 l-3 -4 v-6 c0 -7 -4 -12 -11 -12z"/>
+      <circle cx="54" cy="164" r="3"/>
+      <rect x="52.5" y="136" width="3" height="4" rx="1.5"/>
+    </g>
+    <text x="86" y="160" font-size="24" font-weight="800" fill="#3E2417">Attivo</text>
+    <text x="32" y="200" font-size="15" fill="#5A3321">Le notifiche di lavoro sono silenziate.</text>
+    <text x="32" y="222" font-size="15" font-weight="700" fill="#5A3321">È ora di rilassarsi!</text>
+    <!-- toggle -->
+    <text x="364" y="140" font-size="10.5" font-weight="700" fill="#7A4A33" text-anchor="end" letter-spacing="0.4">NOTIFICATION BLOCKING</text>
+    <rect x="312" y="150" width="52" height="32" rx="16" fill="#E8792B"/>
+    <circle cx="348" cy="166" r="12" fill="#FFFFFF"/>
+    <path d="M342.5 166 l3.8 3.8 l7 -7.5" fill="none" stroke="#E8792B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Illustrazione: stanza calda al tramonto -->
+    <g clip-path="url(#scene)">
+      <rect x="16" y="266" width="380" height="286" fill="url(#wall)"/>
+      <!-- finestra con tramonto -->
+      <rect x="132" y="284" width="148" height="94" rx="10" fill="#B9764A"/>
+      <g clip-path="url(#win)">
+        <rect x="138" y="290" width="136" height="82" fill="url(#sunset)"/>
+        <circle cx="206" cy="366" r="20" fill="#FFD98A"/>
+        <circle cx="206" cy="366" r="30" fill="#FFD98A" opacity="0.25"/>
+        <path d="M150 312 q6 -8 14 -4 q6 -8 16 -2 q10 0 10 7 h-40z" fill="#F7B4C6" opacity="0.9"/>
+        <path d="M218 330 q5 -7 12 -3 q6 -6 13 0 q8 0 8 6 h-33z" fill="#FFC9A8" opacity="0.9"/>
+        <path d="M232 302 q4 -5 9 -2 q5 -4 10 1 h-19z" fill="#E7A4D9" opacity="0.8"/>
+        <path d="M138 360 q30 -12 60 -2 q40 -14 76 0 v14 h-136z" fill="#7A3E6E" opacity="0.55"/>
+      </g>
+      <rect x="204" y="290" width="4" height="82" fill="#B9764A"/>
+      <!-- ringhiera / davanzale -->
+      <rect x="124" y="372" width="164" height="9" rx="4" fill="#9C5F3A"/>
+      <!-- gatto addormentato -->
+      <g>
+        <ellipse cx="252" cy="364" rx="17" ry="9" fill="#E07B3C"/>
+        <circle cx="238" cy="362" r="7.5" fill="#E07B3C"/>
+        <path d="M232 357 l1 -7 l5 5z M239 355 l4 -6 l2 7z" fill="#E07B3C"/>
+        <path d="M234 363 q2 2 4 0" stroke="#5A3321" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M268 366 q8 -2 6 -10" stroke="#E07B3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M248 358 q4 -2 8 0 M254 361 q4 -2 8 0" stroke="#C4602A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <text x="262" y="346" font-size="9" font-weight="700" fill="#9C5F3A">z</text>
+        <text x="269" y="339" font-size="7" font-weight="700" fill="#9C5F3A">z</text>
+      </g>
+      <!-- luce calda che entra -->
+      <path d="M132 381 L280 381 L330 552 L80 552 Z" fill="url(#glow)"/>
+
+      <!-- pavimento + tappeto -->
+      <rect x="16" y="522" width="380" height="30" fill="#D99A6C"/>
+      <ellipse cx="206" cy="534" rx="120" ry="12" fill="#C8604A" opacity="0.55"/>
+
+      <!-- albero sinistro in vaso -->
+      <rect x="57" y="330" width="7" height="170" rx="3" fill="#8A5230"/>
+      <circle cx="60" cy="318" r="30" fill="#5E9B61"/>
+      <circle cx="40" cy="336" r="20" fill="#6FAE6B"/>
+      <circle cx="80" cy="338" r="19" fill="#4E8A55"/>
+      <circle cx="62" cy="296" r="18" fill="#7DBE73"/>
+      <path d="M44 496 h34 l-5 32 h-24z" fill="#C8643E"/>
+      <rect x="41" y="492" width="40" height="7" rx="3" fill="#B2532F"/>
+      <!-- albero destro in vaso -->
+      <rect x="348" y="330" width="7" height="170" rx="3" fill="#8A5230"/>
+      <circle cx="352" cy="316" r="30" fill="#5E9B61"/>
+      <circle cx="372" cy="336" r="20" fill="#4E8A55"/>
+      <circle cx="332" cy="338" r="19" fill="#6FAE6B"/>
+      <circle cx="350" cy="294" r="18" fill="#7DBE73"/>
+      <path d="M334 496 h34 l-5 32 h-24z" fill="#C8643E"/>
+      <rect x="331" y="492" width="40" height="7" rx="3" fill="#B2532F"/>
+
+      <!-- corde dell'amaca -->
+      <path d="M64 392 L104 424 M64 392 L100 432" stroke="#7A4A33" stroke-width="1.8"/>
+      <path d="M348 392 L308 424 M348 392 L312 432" stroke="#7A4A33" stroke-width="1.8"/>
+      <!-- amaca intrecciata (parte dietro) -->
+      <path d="M100 424 Q206 500 312 424 Q206 452 100 424z" fill="url(#weave)"/>
+
+      <!-- persona sdraiata -->
+      <path d="M150 428 Q200 450 250 442" stroke="#6F9C8A" stroke-width="24" fill="none" stroke-linecap="round"/>
+      <path d="M244 442 Q272 438 296 428" stroke="#8C5A3C" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <ellipse cx="302" cy="426" rx="7" ry="5" fill="#F2C7A5"/>
+      <circle cx="130" cy="424" r="14" fill="#F2C7A5"/>
+      <path d="M117 424 a14 14 0 0 1 22 -12 q-6 2 -8 8 q-7 -2 -14 4z" fill="#4A2A1A"/>
+      <path d="M121 413 a14 14 0 0 1 14 -3" stroke="#4A2A1A" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M131 425 q3 2.5 6 0" stroke="#4A2A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M132 431 q3 2 5 0" stroke="#C07B5E" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <circle cx="140" cy="430" r="2.5" fill="#F4A08A" opacity="0.7"/>
+      <!-- libro aperto sul petto -->
+      <path d="M160 432 L176 412 L180 434z" fill="#FFF6E8" stroke="#B2532F" stroke-width="1.2"/>
+      <path d="M180 434 L184 412 L200 436z" fill="#FFEFD8" stroke="#B2532F" stroke-width="1.2"/>
+      <path d="M176 412 L180 434 L184 412" fill="#D9573B"/>
+      <ellipse cx="172" cy="436" rx="6" ry="4" fill="#F2C7A5"/>
+
+      <!-- amaca (bordo davanti) -->
+      <path d="M100 424 Q206 500 312 424 Q206 484 100 424z" fill="url(#weave)" opacity="0.95"/>
+      <path d="M100 424 Q206 500 312 424" stroke="#B26A30" stroke-width="2.4" fill="none"/>
+
+      <!-- tavolino basso con tè fumante -->
+      <rect x="176" y="506" width="72" height="7" rx="3" fill="#9C5F3A"/>
+      <rect x="182" y="512" width="5" height="16" rx="2" fill="#7A4A33"/>
+      <rect x="237" y="512" width="5" height="16" rx="2" fill="#7A4A33"/>
+      <path d="M198 490 h20 v10 a8 8 0 0 1 -8 7 h-4 a8 8 0 0 1 -8 -7z" fill="#FFF6E8"/>
+      <path d="M218 493 a5 5 0 0 1 0 9" stroke="#FFF6E8" stroke-width="2.6" fill="none"/>
+      <rect x="198" y="490" width="20" height="3" fill="#D9573B"/>
+      <path d="M203 484 q-4 -5 0 -10 q4 -5 0 -10 M212 484 q-4 -5 0 -10 q4 -5 0 -10" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85"/>
+      <circle cx="232" cy="502" r="4" fill="#E8792B"/>
+
+      <!-- pianta d'appartamento felice -->
+      <path d="M284 506 h28 l-4 22 h-20z" fill="#F2A65A"/>
+      <path d="M298 506 q-18 -12 -16 -32 q12 10 16 32z" fill="#4E8A55"/>
+      <path d="M298 506 q18 -14 18 -34 q-14 10 -18 34z" fill="#6FAE6B"/>
+      <path d="M298 506 q-2 -24 6 -40 q6 18 -6 40z" fill="#7DBE73"/>
+      <path d="M298 506 q-24 -2 -30 -18 q18 0 30 18z" fill="#5E9B61"/>
+      <circle cx="292" cy="478" r="3" fill="#F4A08A"/>
+      <circle cx="310" cy="474" r="3" fill="#FFD98A"/>
+    </g>
+
+    <!-- Modulo programma off-hours (tramonto) -->
+    <rect x="16" y="568" width="380" height="196" rx="28" fill="#F6C9A3"/>
+    <text x="36" y="604" font-size="17" font-weight="800" fill="#3E2417">Programma off-hours</text>
+    <rect x="262" y="586" width="116" height="28" rx="14" fill="#10B981"/>
+    <text x="320" y="605" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="middle">9 ore per te</text>
+
+    <!-- orari -->
+    <rect x="32" y="624" width="160" height="62" rx="18" fill="#FDEBDD"/>
+    <text x="48" y="646" font-size="11" font-weight="700" fill="#9C5F3A" letter-spacing="0.4">INIZIO</text>
+    <text x="48" y="675" font-size="26" font-weight="800" fill="#3E2417">16:00</text>
+    <rect x="220" y="624" width="160" height="62" rx="18" fill="#FDEBDD"/>
+    <text x="236" y="646" font-size="11" font-weight="700" fill="#9C5F3A" letter-spacing="0.4">FINE</text>
+    <text x="236" y="675" font-size="26" font-weight="800" fill="#3E2417">01:00</text>
+    <circle cx="206" cy="655" r="13" fill="#E8792B"/>
+    <path d="M200 655 h11 m-4 -4 l4 4 l-4 4" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- timeline 24h: finestra attiva 16:00 → 01:00, adesso 16:30 -->
+    <rect x="36" y="708" width="340" height="14" rx="7" fill="#EFD6C2"/>
+    <rect x="262.7" y="708" width="113.3" height="14" rx="7" fill="url(#timeline)"/>
+    <rect x="262.7" y="708" width="20" height="14" fill="#E8792B"/>
+    <rect x="36" y="708" width="14.2" height="14" rx="7" fill="#F2A65A"/>
+    <rect x="40" y="708" width="10.2" height="14" fill="#F2A65A"/>
+    <!-- "adesso" -->
+    <circle cx="269.8" cy="715" r="9" fill="#FFFFFF" stroke="#E8792B" stroke-width="3"/>
+    <circle cx="269.8" cy="715" r="3.2" fill="#E8792B"/>
+    <text x="269.8" y="701" font-size="10" font-weight="800" fill="#B2532F" text-anchor="middle">ORA 16:30</text>
+    <g font-size="10.5" font-weight="600" fill="#8A6A5A">
+      <text x="36" y="742">00:00</text>
+      <text x="121" y="742" text-anchor="middle">06:00</text>
+      <text x="206" y="742" text-anchor="middle">12:00</text>
+      <text x="291" y="742" text-anchor="middle">18:00</text>
+      <text x="376" y="742" text-anchor="end">24:00</text>
+    </g>
+
+    <!-- CTA inferiore -->
+    <rect x="16" y="784" width="380" height="64" rx="32" fill="#E8792B"/>
+    <text x="40" y="822" font-size="16.5" font-weight="800" fill="#FFFFFF">App da silenziare</text>
+    <rect x="222" y="796" width="162" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.24"/>
+    <text x="303" y="821" font-size="14" font-weight="800" fill="#FFFFFF" text-anchor="middle">15 app silenziate</text>
+
+    <!-- barra di navigazione a gesti -->
+    <rect x="152" y="872" width="108" height="5" rx="2.5" fill="#3E2417" opacity="0.8"/>
+  </g>
+  <rect x="0.5" y="0.5" width="411" height="891" rx="40" fill="none" stroke="#E6D3BF"/>
+</svg>
