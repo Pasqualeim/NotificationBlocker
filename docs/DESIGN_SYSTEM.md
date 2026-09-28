@@ -29,14 +29,14 @@ Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.sv
 | `secondaryContainer` / `onSecondaryContainer` | `#C9EEDA` / `#073A28` | `#145B3F` / `#BFF2D6` | Card di stato "in attesa" (attivo, ma ora è consentito) |
 | `tertiary` / `onTertiary` | `#7A4A9E` viola del crepuscolo / `#FFFFFF` | `#D8B8F2` / `#3C1D57` | Accenti di sera e riposo: luna nella `ScheduleCard` quando la fascia non ha sole; icona e bottone della card del permesso |
 | `tertiaryContainer` / `onTertiaryContainer` | `#EEDDF8` / `#35164F` | `#56377A` / `#F2DCFF` | Avvisi soft (card del permesso mancante) |
-| `background` / `onBackground` | `#FBF3E6` crema / `#3E2417` cioccolato | `#1A1210` prugna-marrone / `#F7E8DB` | Sfondo schermate |
-| `surface` / `onSurface` | `#FFF9F1` / `#3E2417` | `#1F1613` / `#F7E8DB` | Bottom bar, intestazioni della lista app |
-| `surfaceVariant` / `onSurfaceVariant` | `#F1DAC4` / `#6B4633` | `#4A3931` / `#DBC2B1` | Binario della timeline, sfondo dell'icona in `DISABLED`, skeleton; `onSurfaceVariant` per testi secondari |
-| `surfaceContainerLowest` | `#FFFCF8` | `#140D0B` | Disponibile, oggi non usato |
+| `background` / `onBackground` | `#FBF3E6` crema / `#3E2417` cioccolato | `#1A1210` prugna-marrone / `#F7E8DB` | Sfondo schermate e bottom bar della Home (la CTA galleggia, niente banda) |
+| `surface` / `onSurface` | `#FFF9F1` / `#3E2417` | `#1F1613` / `#F7E8DB` | Intestazioni della lista app |
+| `surfaceVariant` / `onSurfaceVariant` | `#F1DAC4` / `#6B4633` | `#4A3931` / `#DBC2B1` | Binario della timeline, skeleton; `onSurfaceVariant` per testi secondari |
+| `surfaceContainerLowest` | `#FFFCF8` | `#140D0B` | Disco della campanella in `ACTIVE_INSIDE` e `DISABLED`, pillole degli orari |
 | `surfaceContainerLow` | `#FAEEE1` | `#241A17` | Card dello skeleton |
 | `surfaceContainer` | `#F9E8D6` | `#2B201C` | `SceneCard`, `EndOfShiftCard`, `ZenNotificationCard`, riga app non selezionata |
-| `surfaceContainerHigh` | `#F6DFC8` | `#362924` | Card di stato `DISABLED`, `ScheduleCard`, barra di ricerca, dialog del `TimePicker` |
-| `surfaceContainerHighest` | `#F3D5B9` | `#42332C` | Solo default M3 (binario dello Switch spento, quadrante del `TimePicker`) |
+| `surfaceContainerHigh` | `#F6DFC8` | `#362924` | `ScheduleCard`, barra di ricerca, dialog del `TimePicker` |
+| `surfaceContainerHighest` | `#F3D5B9` | `#42332C` | Card di stato `DISABLED` (un gradino più scura della `ScheduleCard`); default M3 (binario dello Switch spento, con bordo `outline`; quadrante del `TimePicker`) |
 | `outline` / `outlineVariant` | `#8F6D5B` / `#E2C6AE` | `#A68C7D` / `#54433A` | Fascia della timeline a blocco spento; bordo della riga app (`outlineVariant`) |
 | `inverseSurface` / `inverseOnSurface` / `inversePrimary` | `#3A2A22` / `#FBEDE2` / `#FFB575` | `#F7E8DB` / `#3E2417` / `#A6490C` | Solo default M3 (Snackbar, tooltip): oggi non usati |
 
@@ -46,7 +46,7 @@ L'illustrazione (`ZenScene`) mantiene la sua palette in `ui/theme/ZenPalette.kt`
 
 | `HeroStatus` | Container | Icona / tinta | Significato |
 |---|---|---|---|
-| `DISABLED` | `surfaceContainerHigh` | campanella, `onSurfaceVariant` | Blocco spento |
+| `DISABLED` | `surfaceContainerHighest` | campanella, `onSurfaceVariant` | Blocco spento |
 | `ACTIVE_OUTSIDE` | `secondaryContainer` | campanella barrata, `secondary` | Acceso, fuori fascia |
 | `ACTIVE_INSIDE` | `primaryContainer` + alone che respira | campanella barrata `primary` su disco opaco `surfaceContainerLowest` (5.74 / 11.1, anche al picco dell'alone) | Sta bloccando ora |
 

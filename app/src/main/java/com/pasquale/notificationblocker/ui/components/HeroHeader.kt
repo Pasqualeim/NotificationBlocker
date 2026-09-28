@@ -92,7 +92,8 @@ private fun HeroHeaderContent(
 
     val animatedContainerColor by animateColorAsState(
         targetValue = when (status) {
-            HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceContainerHigh
+            // A step darker than the ScheduleCard below, so the two don't merge
+            HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceContainerHighest
             HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondaryContainer
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primaryContainer
         },
@@ -112,7 +113,7 @@ private fun HeroHeaderContent(
 
     val animatedIconBackground by animateColorAsState(
         targetValue = when (status) {
-            HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceVariant
+            HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceContainerLowest
             HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
             // Opaque "paper" disc: the primary bell stays >= 3:1 even at the peak of the glow behind it
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.surfaceContainerLowest

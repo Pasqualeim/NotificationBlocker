@@ -206,8 +206,8 @@ fun MainScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding(),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 3.dp,
+                // Same color as the page: the CTA floats, no two-tone band under it
+                color = MaterialTheme.colorScheme.background,
             ) {
                 Column(
                     modifier = Modifier
