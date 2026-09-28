@@ -1,8 +1,6 @@
 package com.pasquale.notificationblocker.ui.components
 
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
@@ -43,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.theme.TimeDisplayTextStyle
 import com.pasquale.notificationblocker.ui.zen.LifeCopy
@@ -75,7 +73,7 @@ fun ScheduleCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         )
@@ -142,7 +140,7 @@ fun ScheduleCard(
                     Icon(
                         painter = painterResource(if (sunny) R.drawable.ic_sun_dim else R.drawable.ic_moon),
                         contentDescription = null,
-                        tint = if (sunny) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                        tint = if (sunny) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.size(18.dp),
                     )
                     Text(
@@ -212,11 +210,8 @@ private fun TimePill(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium,
-        ),
+        targetValue = if (isPressed) Motion.PRESS_SCALE else 1f,
+        animationSpec = Motion.press(),
         label = "TimePillScale",
     )
 
@@ -236,7 +231,7 @@ private fun TimePill(
                     onClick()
                 }
             ),
-        shape = RoundedCornerShape(20.dp),
+        shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 2.dp
     ) {

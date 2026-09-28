@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,8 +37,11 @@ fun Timeline24h(
     } else {
         MaterialTheme.colorScheme.outline
     }
-    val indicatorColor = MaterialTheme.colorScheme.secondary
-    val indicatorGlowColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+    // "Now" marker: an onSurface ring (visible on the track) around a surface center (visible on
+    // the primary bar). A secondary dot would match primary's luminance and vanish on the bar
+    val indicatorColor = MaterialTheme.colorScheme.onSurface
+    val indicatorGlowColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    val indicatorCenterColor = MaterialTheme.colorScheme.surface
 
     val liveMinutes by rememberCurrentMinutes()
     val currentMins = currentTimeMinutes ?: liveMinutes
@@ -127,8 +129,8 @@ fun Timeline24h(
             )
 
             drawCircle(
-                color = Color.White,
-                radius = barH * 0.25f,
+                color = indicatorCenterColor,
+                radius = barH * 0.35f,
                 center = Offset(dotX, dotY)
             )
         }

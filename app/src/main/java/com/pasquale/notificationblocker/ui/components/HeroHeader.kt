@@ -2,16 +2,15 @@ package com.pasquale.notificationblocker.ui.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -47,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
 
@@ -95,7 +93,7 @@ private fun HeroHeaderContent(
             HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondaryContainer
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primaryContainer
         },
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = Motion.standard(Motion.LONG),
         label = "HeroContainerColor",
     )
 
@@ -105,38 +103,18 @@ private fun HeroHeaderContent(
             HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.onSecondaryContainer
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.onPrimaryContainer
         },
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = Motion.standard(Motion.LONG),
         label = "HeroContentColor",
-    )
-
-    // Warm breathing light / gentle sunlight animation for active state
-    val infiniteTransition = rememberInfiniteTransition(label = "HeroGlowTransition")
-    val glowScale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.40f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "HeroGlowScale",
-    )
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.25f,
-        targetValue = 0.60f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "HeroGlowAlpha",
     )
 
     val animatedIconBackground by animateColorAsState(
         targetValue = when (status) {
             HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceVariant
             HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-            HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+            // Opaque "paper" disc: the primary bell stays >= 3:1 even at the peak of the glow behind it
+            HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.surfaceContainerLowest
         },
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = Motion.standard(Motion.LONG),
         label = "HeroIconBackground",
     )
 
@@ -146,7 +124,7 @@ private fun HeroHeaderContent(
             HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondary
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primary
         },
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = Motion.standard(Motion.LONG),
         label = "HeroIconTint",
     )
 
@@ -157,7 +135,7 @@ private fun HeroHeaderContent(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = animatedContainerColor,
             contentColor = animatedContentColor,
@@ -172,8 +150,9 @@ private fun HeroHeaderContent(
                             animatedContainerColor,
                             when (status) {
                                 HeroStatus.DISABLED -> animatedContainerColor
-                                HeroStatus.ACTIVE_OUTSIDE -> secondaryColor.copy(alpha = 0.12f)
-                                HeroStatus.ACTIVE_INSIDE -> primaryColor.copy(alpha = 0.18f)
+                                // Kept faint: stronger tints drop the 0.85-alpha subtitle below 4.5:1 in dark
+                                HeroStatus.ACTIVE_OUTSIDE -> secondaryColor.copy(alpha = 0.06f)
+                                HeroStatus.ACTIVE_INSIDE -> primaryColor.copy(alpha = 0.06f)
                             }
                         )
                     )
@@ -187,42 +166,35 @@ private fun HeroHeaderContent(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Tactile icon container with breathing sunlight glow in active state
-                    Box(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .drawBehind {
-                                if (status == HeroStatus.ACTIVE_INSIDE) {
-                                    val radius = (size.minDimension / 2f) * glowScale
-                                    drawCircle(
-                                        brush = Brush.radialGradient(
-                                            colors = listOf(
-                                                primaryColor.copy(alpha = glowAlpha),
-                                                primaryColor.copy(alpha = glowAlpha * 0.35f),
-                                                Color.Transparent
-                                            ),
-                                            center = center,
-                                            radius = radius
-                                        ),
-                                        radius = radius,
-                                        center = center
-                                    )
-                                }
-                            }
-                            .background(color = animatedIconBackground, shape = CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        MutedBellIcon(
-                            muted = isBlockingEnabled,
-                            tint = animatedIconTint,
-                            modifier = Modifier.size(30.dp)
-                        )
+                    Box(contentAlignment = Alignment.Center) {
+                        // Composed only while holding notifications, so the loop stops otherwise.
+                        // The bell below keeps its state: the `if` group doesn't shift it
+                        if (status == HeroStatus.ACTIVE_INSIDE) {
+                            BreathingGlow(
+                                color = primaryColor,
+                                modifier = Modifier.matchParentSize(),
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .background(color = animatedIconBackground, shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            MutedBellIcon(
+                                muted = isBlockingEnabled,
+                                tint = animatedIconTint,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
                     }
 
                     AnimatedContent(
                         targetState = status,
                         transitionSpec = {
-                            (fadeIn(animationSpec = tween(300)) + slideInVertically { height -> height / 3 }) togetherWith
-                                    fadeOut(animationSpec = tween(200))
+                            val enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) +
+                                slideInVertically(animationSpec = Motion.standard(Motion.MEDIUM)) { height -> height / 3 }
+                            enter togetherWith fadeOut(animationSpec = Motion.standard(Motion.SHORT))
                         },
                         modifier = Modifier.weight(1f),
                         label = "HeroStatusTransition",
@@ -255,7 +227,10 @@ private fun HeroHeaderContent(
                     Spacer(modifier = Modifier.height(16.dp))
                     AnimatedContent(
                         targetState = lifeMessage,
-                        transitionSpec = { fadeIn(animationSpec = tween(400)) togetherWith fadeOut(animationSpec = tween(200)) },
+                        transitionSpec = {
+                            fadeIn(animationSpec = Motion.standard(Motion.LONG)) togetherWith
+                                fadeOut(animationSpec = Motion.standard(Motion.SHORT))
+                        },
                         label = "HeroLifeMessage",
                     ) { message ->
                         Row(
@@ -282,7 +257,7 @@ private fun HeroHeaderContent(
 
                 // Prominent Master Switch inside surface card with haptic feedback
                 Card(
-                    shape = RoundedCornerShape(18.dp),
+                    shape = MaterialTheme.shapes.medium,
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                     ),
@@ -326,6 +301,50 @@ private fun HeroHeaderContent(
                 }
             }
         }
+    }
+}
+
+// Warm breathing light / gentle sunlight behind the bell, drawn past its bounds (no clipping)
+@Composable
+private fun BreathingGlow(
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "HeroGlowTransition")
+    val glowScale by infiniteTransition.animateFloat(
+        initialValue = 0.9f,
+        targetValue = 1.35f,
+        animationSpec = infiniteRepeatable(
+            animation = Motion.standard(Motion.AMBIENT),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "HeroGlowScale",
+    )
+    val glowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 0.55f,
+        animationSpec = infiniteRepeatable(
+            animation = Motion.standard(Motion.AMBIENT),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "HeroGlowAlpha",
+    )
+
+    Canvas(modifier = modifier) {
+        val radius = (size.minDimension / 2f) * glowScale
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(
+                    color.copy(alpha = glowAlpha),
+                    color.copy(alpha = glowAlpha * 0.35f),
+                    Color.Transparent
+                ),
+                center = center,
+                radius = radius
+            ),
+            radius = radius,
+            center = center
+        )
     }
 }
 

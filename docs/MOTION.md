@@ -12,50 +12,58 @@ Linee guida per le animazioni di NotificationBlocker. Per colori e componenti ve
 
 ## Token
 
-Oggi le durate sono scritte inline. Se ne aggiungi di nuove, usa questi valori (e valuta di estrarli in un `ui/theme/Motion.kt`):
+Tutti i token stanno in `ui/theme/Motion.kt` (`object Motion`). **Niente numeri inline**: ogni durata, easing e spring della UI viene da qui. Una coreografia che appartiene a un solo componente (es. i passi dello scuotimento della campanella) può restare una costante `private const` con un nome parlante e un commento di una riga, ed è elencata nel catalogo qui sotto.
 
 | Token | Valore | Uso |
 |---|---|---|
-| `Instant` | 100ms | Feedback di pressione |
-| `Short` | 200ms | Colori/bordi di elementi piccoli (`AppItemRow`), fade-out |
-| `Medium` | 300ms | Cambi di contenuto (`AnimatedContent`), barra della campanella |
-| `Long` | 400ms | Cambi di colore di superfici grandi (`HeroHeader`) |
-| `Stagger` | 80ms | Ritardo tra elementi nell'entrata di `MainScreen` |
-| `Ambient` | 2000ms | Loop infiniti (alone, shimmer) |
+| `Motion.INSTANT` | 100 ms | Feedback di pressione |
+| `Motion.SHORT` | 200 ms | Colori/bordi di elementi piccoli (`AppItemRow`), fade-out |
+| `Motion.MEDIUM` | 300 ms | Cambi di contenuto (`AnimatedContent`), entrate, espansioni, barra della campanella |
+| `Motion.LONG` | 400 ms | Cambi di colore di superfici grandi (`HeroHeader`), fade-in del messaggio "vita" |
+| `Motion.SLOW` | 1200 ms | Transizioni lente e calme: dissolvenza della scena, passata dello shimmer |
+| `Motion.AMBIENT` | 2000 ms | Mezzo ciclo dei loop ambientali (alone che respira) e pause di "attesa" |
+| `Motion.Stagger` | 80 ms (`Duration`) | Ritardo tra elementi di un'entrata a cascata (`MainScreen`) |
+| `Motion.PRESS_SCALE` | 0.97 | Scala di una CTA o di una pillola premuta |
 
 | Easing / spring | Uso |
 |---|---|
-| `FastOutSlowInEasing` (default `tween`) | Transizioni standard |
-| `spring(DampingRatioMediumBouncy, StiffnessLow)` | Pressione del bottone CTA (scala 0.97) |
+| `Motion.StandardEasing` = `FastOutSlowInEasing` | Easing di ogni tween, salvo eccezioni documentate dal componente |
+| `Motion.standard(durationMillis = MEDIUM, delayMillis = 0)` | `TweenSpec` con `StandardEasing`: la spec da usare per ogni `tween` (es. `Motion.standard(Motion.SHORT)`) |
+| `Motion.press()` = `spring(DampingRatioMediumBouncy, StiffnessLow)` | Pressione della CTA e delle pillole degli orari (scala `PRESS_SCALE`) |
 | `spring()` default | Valori interrotti di frequente (drag, toggle ripetuti) |
+
+Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argomenti) non si usano: passa sempre una spec di `Motion` (fade-in `MEDIUM`, fade-out `SHORT`, expand/shrink `MEDIUM`).
 
 ## Catalogo attuale
 
 | Dove | Cosa | Implementazione |
 |---|---|---|
-| `MainScreen` | Entrata a cascata di header, permesso, hero, orari | `AnimatedVisibility` fade + slide, 300→450ms, 80ms di stagger |
-| `MainScreen` | CTA che si "schiaccia" alla pressione | `animateFloatAsState` + spring, `graphicsLayer` scale |
-| `HeroHeader` | Colori della card per stato | `animateColorAsState` 400ms |
-| `HeroHeader` | Titolo e sottotitolo che cambiano | `AnimatedContent` fade + slide 300ms / fade-out 200ms |
-| `HeroHeader` | Alone pulsante quando blocca ora | `rememberInfiniteTransition`, scala 0.9→1.35, alpha 0.2→0.55, 2s reverse |
-| `MutedBellIcon` | Campanella che suona e viene barrata | `Animatable` rotazione ±24°→0 (7 × 70ms, perno in alto), poi barra 300ms; ritaglio con `BlendMode.Clear` in un layer offscreen |
-| `PermissionCard` | Comparsa/scomparsa | `AnimatedVisibility` |
-| `AppItemRow` | Selezione | `animateColorAsState` 200ms su container e bordo |
-| `ShimmerSkeleton` | Caricamento lista app | Gradiente che scorre in loop infinito |
-| `ZenScene` | Scena animata in fondo alla Home, con la luce reale del giorno (alba, sole, tramonto, notte) e la stagione. Al lavoro: la vista dalla scrivania, una finestra sulla città con laptop, tazza fumante e pianta. Fuori orario: paesaggio giapponese (monte innevato, ruscello, airone che pesca, lanterna, bambù; sakura, foglie d'autunno, neve, lucciole) | Livelli vettoriali in `ui/zen` (2:1, 30 fps); livelli fermi in texture GPU. Cambio di stato = `Crossfade` 1200 ms, niente altro; con "Rimuovi animazioni" frame fermo e cambio istantaneo |
+| `MainScreen` | Entrata a cascata di header, permesso, hero, orari, scena | `AnimatedVisibility` fade + slide, `MEDIUM` per ogni elemento; la cascata viene da `Motion.Stagger` (80 ms) tra un elemento e il successivo |
+| `MainScreen` | CTA che si "schiaccia" alla pressione | `animateFloatAsState` a `PRESS_SCALE` con `Motion.press()`, `graphicsLayer` scale |
+| `ScheduleCard` | Pillole degli orari che si "schiacciano" alla pressione | Come la CTA: `PRESS_SCALE` con `Motion.press()` |
+| `HeroHeader` | Colori della card per stato | `animateColorAsState` `LONG` |
+| `HeroHeader` | Titolo e sottotitolo che cambiano | `AnimatedContent` fade + slide `MEDIUM` / fade-out `SHORT` |
+| `HeroHeader` | Alone che respira quando blocca ora | `rememberInfiniteTransition` in un composable privato (`BreathingGlow`) composto **solo** in `ACTIVE_INSIDE`, così il loop si ferma negli altri stati; scala 0.9→1.35, alpha 0.2→0.55, `AMBIENT` (2000 ms) reverse. Sta fuori da `AnimatedContent`, e la campanella accanto mantiene il suo stato |
+| `MutedBellIcon` | Campanella che suona e viene barrata | `Animatable` rotazione ±24°→0 in 7 passi da `SHAKE_STEP_MILLIS` = 70 ms (costante privata: più rapida di ogni token, così si legge come uno squillo; perno in alto), poi barra `MEDIUM` ritardata della durata dello scuotimento (7 × 70 ms); ritaglio con `BlendMode.Clear` in un layer offscreen |
+| `PermissionCard` | Comparsa/scomparsa | `AnimatedVisibility`: fade-in `MEDIUM` + expand `MEDIUM`, fade-out `SHORT` + shrink `MEDIUM` |
+| `ZenNotificationCard` | Comparsa/scomparsa | Come `PermissionCard` |
+| `AppItemRow` | Selezione | `animateColorAsState` `SHORT` su container e bordo |
+| `ShimmerSkeleton` | Caricamento lista app | Gradiente che scorre in loop infinito, una passata ogni `SLOW` (1200 ms) |
+| `ZenScene` | Scena animata in fondo alla Home, con la luce reale del giorno (alba, sole, tramonto, notte) e la stagione. Al lavoro: la vista dalla scrivania, una finestra sulla città con laptop, tazza fumante e pianta. Fuori orario: paesaggio giapponese (monte innevato, ruscello, airone che pesca, lanterna, bambù; sakura, foglie d'autunno, neve, lucciole) | Livelli vettoriali in `ui/zen` (2:1, 30 fps); livelli fermi in texture GPU. Cambio di stato = `Crossfade` `SLOW` (1200 ms), niente altro; con "Rimuovi animazioni" frame fermo e cambio istantaneo |
 | Notifica zen (tendina / blocco schermo) | Illustrazione animata per la fase del giorno: sole con raggi lenti tra i bambù, tramonto sui colli con riflessi, lanterna con fiamma e lucciole | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
-| Messaggio "vita" (`HeroHeader`) | La frase su sole e tempo libero cambia con dissolvenza | `AnimatedContent` 400/200 ms, ricalcolo al minuto solo con l'app in primo piano (`rememberCurrentMinutes()`: `repeatOnLifecycle(STARTED)`, rilegge l'orologio a ogni ritorno in primo piano) |
+| Messaggio "vita" (`HeroHeader`) | La frase su sole e tempo libero cambia con dissolvenza | `AnimatedContent` fade-in `LONG` / fade-out `SHORT`, ricalcolo al minuto solo con l'app in primo piano (`rememberCurrentMinutes()`: `repeatOnLifecycle(STARTED)`, rilegge l'orologio a ogni ritorno in primo piano) |
 | Riquadro "Stacco & Sole" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
-| `EndOfShiftCard` | "Fine turno": le notifiche volano via, il sole tramonta, sorge la luna con le stelle | Lottie `res/raw/end_of_shift.json` (5s, 60fps), una volta per fascia, poi la card si chiude da sola dopo 2s |
+| `EndOfShiftCard` | "Fine turno": le notifiche volano via, il sole tramonta, sorge la luna con le stelle | Lottie `res/raw/end_of_shift.json` (5s, 60fps), una volta per fascia, poi la card resta ferma per `AMBIENT` (2000 ms) e si chiude da sola; comparsa/scomparsa come `PermissionCard` |
 
 ## Regole di implementazione
 
+- **Durate, easing e spring da `Motion`** (`ui/theme/Motion.kt`), mai numeri inline; le eccezioni di un singolo componente sono costanti private con nome, elencate nel catalogo.
 - **`label =`** su ogni `animate*AsState`, `Transition` e `InfiniteTransition` (servono all'Animation Inspector di Android Studio).
 - Anima in `graphicsLayer { }` (scale, rotation, alpha, translation): niente ricomposizione né nuovo layout a ogni frame. Evita di animare `padding`/`size` se basta una scala.
 - Leggi i valori animati **dentro** la lambda (`graphicsLayer { rotationZ = rotation.value }`, `drawBehind { … }`), non nel corpo del composable.
 - Lo stato che deve sopravvivere a un cambio di stato va **fuori** da `AnimatedContent`, perché `AnimatedContent` ricrea il contenuto ad ogni `targetState`.
 - Sequenze imperative con `Animatable` dentro `LaunchedEffect(key)`; stati dichiarativi con `animate*AsState` / `updateTransition`.
-- `rememberInfiniteTransition` solo per elementi visibili e significativi: consuma frame finché è in composizione.
+- `rememberInfiniteTransition` solo per elementi visibili e significativi: consuma frame finché è in composizione. Se serve solo in uno stato, mettilo in un composable a parte composto solo in quello stato (vedi `BreathingGlow` in `HeroHeader`).
 - Nuovo effetto = preview statica + verifica su dispositivo in entrambi i temi.
 
 ## Prossime animazioni candidate

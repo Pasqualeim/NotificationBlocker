@@ -1,13 +1,11 @@
 package com.pasquale.notificationblocker.ui.components
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,9 +25,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.DeskPainting
 import com.pasquale.notificationblocker.ui.zen.NaturePainting
@@ -81,7 +81,7 @@ fun ZenScene(
 
     Crossfade(
         targetState = isOffWork,
-        animationSpec = tween(CROSSFADE_MILLIS),
+        animationSpec = Motion.standard(Motion.SLOW),
         label = "ZenSceneCrossfade",
         modifier = modifier.fillMaxSize(),
     ) { offWork ->
@@ -113,7 +113,6 @@ private fun BoxScope.ZenLayer(cached: Boolean, draw: ZenPainter.() -> Unit) {
     )
 }
 
-private const val CROSSFADE_MILLIS = 1200
 private const val FRAME_NANOS = 1_000_000_000L / 30
 
 /** [ZenPainter] on a Compose [DrawScope], scaled from scene units to the layer size. */

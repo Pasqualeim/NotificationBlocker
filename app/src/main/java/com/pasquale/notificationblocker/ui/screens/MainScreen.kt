@@ -10,10 +10,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,7 +31,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -79,10 +75,10 @@ import com.pasquale.notificationblocker.ui.components.SceneCard
 import com.pasquale.notificationblocker.ui.components.ScheduleCard
 import com.pasquale.notificationblocker.ui.components.ZenNotificationCard
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun MainScreen(
@@ -184,24 +180,21 @@ fun MainScreenContent(
 
     LaunchedEffect(Unit) {
         animatedHeaderVisible = true
-        delay(80.milliseconds)
+        delay(Motion.Stagger)
         animatedPermissionVisible = true
-        delay(80.milliseconds)
+        delay(Motion.Stagger)
         animatedHeroVisible = true
-        delay(80.milliseconds)
+        delay(Motion.Stagger)
         animatedScheduleVisible = true
-        delay(80.milliseconds)
+        delay(Motion.Stagger)
         animatedSceneVisible = true
     }
 
     val buttonInteractionSource = remember { MutableInteractionSource() }
     val isButtonPressed by buttonInteractionSource.collectIsPressedAsState()
     val buttonScale by animateFloatAsState(
-        targetValue = if (isButtonPressed) 0.97f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow,
-        ),
+        targetValue = if (isButtonPressed) Motion.PRESS_SCALE else 1f,
+        animationSpec = Motion.press(),
         label = "ButtonPressScale",
     )
 
@@ -277,8 +270,8 @@ fun MainScreenContent(
         ) {
             AnimatedVisibility(
                 visible = animatedHeaderVisible,
-                enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-                    animationSpec = tween(300),
+                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
+                    animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
             ) {
                 Row(
@@ -303,8 +296,8 @@ fun MainScreenContent(
 
             AnimatedVisibility(
                 visible = animatedPermissionVisible,
-                enter = fadeIn(animationSpec = tween(350)) + slideInVertically(
-                    animationSpec = tween(350),
+                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
+                    animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
             ) {
                 Column {
@@ -327,8 +320,8 @@ fun MainScreenContent(
 
             AnimatedVisibility(
                 visible = animatedHeroVisible,
-                enter = fadeIn(animationSpec = tween(400)) + slideInVertically(
-                    animationSpec = tween(400),
+                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
+                    animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
             ) {
                 HeroHeader(
@@ -341,8 +334,8 @@ fun MainScreenContent(
 
             AnimatedVisibility(
                 visible = animatedScheduleVisible,
-                enter = fadeIn(animationSpec = tween(450)) + slideInVertically(
-                    animationSpec = tween(450),
+                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
+                    animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
             ) {
                 ScheduleCard(
@@ -357,8 +350,8 @@ fun MainScreenContent(
 
             AnimatedVisibility(
                 visible = animatedSceneVisible,
-                enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
-                    animationSpec = tween(500),
+                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
+                    animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
             ) {
                 SceneCard(isOffWork = isBlockingEnabled && isInOffHoursNow)
@@ -430,7 +423,7 @@ fun TimePickerDialog(
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        shape = RoundedCornerShape(28.dp),
+        shape = MaterialTheme.shapes.large,
     )
 }
 

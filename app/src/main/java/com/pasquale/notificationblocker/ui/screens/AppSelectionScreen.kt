@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -190,6 +191,11 @@ fun AppSelectionScreenContent(
             )
 
             // Filter chips row
+            // Warm selected state (the M3 default is secondaryContainer, emerald in this palette)
+            val filterChipColors = FilterChipDefaults.filterChipColors(
+                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -201,12 +207,14 @@ fun AppSelectionScreenContent(
                     onClick = { filterState = AppFilter.ALL },
                     label = { Text(stringResource(R.string.filter_all)) },
                     shape = CircleShape,
+                    colors = filterChipColors,
                 )
                 FilterChip(
                     selected = filterState == AppFilter.SELECTED,
                     onClick = { filterState = AppFilter.SELECTED },
                     label = { Text(stringResource(R.string.filter_selected)) },
                     shape = CircleShape,
+                    colors = filterChipColors,
                 )
             }
 

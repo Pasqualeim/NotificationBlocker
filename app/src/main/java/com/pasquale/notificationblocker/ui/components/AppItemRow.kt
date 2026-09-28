@@ -1,7 +1,6 @@
 package com.pasquale.notificationblocker.ui.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.AppInfo
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 
 @Composable
@@ -62,7 +61,7 @@ fun AppItemRow(
         } else {
             MaterialTheme.colorScheme.surfaceContainer
         },
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = Motion.standard(Motion.SHORT),
         label = "AppRowBgColor",
     )
 
@@ -72,7 +71,7 @@ fun AppItemRow(
         } else {
             MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
         },
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = Motion.standard(Motion.SHORT),
         label = "AppRowBorderColor",
     )
 
@@ -87,7 +86,7 @@ fun AppItemRow(
             ) {
                 onToggleBlocked(!isBlocked)
             },
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = animatedContainerColor,
         ),

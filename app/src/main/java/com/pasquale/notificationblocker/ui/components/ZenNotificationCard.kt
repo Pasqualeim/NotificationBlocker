@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 
 /** Optional prompt for the notification permission (Android 13+), used by the zen status notification. */
@@ -40,13 +40,15 @@ fun ZenNotificationCard(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically(),
+        enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) +
+            expandVertically(animationSpec = Motion.standard(Motion.MEDIUM)),
+        exit = fadeOut(animationSpec = Motion.standard(Motion.SHORT)) +
+            shrinkVertically(animationSpec = Motion.standard(Motion.MEDIUM)),
         modifier = modifier,
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         ) {
             Column(
@@ -84,7 +86,7 @@ fun ZenNotificationCard(
                     TextButton(onClick = onDismiss) {
                         Text(stringResource(R.string.zen_permission_later))
                     }
-                    Button(onClick = onAllow, shape = RoundedCornerShape(12.dp)) {
+                    Button(onClick = onAllow, shape = MaterialTheme.shapes.small) {
                         Text(
                             text = stringResource(R.string.zen_permission_allow),
                             fontWeight = FontWeight.SemiBold,

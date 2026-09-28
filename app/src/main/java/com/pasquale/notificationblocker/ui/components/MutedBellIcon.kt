@@ -1,9 +1,7 @@
 package com.pasquale.notificationblocker.ui.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -27,9 +25,13 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 
 private val ShakeAngles = listOf(-24f, 20f, -16f, 12f, -7f, 3f, 0f)
+
+// Bell-only choreography: each shake step is quicker than any Motion token, so it reads as a ring
+private const val SHAKE_STEP_MILLIS = 70
 
 /**
  * Bell icon that rings (shakes) and then gets crossed out when [muted] becomes true.
@@ -47,7 +49,7 @@ fun MutedBellIcon(
     LaunchedEffect(muted) {
         if (muted && !previousMuted) {
             ShakeAngles.forEach { angle ->
-                rotation.animateTo(angle, tween(durationMillis = 70))
+                rotation.animateTo(angle, Motion.standard(SHAKE_STEP_MILLIS))
             }
         }
         previousMuted = muted
@@ -55,10 +57,9 @@ fun MutedBellIcon(
 
     val slashProgress by animateFloatAsState(
         targetValue = if (muted) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = if (muted) ShakeAngles.size * 70 else 0,
-            easing = FastOutSlowInEasing,
+        animationSpec = Motion.standard(
+            durationMillis = Motion.MEDIUM,
+            delayMillis = if (muted) ShakeAngles.size * SHAKE_STEP_MILLIS else 0,
         ),
         label = "BellSlashProgress",
     )
@@ -86,7 +87,8 @@ fun MutedBellIcon(
                     y = start.y + size.height * 0.76f * slashProgress,
                 )
                 val stroke = size.minDimension * 0.09f
-                // Cut a gap around the slash so it reads over the bell
+                // Cut a gap around the slash so it reads over the bell. Black is only a mask:
+                // BlendMode.Clear keeps the stroke's shape and ignores its color
                 drawLine(
                     color = Color.Black,
                     start = start,

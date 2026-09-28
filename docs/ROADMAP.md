@@ -22,6 +22,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 | Lingua per app | S | `locales_config.xml` → l'utente sceglie italiano/inglese dalle impostazioni di sistema (Android 13+) |
 | Material 3 Expressive | M | `MotionScheme.expressive()`, componenti espressivi dove hanno senso. Richiede BOM aggiornata |
 | Sole → luna, timeline "ora" animata, `animateItem()` | M | Vedi `MOTION.md` |
+| Rifiniture di layout (fase 3 della revisione lo-fi) | M | Emerse con la palette Chai: card di stato `DISABLED` dello stesso colore della `ScheduleCard` (e disco dell'icona quasi invisibile); lista app a strisce `surface`/`background` fra top bar, header e lista; bottom bar della Home con bordo netto sulla scena e banda bicolore sotto; cielo blu della scena fuori tono nel tema scuro (arriva la scena lo-fi, fase 2) |
 
 ## 3. Funzionalità
 
@@ -44,6 +45,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 | Riquadro Impostazioni rapide "Stacco & Sole" | `ZenTileService`, icona per fase, sincronizzato con app e notifica |
 | Fondamenta (fase 0 della revisione lo-fi) | Scena visibile (`SceneCard` 2:1), messaggi "vita" e ore di sole collegati alla UI, permesso notifiche chiesto con `ZenNotificationCard`, timeline/saluto/fascia aggiornati ogni minuto (`rememberCurrentMinutes`), contatore filtrate deduplicato, lista app ricaricata al resume. Via `INTERNET`, stringhe inutilizzate e componenti morti. Dipendenze AndroidX aggiornate (BOM 2026.09), `targetSdk` 36, R8 in release |
 | Messaggi "vita" | Ore di sole e tempo libero rimasti, in `HeroHeader` e `ScheduleCard` (`LifeCopy`, testato) |
+| Palette e token (fase 1 della revisione lo-fi) | Palette calda "Chai" (chiaro) / "Lo-fi night" (scuro) con tutti i ruoli M3 assegnati e contrasto WCAG verificato (tabelle in `DESIGN_SYSTEM.md`, regola "`primary` come testo mai su `surfaceContainerHighest` né `primaryContainer`"). Token di movimento in `ui/theme/Motion.kt` usati ovunque (niente durate inline; alone dell'`HeroHeader` attivo solo in `ACTIVE_INSIDE`). Forme del tema (`MaterialTheme.shapes`) al posto dei `RoundedCornerShape` sparsi, niente `Color.White`/`Color(0x…)` nei componenti (salvo la maschera `BlendMode` di `MutedBellIcon`). Illustrazione (`ZenPalette`) invariata: le scene lo-fi sono la fase 2, il nuovo layout della Home (mock-up `mockups/home_active_warm.svg`) la fase 3 |
 
 ## 4. Qualità
 

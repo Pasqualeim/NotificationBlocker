@@ -1,11 +1,9 @@
 package com.pasquale.notificationblocker.ui.components
 
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -33,19 +30,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.pasquale.notificationblocker.ui.theme.Motion
 
+/** @param shape clip of the placeholder; null = MaterialTheme.shapes.extraSmall */
 fun Modifier.shimmerEffect(
-    shape: Shape = RoundedCornerShape(4.dp)
+    shape: Shape? = null
 ): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmerTransition")
     val translateAnim = transition.animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1200,
-                easing = FastOutSlowInEasing
-            ),
+            animation = Motion.standard(Motion.SLOW),
             repeatMode = RepeatMode.Restart
         ),
         label = "shimmerTranslate"
@@ -64,7 +60,7 @@ fun Modifier.shimmerEffect(
     )
 
     this
-        .clip(shape)
+        .clip(shape ?: MaterialTheme.shapes.extraSmall)
         .background(brush)
 }
 
@@ -100,13 +96,13 @@ fun ShimmerSkeletonItem(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
                         .height(16.dp)
-                        .shimmerEffect(shape = RoundedCornerShape(4.dp))
+                        .shimmerEffect(shape = MaterialTheme.shapes.extraSmall)
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(12.dp)
-                        .shimmerEffect(shape = RoundedCornerShape(4.dp))
+                        .shimmerEffect(shape = MaterialTheme.shapes.extraSmall)
                 )
             }
 
@@ -115,7 +111,7 @@ fun ShimmerSkeletonItem(
             Box(
                 modifier = Modifier
                     .size(24.dp)
-                    .shimmerEffect(shape = RoundedCornerShape(4.dp))
+                    .shimmerEffect(shape = MaterialTheme.shapes.extraSmall)
             )
         }
     }

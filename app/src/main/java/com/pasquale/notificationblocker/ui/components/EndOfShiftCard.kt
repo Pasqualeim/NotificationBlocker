@@ -37,6 +37,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.compose.rememberLottieDynamicProperties
 import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -54,8 +55,10 @@ fun EndOfShiftCard(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically(),
+        enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) +
+            expandVertically(animationSpec = Motion.standard(Motion.MEDIUM)),
+        exit = fadeOut(animationSpec = Motion.standard(Motion.SHORT)) +
+            shrinkVertically(animationSpec = Motion.standard(Motion.MEDIUM)),
         modifier = modifier,
     ) {
         Card(
@@ -120,18 +123,21 @@ private fun EndOfShiftAnimation(
     )
 }
 
-// Maps the group names in res/raw/end_of_shift.json (see tools/lottie/end_of_shift.py) to theme colors
+// Maps the group names in res/raw/end_of_shift.json (see tools/lottie/end_of_shift.py) to theme colors.
+// By meaning: the working day (notification cards, sun) in the warm primary, the night (sky, moon,
+// stars) in the dusk-violet tertiary. Sun, moon and stars stay >= 3:1 on the surfaceContainer card
+// in both themes, and so does the card dot on primaryContainer.
 @Composable
 private fun rememberEndOfShiftColors() = with(MaterialTheme.colorScheme) {
     rememberLottieDynamicProperties(
-        colorProperty("card_bg", secondaryContainer),
-        colorProperty("card_dot", secondary),
-        colorProperty("card_line", onSecondaryContainer),
-        colorProperty("sun", secondary),
+        colorProperty("card_bg", primaryContainer),
+        colorProperty("card_dot", primary),
+        colorProperty("card_line", onPrimaryContainer),
+        colorProperty("sun", primary),
         colorProperty("horizon", onSurfaceVariant, LottieProperty.STROKE_COLOR),
-        colorProperty("sky_night", primary),
-        colorProperty("moon", primary),
-        colorProperty("star", primary),
+        colorProperty("sky_night", tertiary),
+        colorProperty("moon", tertiary),
+        colorProperty("star", tertiary),
     )
 }
 
@@ -143,7 +149,7 @@ private fun colorProperty(group: String, color: Color, property: Int = LottiePro
         "**", group, "**",
     )
 
-private val HoldAfterEnd = 2000.milliseconds
+private val HoldAfterEnd = Motion.AMBIENT.milliseconds
 
 @Preview(showBackground = true, name = "End of shift - Light")
 @Composable
