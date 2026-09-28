@@ -16,9 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
+import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 
@@ -29,7 +35,8 @@ fun Timeline24h(
     modifier: Modifier = Modifier,
     isBlockingEnabled: Boolean = true,
     currentTimeMinutes: Int? = null,
-    barHeight: Dp = 16.dp
+    barHeight: Dp = 12.dp,
+    showNowLabel: Boolean = true,
 ) {
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val activeColor = if (isBlockingEnabled) {
@@ -48,6 +55,13 @@ fun Timeline24h(
     val isNowActive = isBlockingEnabled && OffHours.isWithin(currentMins, startTimeMinutes, endTimeMinutes)
 
     Column(modifier = modifier.fillMaxWidth()) {
+        if (showNowLabel) {
+            NowLabel(
+                text = stringResource(R.string.timeline_now, OffHours.format(currentMins)).uppercase(),
+                fraction = currentMins.coerceIn(0, 1440) / 1440f,
+                color = if (isNowActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,6 +164,29 @@ fun Timeline24h(
             Text(text = "12:00", style = labelStyle, color = labelColor)
             Text(text = "18:00", style = labelStyle, color = labelColor)
             Text(text = "24:00", style = labelStyle, color = labelColor)
+        }
+    }
+}
+
+/** The "now" time above the marker, centered on it but kept inside the bar's width. */
+@Composable
+private fun NowLabel(text: String, fraction: Float, color: Color) {
+    Layout(
+        content = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = color,
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+    ) { measurables, constraints ->
+        val label = measurables.first().measure(constraints.copy(minWidth = 0))
+        val width = constraints.maxWidth
+        layout(width, label.height) {
+            val x = (fraction * width - label.width / 2f).roundToInt().coerceIn(0, (width - label.width).coerceAtLeast(0))
+            label.place(x, 0)
         }
     }
 }

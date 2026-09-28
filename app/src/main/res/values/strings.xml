@@ -7,23 +7,19 @@
 
     <!-- Hero Statuses -->
     <string name="status_disabled">Disabled</string>
-    <string name="status_active_outside">Active outside off-hours</string>
+    <string name="status_active">Active</string>
+    <string name="status_standby">On standby</string>
 
     <!-- Hero Subtitles -->
-    <string name="hero_subtitle_disabled">Notification blocking is turned off. All notifications will be delivered.</string>
-    <string name="hero_subtitle_outside">Outside scheduled off-hours. Work notifications are allowed.</string>
-    <string name="hero_subtitle_inside">Work notifications are silent. You are free.</string>
+    <string name="hero_subtitle_disabled">Blocking is off: every notification comes through.</string>
+    <string name="hero_subtitle_outside">Work hours: notifications come through until your off-hours start.</string>
+    <string name="hero_subtitle_inside">Work notifications are silenced.</string>
 
     <!-- Warm Greetings & Quotes -->
     <string name="greeting_welcome_life">Welcome back to your life</string>
     <string name="greeting_time_breathe">Time to breathe</string>
     <string name="greeting_enjoy_sun">Enjoy the sunshine</string>
     <string name="greeting_time_begins">Your time begins now</string>
-
-    <!-- Master Switch -->
-    <string name="master_switch_label">Notification blocking</string>
-    <string name="master_switch_status_on">Blocking schedule is enabled</string>
-    <string name="master_switch_status_off">Blocking schedule is disabled</string>
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Permission required</string>
@@ -32,16 +28,14 @@
 
     <!-- Schedule Section -->
     <string name="schedule_title">Off-hours schedule</string>
-    <string name="schedule_subtitle">Set your daily off-hours window when notifications will be blocked</string>
-    <string name="schedule_start_time">Start time</string>
-    <string name="schedule_end_time">End time</string>
-    <string name="schedule_from">From %1$s</string>
-    <string name="schedule_to">To %1$s</string>
+    <string name="schedule_start_time">Start</string>
+    <string name="schedule_end_time">End</string>
     <plurals name="schedule_hours_dedicated">
-        <item quantity="one">%1$d hour for yourself</item>
-        <item quantity="other">%1$d hours for yourself</item>
+        <item quantity="one">%1$d hour for you</item>
+        <item quantity="other">%1$d hours for you</item>
     </plurals>
-    <string name="schedule_time_dedicated">%1$s for yourself</string>
+    <string name="schedule_time_dedicated">%1$s for you</string>
+    <string name="timeline_now">Now %1$s</string>
     <string name="duration_format">%1$d h %2$d min</string>
     <string name="duration_hours_only">%1$d h quiet</string>
 

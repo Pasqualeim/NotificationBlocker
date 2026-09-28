@@ -61,7 +61,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 └── ui/
     ├── MainViewModel.kt             # AndroidViewModel shared by both screens (StateFlows)
     ├── screens/
-    │   ├── MainScreen.kt            # staggered entrance, hero, schedule, time pickers, bottom CTA
+    │   ├── MainScreen.kt            # staggered entrance: hero, scene, schedule; time pickers, bottom CTA
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter, sections
     ├── components/
     │   ├── HeroHeader.kt            # status card (3 HeroStatus states) + master Switch

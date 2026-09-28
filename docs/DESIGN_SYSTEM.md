@@ -23,14 +23,14 @@ Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.sv
 
 | Ruolo | Chai (chiaro) | Lo-fi night (scuro) | Uso |
 |---|---|---|---|
-| `primary` / `onPrimary` | `#A6490C` arancio bruciato / `#FFFFFF` | `#FFB575` ambra lampada / `#4D2200` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (lucchetto del titolo, sole nella `ScheduleCard`, `ZenNotificationCard`) |
+| `primary` / `onPrimary` | `#A6490C` arancio bruciato / `#FFFFFF` | `#FFB575` ambra lampada / `#4D2200` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro del lucchetto nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
 | `primaryContainer` / `onPrimaryContainer` | `#F0B899` terracotta chiara / `#3E1B0A` | `#7A3A12` / `#FFDCC4` | Card di stato "sto bloccando ora", badge contatore nella CTA, riga app selezionata (alpha 0.35) |
-| `secondary` / `onSecondary` | `#0B7350` smeraldo / `#FFFFFF` | `#7FD6AC` / `#00391F` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, icona calendario nella pillola della durata (`ScheduleCard`) |
-| `secondaryContainer` / `onSecondaryContainer` | `#C9EEDA` / `#073A28` | `#145B3F` / `#BFF2D6` | Card di stato "attivo, ma ora è consentito", pillola della durata nella `ScheduleCard` |
+| `secondary` / `onSecondary` | `#0B7350` smeraldo / `#FFFFFF` | `#7FD6AC` / `#00391F` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, badge pieno "9 ore per te" nella `ScheduleCard` (con `onSecondary`) |
+| `secondaryContainer` / `onSecondaryContainer` | `#C9EEDA` / `#073A28` | `#145B3F` / `#BFF2D6` | Card di stato "in attesa" (attivo, ma ora è consentito) |
 | `tertiary` / `onTertiary` | `#7A4A9E` viola del crepuscolo / `#FFFFFF` | `#D8B8F2` / `#3C1D57` | Accenti di sera e riposo: luna nella `ScheduleCard` quando la fascia non ha sole; icona e bottone della card del permesso |
 | `tertiaryContainer` / `onTertiaryContainer` | `#EEDDF8` / `#35164F` | `#56377A` / `#F2DCFF` | Avvisi soft (card del permesso mancante) |
 | `background` / `onBackground` | `#FBF3E6` crema / `#3E2417` cioccolato | `#1A1210` prugna-marrone / `#F7E8DB` | Sfondo schermate |
-| `surface` / `onSurface` | `#FFF9F1` / `#3E2417` | `#1F1613` / `#F7E8DB` | Bottom bar, riquadro dell'interruttore nella card di stato, pillole degli orari, intestazioni della lista app |
+| `surface` / `onSurface` | `#FFF9F1` / `#3E2417` | `#1F1613` / `#F7E8DB` | Bottom bar, intestazioni della lista app |
 | `surfaceVariant` / `onSurfaceVariant` | `#F1DAC4` / `#6B4633` | `#4A3931` / `#DBC2B1` | Binario della timeline, sfondo dell'icona in `DISABLED`, skeleton; `onSurfaceVariant` per testi secondari |
 | `surfaceContainerLowest` | `#FFFCF8` | `#140D0B` | Disponibile, oggi non usato |
 | `surfaceContainerLow` | `#FAEEE1` | `#241A17` | Card dello skeleton |
@@ -146,14 +146,14 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 |---|---|---|
 | `extraSmall` | 8dp | Righe dello skeleton (`ShimmerSkeleton`) |
 | `small` | 12dp | Bottoni dentro le card (`PermissionCard`, `ZenNotificationCard`) |
-| `medium` | 20dp | Card secondarie (`PermissionCard`, `EndOfShiftCard`, `ZenNotificationCard`), riga app, riquadro dell'interruttore, pillole degli orari |
+| `medium` | 20dp | Card secondarie (`PermissionCard`, `EndOfShiftCard`, `ZenNotificationCard`), riga app, pillole degli orari |
 | `large` | 28dp | Card principali (card di stato, `ScheduleCard`), dialog del `TimePicker` |
 | `extraLarge` | 32dp | `SceneCard` |
 | `CircleShape` | pill | Bottone CTA, barra di ricerca, filtri, badge, contenitori icone |
 
 Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 
-- Margine orizzontale delle schermate: **16dp**. Spazio tra le card: **16dp**. Padding interno delle card: **20dp** (hero) / **16dp** (card annidate).
+- Margine orizzontale delle schermate: **16dp**. Spazio tra le card: **16dp**. Padding interno delle card: **20dp**. Niente card annidate: lo switch sta nella riga del titolo della card di stato.
 - Target di tocco ≥ **48dp**. CTA principale alta **56dp**.
 - Rispetta sempre gli insets (`WindowInsets.safeDrawing`, `navigationBarsPadding()`): l'app è edge-to-edge.
 
@@ -165,11 +165,13 @@ Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 
 ## Componenti
 
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con lucchetto → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App da silenziare".
+
 | Componente | File | Note |
 |---|---|---|
-| Card di stato | `HeroHeader.kt` | Colore animato per stato, testo in `AnimatedContent`, toggle incluso nella card |
+| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("Attivo" / "In attesa" / "Disattivato", `headlineSmall` ExtraBold) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
 | Campanella animata | `MutedBellIcon.kt` | Stato "silenziato" = barra diagonale; vedi `MOTION.md` |
-| Orari | `ScheduleCard.kt`, `Timeline24h.kt` | Tocca un orario per aprire il `TimePicker` 24h in `AlertDialog` |
+| Orari | `ScheduleCard.kt`, `Timeline24h.kt` | Titolo + badge "N ore per te", pillole INIZIO → FINE (`surfaceContainerLowest`, orario 24sp ExtraBold, freccia in un cerchio `primary`), timeline con l'etichetta "Ora 16:30" sopra l'indicatore. Tocca un orario per aprire il `TimePicker` 24h in `AlertDialog` |
 | Permesso | `PermissionCard.kt` | Visibile solo senza accesso; porta alle impostazioni di sistema |
 | Riga app | `AppItemRow.kt` | Bordo e container animati (`Motion.SHORT`) quando l'app è selezionata |
 | Caricamento / vuoto | `ShimmerSkeleton.kt`, `EmptyState.kt` | Mai spinner a tutto schermo: skeleton con la forma del contenuto |

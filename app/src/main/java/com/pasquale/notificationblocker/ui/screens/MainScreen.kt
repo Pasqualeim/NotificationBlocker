@@ -185,9 +185,9 @@ fun MainScreenContent(
         delay(Motion.Stagger)
         animatedHeroVisible = true
         delay(Motion.Stagger)
-        animatedScheduleVisible = true
-        delay(Motion.Stagger)
         animatedSceneVisible = true
+        delay(Motion.Stagger)
+        animatedScheduleVisible = true
     }
 
     val buttonInteractionSource = remember { MutableInteractionSource() }
@@ -279,12 +279,18 @@ fun MainScreenContent(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(vertical = 4.dp),
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp),
-                    )
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(44.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.padding(10.dp),
+                        )
+                    }
                     Text(
                         text = stringResource(R.string.main_title),
                         style = MaterialTheme.typography.headlineMedium,
@@ -333,6 +339,15 @@ fun MainScreenContent(
             }
 
             AnimatedVisibility(
+                visible = animatedSceneVisible,
+                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
+                    animationSpec = Motion.standard(Motion.MEDIUM),
+                ) { it / 2 },
+            ) {
+                SceneCard(isOffWork = isBlockingEnabled && isInOffHoursNow)
+            }
+
+            AnimatedVisibility(
                 visible = animatedScheduleVisible,
                 enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
                     animationSpec = Motion.standard(Motion.MEDIUM),
@@ -346,15 +361,6 @@ fun MainScreenContent(
                     onEndTimeClick = { showEndTimePicker = true },
                     sunshineMinutes = sunshineMinutes,
                 )
-            }
-
-            AnimatedVisibility(
-                visible = animatedSceneVisible,
-                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
-                    animationSpec = Motion.standard(Motion.MEDIUM),
-                ) { it / 2 },
-            ) {
-                SceneCard(isOffWork = isBlockingEnabled && isInOffHoursNow)
             }
         }
     }

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -84,51 +83,73 @@ fun ScheduleCard(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Title & Human language calculation badge
+            // Title and the "time for you" badge on one line
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.schedule_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                ) {
                     Text(
-                        text = stringResource(R.string.schedule_title),
-                        style = MaterialTheme.typography.titleMedium,
+                        text = dedicatedText,
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = stringResource(R.string.schedule_subtitle),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                     )
                 }
             }
 
-            // Natural human language calculation badge ("15 ore dedicate a te")
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            // Start -> end pills
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                TimePill(
+                    label = stringResource(R.string.schedule_start_time),
+                    time = OffHours.format(startTimeMinutes),
+                    onClick = onStartTimeClick,
+                    accessibilityLabel = stringResource(R.string.cd_start_time_picker),
+                    modifier = Modifier.weight(1f)
+                )
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(32.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                    Text(
-                        text = dedicatedText,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold
+                        modifier = Modifier.padding(7.dp),
                     )
                 }
+                TimePill(
+                    label = stringResource(R.string.schedule_end_time),
+                    time = OffHours.format(endTimeMinutes),
+                    onClick = onEndTimeClick,
+                    accessibilityLabel = stringResource(R.string.cd_end_time_picker),
+                    modifier = Modifier.weight(1f)
+                )
             }
+
+            // 24h timeline with the "now" marker
+            Timeline24h(
+                startTimeMinutes = startTimeMinutes,
+                endTimeMinutes = endTimeMinutes,
+                isBlockingEnabled = isBlockingEnabled,
+            )
 
             // Daylight info if available
             if (sunshineMinutes != null) {
@@ -154,54 +175,14 @@ fun ScheduleCard(
                     )
                 }
             }
-
-            // 24h Timeline bar
-            Timeline24h(
-                startTimeMinutes = startTimeMinutes,
-                endTimeMinutes = endTimeMinutes,
-                isBlockingEnabled = isBlockingEnabled,
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-
-            // Side-by-side Time Pills ("Dalle 17:00" -> "Alle 08:00")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val cdStart = stringResource(R.string.cd_start_time_picker)
-                TimePill(
-                    timeText = stringResource(R.string.schedule_from, OffHours.format(startTimeMinutes)),
-                    subText = stringResource(R.string.schedule_start_time),
-                    onClick = onStartTimeClick,
-                    accessibilityLabel = cdStart,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-
-                val cdEnd = stringResource(R.string.cd_end_time_picker)
-                TimePill(
-                    timeText = stringResource(R.string.schedule_to, OffHours.format(endTimeMinutes)),
-                    subText = stringResource(R.string.schedule_end_time),
-                    onClick = onEndTimeClick,
-                    accessibilityLabel = cdEnd,
-                    modifier = Modifier.weight(1f)
-                )
-            }
         }
     }
 }
 
 @Composable
 private fun TimePill(
-    timeText: String,
-    subText: String,
+    label: String,
+    time: String,
     onClick: () -> Unit,
     accessibilityLabel: String,
     modifier: Modifier = Modifier
@@ -232,26 +213,25 @@ private fun TimePill(
                 }
             ),
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
             Text(
-                text = subText,
+                text = label.uppercase(),
                 style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = timeText,
-                style = TimeDisplayTextStyle.copy(fontSize = 20.sp, lineHeight = 26.sp),
+                text = time,
+                style = TimeDisplayTextStyle.copy(fontSize = 24.sp, lineHeight = 30.sp),
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
         }
     }

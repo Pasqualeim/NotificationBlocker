@@ -6,23 +6,19 @@
 
     <!-- Hero Statuses -->
     <string name="status_disabled">Disattivato</string>
-    <string name="status_active_outside">Attivo fuori orario</string>
+    <string name="status_active">Attivo</string>
+    <string name="status_standby">In attesa</string>
 
     <!-- Hero Subtitles -->
-    <string name="hero_subtitle_disabled">Il blocco delle notifiche è disattivato. Tutte le notifiche saranno recapitate.</string>
-    <string name="hero_subtitle_outside">Fuori dall\'orario di blocco programmato. Le notifiche sono attualmente consentite.</string>
-    <string name="hero_subtitle_inside">Le notifiche di lavoro tacciono. Sei libero.</string>
+    <string name="hero_subtitle_disabled">Il blocco è spento: arrivano tutte le notifiche.</string>
+    <string name="hero_subtitle_outside">Orario di lavoro: le notifiche arrivano fino all\'inizio del tuo tempo libero.</string>
+    <string name="hero_subtitle_inside">Le notifiche di lavoro sono silenziate.</string>
 
     <!-- Warm Greetings & Quotes -->
     <string name="greeting_welcome_life">Bentornato alla tua vita</string>
     <string name="greeting_time_breathe">È tempo di respirare</string>
     <string name="greeting_enjoy_sun">Goditi il sole</string>
     <string name="greeting_time_begins">Il tuo tempo comincia adesso</string>
-
-    <!-- Master Switch -->
-    <string name="master_switch_label">Blocco notifiche</string>
-    <string name="master_switch_status_on">Programmazione blocco attiva</string>
-    <string name="master_switch_status_off">Programmazione blocco disattivata</string>
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Permesso richiesto</string>
@@ -31,17 +27,15 @@
 
     <!-- Schedule Section -->
     <string name="schedule_title">Orario di blocco</string>
-    <string name="schedule_subtitle">Imposta la fascia oraria giornaliera in cui le notifiche saranno bloccate</string>
-    <string name="schedule_start_time">Ora di inizio</string>
-    <string name="schedule_end_time">Ora di fine</string>
-    <string name="schedule_from">Dalle %1$s</string>
-    <string name="schedule_to">Alle %1$s</string>
+    <string name="schedule_start_time">Inizio</string>
+    <string name="schedule_end_time">Fine</string>
     <plurals name="schedule_hours_dedicated">
-        <item quantity="one">%1$d ora dedicata a te</item>
-        <item quantity="many">%1$d ore dedicate a te</item>
-        <item quantity="other">%1$d ore dedicate a te</item>
+        <item quantity="one">%1$d ora per te</item>
+        <item quantity="many">%1$d ore per te</item>
+        <item quantity="other">%1$d ore per te</item>
     </plurals>
-    <string name="schedule_time_dedicated">%1$s dedicate a te</string>
+    <string name="schedule_time_dedicated">%1$s per te</string>
+    <string name="timeline_now">Ora %1$s</string>
     <string name="duration_format">%1$d h %2$d min</string>
     <string name="duration_hours_only">%1$d h di quiete</string>
 

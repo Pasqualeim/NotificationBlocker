@@ -22,11 +22,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -160,10 +163,11 @@ private fun HeroHeaderContent(
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
+                // Bell, short status and the master switch on one line, as in the mockup
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     // Tactile icon container with breathing sunlight glow in active state
                     Box(contentAlignment = Alignment.Center) {
@@ -197,26 +201,76 @@ private fun HeroHeaderContent(
                             enter togetherWith fadeOut(animationSpec = Motion.standard(Motion.SHORT))
                         },
                         modifier = Modifier.weight(1f),
-                        label = "HeroStatusTransition",
+                        label = "HeroStatusTitle",
                     ) { targetStatus ->
-                        val (titleText, subtitleRes) = when (targetStatus) {
-                            HeroStatus.DISABLED -> stringResource(R.string.status_disabled) to R.string.hero_subtitle_disabled
-                            HeroStatus.ACTIVE_OUTSIDE -> stringResource(R.string.status_active_outside) to R.string.hero_subtitle_outside
-                            HeroStatus.ACTIVE_INSIDE -> stringResource(greetingRes) to R.string.hero_subtitle_inside
-                        }
+                        Text(
+                            text = stringResource(
+                                when (targetStatus) {
+                                    HeroStatus.DISABLED -> R.string.status_disabled
+                                    HeroStatus.ACTIVE_OUTSIDE -> R.string.status_standby
+                                    HeroStatus.ACTIVE_INSIDE -> R.string.status_active
+                                }
+                            ),
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = animatedContentColor,
+                            maxLines = 1,
+                        )
+                    }
 
-                        Column {
+                    val cdSwitch = stringResource(R.string.cd_master_switch)
+                    Switch(
+                        checked = isBlockingEnabled,
+                        onCheckedChange = { checked ->
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            onBlockingEnabledChanged(checked)
+                        },
+                        thumbContent = if (isBlockingEnabled) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                )
+                            }
+                        } else {
+                            null
+                        },
+                        modifier = Modifier.semantics {
+                            contentDescription = cdSwitch
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // What happens now, and a warm line while holding notifications
+                AnimatedContent(
+                    targetState = status,
+                    transitionSpec = {
+                        fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) togetherWith
+                            fadeOut(animationSpec = Motion.standard(Motion.SHORT))
+                    },
+                    label = "HeroStatusSubtitle",
+                ) { targetStatus ->
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = stringResource(
+                                when (targetStatus) {
+                                    HeroStatus.DISABLED -> R.string.hero_subtitle_disabled
+                                    HeroStatus.ACTIVE_OUTSIDE -> R.string.hero_subtitle_outside
+                                    HeroStatus.ACTIVE_INSIDE -> R.string.hero_subtitle_inside
+                                }
+                            ),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = animatedContentColor,
+                        )
+                        if (targetStatus == HeroStatus.ACTIVE_INSIDE) {
                             Text(
-                                text = titleText,
-                                style = MaterialTheme.typography.titleMedium,
+                                text = stringResource(greetingRes),
+                                style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = animatedContentColor
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = stringResource(subtitleRes),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = animatedContentColor.copy(alpha = 0.85f)
+                                color = animatedContentColor,
                             )
                         }
                     }
@@ -224,7 +278,7 @@ private fun HeroHeaderContent(
 
                 // Daylight & free time left message
                 if (lifeMessage != null) {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                     AnimatedContent(
                         targetState = lifeMessage,
                         transitionSpec = {
@@ -250,53 +304,6 @@ private fun HeroHeaderContent(
                                 color = animatedContentColor,
                             )
                         }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Prominent Master Switch inside surface card with haptic feedback
-                Card(
-                    shape = MaterialTheme.shapes.medium,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.master_switch_label),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = stringResource(
-                                    if (isBlockingEnabled) R.string.master_switch_status_on else R.string.master_switch_status_off
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-
-                        val cdSwitch = stringResource(R.string.cd_master_switch)
-                        Switch(
-                            checked = isBlockingEnabled,
-                            onCheckedChange = { checked ->
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                onBlockingEnabledChanged(checked)
-                            },
-                            modifier = Modifier.semantics {
-                                contentDescription = cdSwitch
-                            }
-                        )
                     }
                 }
             }
