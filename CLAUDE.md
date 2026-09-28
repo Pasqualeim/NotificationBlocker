@@ -49,6 +49,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 ├── MainActivity.kt                  # Activity, Route (NavKey) and NavDisplay graph
 ├── data/
 │   ├── OffHours.kt                  # pure time-window logic (unit tested)
+│   ├── MorningReport.kt             # pure: held notifications per app, when to show the report (unit tested)
 │   └── PreferencesManager.kt        # SharedPreferences singleton, shouldBlock()
 ├── notification/
 │   ├── ZenNotificationState.kt      # pure: what the zen notification shows now (unit tested)
@@ -70,6 +71,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
     │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
     │   ├── EndOfShiftCard.kt        # Lottie "end of shift" celebration, once per off-hours window
+    │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
     │   ├── SceneCard.kt             # 2:1 card framing the scene on Home (fixed height inside the scrolling column)
     │   ├── ZenScene.kt              # animated scene: desk (work) / nature (off work)
     │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, shown after the listener permission
@@ -95,7 +97,7 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Preferences keys (`notification_blocker_prefs`)
 
-`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, ISO date of the window start that last played the "end of shift" animation; see `OffHours.windowStartDate`), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted), `zen_dismissed_window` (window in which the user swiped the zen notification away), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
+`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, ISO date of the window start that last played the "end of shift" animation; see `OffHours.windowStartDate`), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nkey`, older ones the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
 
 ### App list
 

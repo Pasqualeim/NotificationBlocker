@@ -52,19 +52,32 @@ class PreferencesManager private constructor(context: Context) {
 
     /**
      * Counts a held notification once per [notificationKey] in [window]: apps that re-post the same
-     * notification (updates, progress) do not inflate the counter.
+     * notification (updates, progress) do not inflate the counter. The app is kept with the key for
+     * the morning report.
      */
     @Synchronized
-    fun recordFiltered(window: String, notificationKey: String) {
+    fun recordFiltered(window: String, packageName: String, notificationKey: String) {
         val sameWindow = prefs.getString(KEY_FILTERED_WINDOW, null) == window
         val seen = if (sameWindow) prefs.getStringSet(KEY_FILTERED_KEYS, emptySet()).orEmpty() else emptySet()
-        if (notificationKey in seen) return
+        val entry = MorningReport.entry(packageName, notificationKey)
+        if (entry in seen || notificationKey in seen) return
         prefs.edit {
             putString(KEY_FILTERED_WINDOW, window)
             putInt(KEY_FILTERED_COUNT, filteredCount(window) + 1)
-            putStringSet(KEY_FILTERED_KEYS, seen + notificationKey)
+            putStringSet(KEY_FILTERED_KEYS, seen + entry)
         }
     }
+
+    /** Held notifications of the last window that had any; null if none was ever held. */
+    fun lastReport(): MorningReport? {
+        val window = prefs.getString(KEY_FILTERED_WINDOW, null)
+        return MorningReport.build(window, prefs.getInt(KEY_FILTERED_COUNT, 0), prefs.getStringSet(KEY_FILTERED_KEYS, emptySet()).orEmpty())
+    }
+
+    // Window whose morning report the user dismissed
+    var reportSeenWindow: String?
+        get() = prefs.getString(KEY_REPORT_SEEN_WINDOW, null)
+        set(value) = prefs.edit { putString(KEY_REPORT_SEEN_WINDOW, value) }
 
     fun getBlockedApps(): Set<String> {
         return prefs.getStringSet(KEY_BLOCKED_APPS, emptySet()) ?: emptySet()
@@ -101,6 +114,7 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_FILTERED_WINDOW = "filtered_window"
         private const val KEY_FILTERED_COUNT = "filtered_count"
         private const val KEY_FILTERED_KEYS = "filtered_keys"
+        private const val KEY_REPORT_SEEN_WINDOW = "report_seen_window"
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null

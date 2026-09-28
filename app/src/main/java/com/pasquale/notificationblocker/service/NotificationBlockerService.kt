@@ -40,7 +40,7 @@ class NotificationBlockerService : NotificationListenerService() {
             // Group summaries duplicate their children; ongoing ones cannot be canceled at all
             val isSummary = notification.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
             if (notification.isClearable && !isSummary) {
-                prefs.recordFiltered(prefs.currentWindowKey(), notification.key)
+                prefs.recordFiltered(prefs.currentWindowKey(), notification.packageName, notification.key)
             }
         }
         if (notification.packageName != packageName) ZenNotificationManager.refresh(this)

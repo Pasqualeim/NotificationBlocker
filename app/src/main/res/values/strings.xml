@@ -116,4 +116,19 @@
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>
 
+
+    <!-- Morning report: what waited outside during the last window -->
+    <string name="report_title">While you were off</string>
+    <plurals name="report_count">
+        <item quantity="one">%1$d work notification waited outside.</item>
+        <item quantity="other">%1$d work notifications waited outside.</item>
+    </plurals>
+    <string name="report_apps_one">From %1$s.</string>
+    <string name="report_apps_two">From %1$s and %2$s.</string>
+    <plurals name="report_apps_more">
+        <item quantity="one">From %1$s, %2$s and %3$d more app.</item>
+        <item quantity="other">From %1$s, %2$s and %3$d more apps.</item>
+    </plurals>
+    <string name="report_nothing_lost">Nothing is lost: the messages are still in the apps, whenever you want them.</string>
+    <string name="report_dismiss">Got it</string>
 </resources>

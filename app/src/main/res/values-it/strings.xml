@@ -118,4 +118,21 @@
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>
 
+
+    <!-- Rapporto del mattino: cosa ha aspettato fuori nell'ultima fascia -->
+    <string name="report_title">Mentre eri via</string>
+    <plurals name="report_count">
+        <item quantity="one">%1$d notifica di lavoro ha aspettato fuori.</item>
+        <item quantity="many">%1$d notifiche di lavoro hanno aspettato fuori.</item>
+        <item quantity="other">%1$d notifiche di lavoro hanno aspettato fuori.</item>
+    </plurals>
+    <string name="report_apps_one">Da %1$s.</string>
+    <string name="report_apps_two">Da %1$s e %2$s.</string>
+    <plurals name="report_apps_more">
+        <item quantity="one">Da %1$s, %2$s e %3$d altra app.</item>
+        <item quantity="many">Da %1$s, %2$s e altre %3$d app.</item>
+        <item quantity="other">Da %1$s, %2$s e altre %3$d app.</item>
+    </plurals>
+    <string name="report_nothing_lost">Niente è perso: i messaggi sono ancora nelle app, quando vorrai.</string>
+    <string name="report_dismiss">Ok, grazie</string>
 </resources>

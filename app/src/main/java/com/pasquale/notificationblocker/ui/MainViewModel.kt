@@ -5,10 +5,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.pasquale.notificationblocker.data.MorningReport
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.PreferencesManager
 import com.pasquale.notificationblocker.notification.ZenNotificationManager
 import com.pasquale.notificationblocker.tile.ZenTileService
+import com.pasquale.notificationblocker.ui.components.MorningReportUi
 import com.pasquale.notificationblocker.ui.zen.LifeCopy
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +60,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _sunshineMinutes = MutableStateFlow(computeSunshine())
     val sunshineMinutes: StateFlow<Int> = _sunshineMinutes.asStateFlow()
 
+    private val _morningReport = MutableStateFlow<MorningReportUi?>(null)
+    val morningReport: StateFlow<MorningReportUi?> = _morningReport.asStateFlow()
+
+    // Window and total of the report on screen, so the minute tick doesn't re-read app labels
+    private var shownReport: Pair<String, Int>? = null
+
     // The Quick Settings tile writes the same preference: follow it live (kept as a field, the
     // SharedPreferences registry only holds listeners weakly)
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -69,6 +77,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         preferencesManager.registerListener(prefsListener)
+        refreshMorningReport()
     }
 
     override fun onCleared() {
@@ -114,6 +123,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         maybeCelebrateEndOfShift()
         refreshZenNotification()
         refreshLife()
+        refreshMorningReport()
+    }
+
+    /** Shows what waited outside during the last window, once it is over and until dismissed. */
+    private fun refreshMorningReport() {
+        val report = preferencesManager.lastReport()
+        val currentWindow = if (preferencesManager.isInOffHoursNow()) preferencesManager.currentWindowKey() else null
+        if (report == null || !MorningReport.shouldShow(report, LocalDate.now(), currentWindow, preferencesManager.reportSeenWindow)) {
+            shownReport = null
+            _morningReport.value = null
+            return
+        }
+        val key = report.window to report.total
+        if (shownReport == key) return
+        shownReport = key
+        val pm = getApplication<Application>().packageManager
+        val names = report.apps.take(REPORT_NAMED_APPS).map { app ->
+            runCatching { pm.getApplicationLabel(pm.getApplicationInfo(app.packageName, 0)).toString() }
+                .getOrDefault(app.packageName)
+        }
+        _morningReport.value = MorningReportUi(
+            total = report.total,
+            appNames = names,
+            moreApps = report.apps.size - names.size,
+        )
+    }
+
+    fun onMorningReportDismissed() {
+        preferencesManager.reportSeenWindow = shownReport?.first ?: return
+        shownReport = null
+        _morningReport.value = null
     }
 
     private fun refreshLife() {
@@ -207,5 +247,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
             .sortedBy { it.name.lowercase() }
+    }
+
+    private companion object {
+        const val REPORT_NAMED_APPS = 2
     }
 }

@@ -70,6 +70,8 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.EndOfShiftCard
 import com.pasquale.notificationblocker.ui.components.HeroHeader
+import com.pasquale.notificationblocker.ui.components.MorningReportCard
+import com.pasquale.notificationblocker.ui.components.MorningReportUi
 import com.pasquale.notificationblocker.ui.components.PermissionCard
 import com.pasquale.notificationblocker.ui.components.SceneCard
 import com.pasquale.notificationblocker.ui.components.ScheduleCard
@@ -96,6 +98,7 @@ fun MainScreen(
     val lifeMessage by viewModel.lifeMessage.collectAsStateWithLifecycle()
     val sunshineMinutes by viewModel.sunshineMinutes.collectAsStateWithLifecycle()
     val zenPromptDismissed by viewModel.zenPromptDismissed.collectAsStateWithLifecycle()
+    val morningReport by viewModel.morningReport.collectAsStateWithLifecycle()
 
     var hasListenerPermission by remember { mutableStateOf(hasNotificationListenerPermission(context)) }
     var canPostNotifications by remember { mutableStateOf(canPostNotifications(context)) }
@@ -144,6 +147,8 @@ fun MainScreen(
         onNavigateToAppSelection = onNavigateToAppSelection,
         onEndOfShiftShown = viewModel::onEndOfShiftShown,
         modifier = modifier,
+        morningReport = morningReport,
+        onDismissMorningReport = viewModel::onMorningReportDismissed,
     )
 }
 
@@ -168,6 +173,8 @@ fun MainScreenContent(
     showZenPrompt: Boolean = false,
     onAllowZenNotification: () -> Unit = {},
     onDismissZenPrompt: () -> Unit = {},
+    morningReport: MorningReportUi? = null,
+    onDismissMorningReport: () -> Unit = {},
 ) {
     var showStartTimePicker by remember { mutableStateOf(value = false) }
     var showEndTimePicker by remember { mutableStateOf(value = false) }
@@ -318,6 +325,11 @@ fun MainScreenContent(
                     )
                 }
             }
+
+            MorningReportCard(
+                report = if (animatedHeroVisible) morningReport else null,
+                onDismiss = onDismissMorningReport,
+            )
 
             EndOfShiftCard(
                 visible = showEndOfShift && animatedHeroVisible,
