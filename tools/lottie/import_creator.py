@@ -40,13 +40,14 @@ SHARED_LAYERS = {
     "Sun": "sun disc in the window (opacity driven by the app)",
     "Moon": "moon in the window (opacity driven by the app)",
     "Stars": "stars in the window (opacity driven by the app)",
-    "LampGlow": "warm halo of the desk lamp (opacity driven by the app: evening and night)",
+    "Clouds": "clouds drifting in the window (opacity driven by the app: faint at night)",
+    "CityLights": "lit windows of the city skyline (opacity driven by the app: dusk and night)",
     "TreeOutside": "tree seen through the window; its fills named 'Foliage' are recolored by season",
+    "RoomShade": "plum overlay on the room, window cut out (opacity driven by the app: evening and night)",
+    "LampGlow": "warm halo of the desk lamp, above RoomShade (opacity driven by the app: evening and night)",
 }
-SCENE_LAYERS = {
-    "scene_work": {"CityLights": "lit windows of the city skyline (opacity driven by the app: dusk and night)"},
-    "scene_rest": {},
-}
+# Both scenes show the same room and the same view, so they share every driven layer.
+SCENE_LAYERS = {"scene_work": {}, "scene_rest": {}}
 
 
 def reorder_type_first(node):
