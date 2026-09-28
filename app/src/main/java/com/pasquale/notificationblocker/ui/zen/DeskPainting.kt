@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.ui.zen
 
 import com.pasquale.notificationblocker.ui.theme.ZenPalette as P
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -10,12 +11,18 @@ import kotlin.math.sin
  * notebook and a plant. Structured and calm, so the landscape after work reads as the contrast.
  *
  * Indoor colors use [indoor]: daylight during the day, warm lamp light when it gets dark outside.
+ * After dark the laptop switches to a dark screen that casts a cool light on the desk; in the day
+ * the sun draws the window panes on the desk. On rainy days the sky is grey and rain runs on the glass.
  */
 class DeskPainting(env: ZenState) : ScenePainting(env) {
 
     private val indoorLight = ZenColor.mix(light.ambient, P.IndoorLight, light.lantern * 0.85f)
 
     private fun indoor(color: Int) = ZenColor.multiply(color, indoorLight)
+
+    /** 0 = light screen (day), 1 = dark screen (night). */
+    private val screenNight = light.lantern.coerceIn(0f, 1f)
+    private val screenBg = ZenColor.mix(P.ScreenBg, P.ScreenBgNight, screenNight)
 
     /** Sun and moon move across the window instead of the whole scene. */
     private val sunX = WIN_X + sun.x * WIN_W
@@ -24,6 +31,7 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
     override fun sky(p: ZenPainter) {
         skyGradient(p, WIN_Y + WIN_H)
         sunOrMoon(p, sunX, sunY)
+        overcast(p, WIN_Y + WIN_H)
     }
 
     override fun skyMotion(p: ZenPainter, t: Float) {
@@ -36,7 +44,7 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
     /** Once in a while a plane crosses high up, with a blinking light after dark. */
     private fun plane(p: ZenPainter, t: Float) {
         val cycle = t % PLANE_CYCLE
-        if (cycle > 26f) return
+        if (cycle > 26f || rain) return
         val x = WIN_X - 10 + cycle / 26f * (WIN_W + 20)
         val y = 30f - cycle * 0.25f
         p.line(x - 4, y, x + 4, y - 0.6f, 1.3f, lit(P.Plane))
@@ -50,6 +58,7 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
         city(p)
         window(p)
         desk(p)
+        sunPatch(p)
         laptop(p)
         notebook(p)
         mug(p)
@@ -153,6 +162,23 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
         p.rect(0f, H - 5, W, 5f, indoor(P.DeskEdge))
     }
 
+    /** The three window panes drawn by the sun on the desk, sliding as the sun crosses the sky. */
+    private fun sunPatch(p: ZenPainter) {
+        if (!sun.isSun || rain || light.rays < 0.05f) return
+        val shift = (0.5f - sun.x) * 70f
+        val pane = WIN_W / 3
+        val color = a(P.SunPatch, SUN_PATCH_ALPHA * light.rays)
+        for (i in 0 until 3) {
+            val x0 = WIN_X + i * pane + 5 + shift
+            begin()
+            pt(x0, DESK_Y + 1.5f)
+            pt(x0 + pane - 10, DESK_Y + 1.5f)
+            pt(x0 + pane - 10 + shift * 0.5f, H - 6)
+            pt(x0 + shift * 0.5f, H - 6)
+            fill(p, color)
+        }
+    }
+
     private fun laptop(p: ZenPainter) {
         val body = indoor(P.LaptopBody)
         p.rect(LAPTOP_X - 2, 86f, 76f, 40f, body)
@@ -166,16 +192,13 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
         // Screen: emissive, so not dimmed by the room light
         val sx = LAPTOP_X + 1
         val sy = 89f
-        p.rect(sx, sy, 70f, 34f, P.ScreenBg)
+        val line = ZenColor.mix(P.ScreenLine, P.ScreenLineNight, screenNight)
+        p.rect(sx, sy, 70f, 34f, screenBg)
         p.rect(sx, sy, 70f, 4f, P.ScreenHeader)
-        p.rect(sx, sy + 4, 14f, 30f, P.ScreenSide)
-        for (k in 0 until 4) p.rect(sx + 3, sy + 8 + k * 5, 8f, 1.4f, P.ScreenLine)
-        for (k in 0 until 3) p.rect(sx + 18, sy + 8 + k * 4, 22f + (hash(k, 71) % 20), 1.4f, P.ScreenLine)
-        // A small chart
-        for (k in 0 until 6) {
-            val h = 4f + hash(k, 72) % 9
-            p.rect(sx + 18 + k * 7, sy + 31 - h, 4f, h, if (k == 4) P.ScreenAccent else P.ScreenBar)
-        }
+        p.rect(sx, sy + 4, 14f, 30f, ZenColor.mix(P.ScreenSide, P.ScreenSideNight, screenNight))
+        for (k in 0 until 4) p.rect(sx + 3, sy + 8 + k * 5, 8f, 1.4f, line)
+        for (k in 0 until 3) p.rect(sx + 18, sy + 8 + k * 4, 22f + (hash(k, 71) % 20), 1.4f, line)
+        // The chart bars move: see foreground
     }
 
     private fun notebook(p: ZenPainter) {
@@ -221,6 +244,12 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
     // Foreground ----------------------------------------------------------------------------------
 
     override fun foreground(p: ZenPainter, t: Float) {
+        if (rain) rainOnGlass(p, t)
+        // The chart on the screen, its bars slowly rising and falling
+        for (k in 0 until 6) {
+            val h = (4f + hash(k, 72) % 9) * (0.78f + 0.22f * sin(t * 0.55f + k * 1.3f))
+            p.rect(LAPTOP_X + 19 + k * 7, 89f + 31 - h, 4f, h, if (k == 4) P.ScreenAccent else P.ScreenBar)
+        }
         // Steam curling up from the mug
         for (k in 0 until 3) {
             var y = 111f
@@ -236,10 +265,33 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
             }
         }
         // Cursor blinking at the end of the text line
-        if ((t * 1.1f) % 1f < 0.55f) p.rect(LAPTOP_X + 42.5f + hash(0, 71) % 20, 96.3f, 0.9f, 2.8f, P.ScreenHeader)
-        // After dark, the screen lights the desk in front of it
-        if (light.lantern > 0.05f) p.glow(LAPTOP_X + 36, 128f, 52f, a(P.ScreenBg, 0.12f * light.lantern))
+        val cursor = ZenColor.mix(P.ScreenHeader, P.ScreenBar, screenNight)
+        if ((t * 1.1f) % 1f < 0.55f) p.rect(LAPTOP_X + 42.5f + hash(0, 71) % 20, 96.3f, 0.9f, 2.8f, cursor)
+        // After dark, the screen casts a cool light on the desk in front of it
+        if (screenNight > 0.05f) {
+            p.glow(LAPTOP_X + 36, 130f, 60f, a(P.ScreenGlow, 0.2f * screenNight))
+            p.glow(LAPTOP_X + 36, 106f, 46f, a(P.ScreenGlow, 0.1f * screenNight))
+        }
     }
+
+    /** Rain falling outside and drops sliding down the glass. */
+    private fun rainOnGlass(p: ZenPainter, t: Float) {
+        val bottom = WIN_Y + WIN_H
+        for (i in 0 until 70) rainDrop(p, t, i, WIN_X, WIN_Y, WIN_X + WIN_W, bottom, 0.35f)
+        for (i in 0 until 16) {
+            val x = WIN_X + 2 + hash(i, 111) % (WIN_W - 4).toInt()
+            val speed = 2f + hash(i, 112) % 5
+            val y = WIN_Y + (t * speed + hash(i, 113)) % WIN_H
+            if (rainHidden(x, y)) continue
+            p.line(x, maxOf(WIN_Y, y - 6f), x, y, 0.5f, a(lit(P.Rain), 0.18f))
+            p.circle(x, y, 0.9f, a(lit(P.Rain), 0.55f))
+        }
+    }
+
+    override fun rainHidden(x: Float, y: Float): Boolean =
+        (x > LAPTOP_X - 4 && x < LAPTOP_X + 76 && y > 84f) || // laptop
+            (x > PLANT_X - 22 && x < PLANT_X + 22 && y > 86f) || // plant
+            abs(x - (WIN_X + WIN_W / 3)) < 2f || abs(x - (WIN_X + WIN_W * 2 / 3)) < 2f // mullions
 
     companion object {
         const val WIN_X = 22f
@@ -251,5 +303,6 @@ class DeskPainting(env: ZenState) : ScenePainting(env) {
         const val MUG_X = 236f
         const val PLANT_X = 282f
         private const val PLANE_CYCLE = 45f
+        private const val SUN_PATCH_ALPHA = 0.22f
     }
 }

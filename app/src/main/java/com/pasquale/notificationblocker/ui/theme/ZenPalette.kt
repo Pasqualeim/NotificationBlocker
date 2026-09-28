@@ -21,6 +21,12 @@ object ZenPalette {
     val CloudShade = rgb(0xE3EAF2)
     val Bird = rgb(0x2B2D42)
 
+    // Rainy days
+    val Overcast = rgb(0x8C95A6)      // veil over the sky
+    val RainCloud = rgb(0xAEB6C4)
+    val Rain = rgb(0xDCE6F2)
+    val RainAmbient = rgb(0xC4CAD6)   // multiplies the ambient light on rainy days
+
     // Nature: stone, wood, water birds
     val Stone = rgb(0xA3A3AE)
     val StoneLight = rgb(0xC4C4CE)
@@ -37,6 +43,8 @@ object ZenPalette {
     val TrunkLight = rgb(0x7A5040)
     val Snow = rgb(0xF4F7FB)
     val SnowShade = rgb(0xCBD6E6)
+    val Koi = rgb(0xF08A3C)
+    val KoiWhite = rgb(0xFFF4E8)
 
     // Desk and city (working hours)
     val IndoorLight = rgb(0xFFEFD9)   // warm lamp light once it is dark outside
@@ -60,6 +68,12 @@ object ZenPalette {
     val ScreenLine = rgb(0xBAC2CE)
     val ScreenBar = rgb(0xB8A6FF)     // brand primary (dark theme)
     val ScreenAccent = rgb(0xFFC56B)  // brand secondary
+    // Dark mode of the same screen, faded in after dark
+    val ScreenBgNight = rgb(0x23273A)
+    val ScreenSideNight = rgb(0x2C3147)
+    val ScreenLineNight = rgb(0x4E5673)
+    val ScreenGlow = rgb(0xA9B8FF)    // cool light the screen casts on the desk at night
+    val SunPatch = rgb(0xFFE6B0)      // sunlight through the window, on the desk
     val Mug = rgb(0xEEE8F8)
     val MugShade = rgb(0xCFC6E3)
     val Coffee = rgb(0x6B4430)

@@ -18,6 +18,7 @@ abstract class ScenePainting(val env: ZenState) {
     protected val flora = env.flora
     protected val season = env.season
     protected val sun = env.celestial
+    protected val rain = env.rain
 
     private val pts = FloatArray(512)
     private var n = 0
@@ -57,7 +58,18 @@ abstract class ScenePainting(val env: ZenState) {
         p.verticalGradient(0f, mid - 0.5f, W, bottom - mid + 1, light.skyMid, light.skyLow)
     }
 
+    /** On rainy days a grey veil over the sky (and the sun or moon behind it), down to [bottom]. */
+    protected fun overcast(p: ZenPainter, bottom: Float) {
+        if (rain) p.rect(0f, 0f, W, bottom, a(lit(P.Overcast), OVERCAST_ALPHA))
+    }
+
     protected fun sunOrMoon(p: ZenPainter, x: Float, y: Float) {
+        if (rain) {
+            // Only a pale disc behind the clouds
+            p.glow(x, y, 24f, a(if (sun.isSun) P.Sun else P.Moon, 0.25f))
+            p.circle(x, y, if (sun.isSun) 8f else 7f, a(if (sun.isSun) P.Sun else P.Moon, 0.3f))
+            return
+        }
         if (sun.isSun) {
             p.glow(x, y, 60f, a(P.SunGlow, 0.55f * (0.6f + 0.4f * light.rays)))
             p.glow(x, y, 20f, a(P.Sun, 0.8f))
@@ -72,7 +84,7 @@ abstract class ScenePainting(val env: ZenState) {
     }
 
     protected fun stars(p: ZenPainter, t: Float, maxY: Int) {
-        if (light.stars <= 0.05f) return
+        if (light.stars <= 0.05f || rain) return
         for (i in 0 until 44) {
             val twinkle = 0.55f + 0.45f * sin(t * 1.3f + i * 2.1f)
             val r = 0.5f + (hash(i, 6) % 3) * 0.3f
@@ -82,7 +94,7 @@ abstract class ScenePainting(val env: ZenState) {
 
     /** Clouds drifting slowly to the left, [count] of them from height [top]. */
     protected fun clouds(p: ZenPainter, t: Float, top: Float, count: Int = 3) {
-        for (i in 0 until count) {
+        for (i in 0 until if (rain) count + 2 else count) {
             val speed = 2.2f + i * 1.1f
             val x = W + 40 - ((t * speed + i * 137) % (W + 80))
             cloud(p, x, top + i * 11, 1f - i * 0.22f)
@@ -90,8 +102,9 @@ abstract class ScenePainting(val env: ZenState) {
     }
 
     private fun cloud(p: ZenPainter, x: Float, y: Float, s: Float) {
-        val body = a(lit(P.Cloud), 0.92f)
-        p.ellipse(x, y + 4.5f * s, 22f * s, 4.5f * s, a(lit(P.CloudShade), 0.92f))
+        val white = if (rain) P.RainCloud else P.Cloud
+        val body = a(lit(white), 0.92f)
+        p.ellipse(x, y + 4.5f * s, 22f * s, 4.5f * s, a(lit(if (rain) P.Overcast else P.CloudShade), 0.92f))
         p.circle(x - 10 * s, y + 1 * s, 7f * s, body)
         p.circle(x, y - 3 * s, 10f * s, body)
         p.circle(x + 11 * s, y + 0.5f * s, 7.5f * s, body)
@@ -100,7 +113,7 @@ abstract class ScenePainting(val env: ZenState) {
 
     /** Two birds gliding across, only in daylight. */
     protected fun birds(p: ZenPainter, t: Float, top: Float) {
-        if (light.rays <= 0.5f) return
+        if (light.rays <= 0.5f || rain) return
         val color = lit(P.Bird)
         for (i in 0 until 2) {
             val x = (t * 13 + i * 70) % (W + 40) - 20
@@ -110,6 +123,22 @@ abstract class ScenePainting(val env: ZenState) {
             p.line(x, y + 1f, x + 4, y - wing, 0.9f, color)
         }
     }
+
+    /**
+     * One raindrop streak of a shower falling slightly to the left: drop [i] at time [t], inside
+     * [top]..[bottom] and [left]..[right]. Nothing is drawn where [rainHidden] says so.
+     */
+    protected fun rainDrop(p: ZenPainter, t: Float, i: Int, left: Float, top: Float, right: Float, bottom: Float, alpha: Float) {
+        val speed = 140f + hash(i, 101) % 60
+        val span = bottom - top + RAIN_LEN
+        val y = top + (t * speed + hash(i, 102)) % span - RAIN_LEN
+        val x = left + hash(i, 103) % (right - left).toInt() - (y - top) * RAIN_SLANT
+        if (x < left || rainHidden(x, y)) return
+        p.line(x, maxOf(y, top), x - RAIN_LEN * RAIN_SLANT, minOf(y + RAIN_LEN, bottom), 0.6f, a(lit(P.Rain), alpha))
+    }
+
+    /** Where rain must not be drawn (e.g. objects in front of the window). */
+    protected open fun rainHidden(x: Float, y: Float): Boolean = false
 
     /** Lance-shaped leaf from (x, y) toward [dx], [dy] (unit vector), [len] long. */
     protected fun leaf(p: ZenPainter, x: Float, y: Float, dx: Float, dy: Float, len: Float, width: Float, color: Int) {
@@ -127,5 +156,9 @@ abstract class ScenePainting(val env: ZenState) {
         /** Scene units: the composable scales them to its size (2:1). */
         const val W = 320f
         const val H = 160f
+
+        private const val OVERCAST_ALPHA = 0.35f
+        const val RAIN_LEN = 7f
+        const val RAIN_SLANT = 0.12f
     }
 }

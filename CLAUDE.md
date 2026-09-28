@@ -76,7 +76,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
     │   ├── AppItemRow.kt, AppIconImage.kt
     │   └── ShimmerSkeleton.kt, EmptyState.kt   # loading / empty states
-    ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light),
+    ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light/rain),
     │                                # ScenePainting → DeskPainting, NaturePainting; ZenPainter (Compose + AWT in tests);
     │                                # LifeCopy (daylight / free-time messages on Home, unit tested)
     └── theme/                       # Color ("Chai" light, "Lo-fi night" dark), Motion (tokens), Type (Manrope),

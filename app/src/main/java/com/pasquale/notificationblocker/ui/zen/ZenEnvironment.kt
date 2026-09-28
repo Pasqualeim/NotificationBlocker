@@ -37,6 +37,7 @@ data class ZenState(
     val timeOfDay: TimeOfDay,
     val light: ZenPalette.Light,
     val celestial: Celestial,
+    val rain: Boolean = false,
 ) {
     val flora: ZenPalette.Flora
         get() = when (season) {
@@ -65,13 +66,46 @@ object ZenEnvironment {
     fun resolve(date: LocalDate, time: LocalTime): ZenState {
         val (sunrise, sunset) = sunTimes(date)
         val minute = time.hour * 60 + time.minute
+        val rain = isRaining(date, time.hour)
+        val light = light(minute, sunrise, sunset)
         return ZenState(
             season = Season.of(date),
             timeOfDay = timeOfDay(minute, sunrise, sunset),
-            light = light(minute, sunrise, sunset),
+            light = if (rain) rainy(light) else light,
             celestial = celestial(minute, sunrise, sunset),
+            rain = rain,
         )
     }
+
+    /** The same light under rain clouds: greyer sky, dimmer and cooler ambient, no sun rays. */
+    fun rainy(l: ZenPalette.Light): ZenPalette.Light = l.copy(
+        skyTop = ZenColor.mix(l.skyTop, ZenColor.multiply(ZenPalette.Overcast, l.ambient), 0.6f),
+        skyMid = ZenColor.mix(l.skyMid, ZenColor.multiply(ZenPalette.RainCloud, l.ambient), 0.6f),
+        skyLow = ZenColor.mix(l.skyLow, ZenColor.multiply(ZenPalette.RainCloud, l.ambient), 0.5f),
+        ambient = ZenColor.multiply(l.ambient, ZenPalette.RainAmbient),
+        mist = ZenColor.mix(l.mist, ZenPalette.RainCloud, 0.4f),
+        water = ZenColor.mix(l.water, ZenColor.multiply(ZenPalette.Overcast, l.ambient), 0.4f),
+        rays = 0f,
+    )
+
+    /**
+     * Made-up but stable weather: some days have a six-hour shower, more often in spring and autumn,
+     * never in winter (the garden already has its snow). Same date and hour, same answer.
+     */
+    fun isRaining(date: LocalDate, hour: Int): Boolean {
+        val chance = when (Season.of(date)) {
+            Season.SPRING -> 22
+            Season.SUMMER -> 10
+            Season.AUTUMN -> 28
+            Season.WINTER -> 0
+        }
+        if (hash(date.year, date.dayOfYear, RAIN_SEED) % 100 >= chance) return false
+        val start = hash(date.year, date.dayOfYear, RAIN_SEED + 1) % 24
+        return (hour - start + 24) % 24 < RAIN_HOURS
+    }
+
+    private const val RAIN_SEED = 7_331
+    private const val RAIN_HOURS = 6
 
     /** Sunrise and sunset in minutes from midnight. */
     fun sunTimes(date: LocalDate): Pair<Int, Int> {

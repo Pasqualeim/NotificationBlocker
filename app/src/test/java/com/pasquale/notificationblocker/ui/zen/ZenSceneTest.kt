@@ -33,6 +33,8 @@ class ZenSceneTest {
 
     private fun env(date: LocalDate, time: LocalTime) = ZenEnvironment.resolve(date, time)
 
+    private fun ZenState.wet() = copy(rain = true, light = ZenEnvironment.rainy(light))
+
     // Environment ---------------------------------------------------------------------------------
 
     @Test
@@ -105,6 +107,29 @@ class ZenSceneTest {
         assertTrue(evening.x < noon.x) // east (right) to west (left)
     }
 
+    @Test
+    fun rain_isStableSometimesAndNeverInWinter() {
+        val year = (0 until 365).map { LocalDate.of(2026, 1, 1).plusDays(it.toLong()) }
+        val rainyHours = year.associateWith { day -> (0 until 24).count { ZenEnvironment.isRaining(day, it) } }
+        // A shower lasts six hours, a few days a season have one
+        assertTrue(rainyHours.values.all { it == 0 || it == 6 })
+        val rainyDays = rainyHours.filterValues { it > 0 }.keys
+        assertTrue(rainyDays.size in 20..80)
+        assertTrue(rainyDays.none { Season.of(it) == Season.WINTER })
+        // Same date and hour, same weather
+        for (day in rainyDays) assertEquals(ZenEnvironment.isRaining(day, 9), ZenEnvironment.isRaining(day, 9))
+    }
+
+    @Test
+    fun rainyScenes_lookDifferentFromDryOnes() {
+        val dry = env(springDay, LocalTime.of(12, 0)).copy(rain = false, light = ZenPalette.Daylight)
+        for (offWork in listOf(false, true)) {
+            val wet = render(dry.wet(), 5f, offWork)
+            assertTrue(wet.pixels().all { it ushr 24 == 0xFF })
+            assertNotEquals(render(dry, 5f, offWork).pixels().toList(), wet.pixels().toList())
+        }
+    }
+
     // Rendering -----------------------------------------------------------------------------------
 
     private fun scene(e: ZenState, offWork: Boolean): ScenePainting = if (offWork) NaturePainting(e) else DeskPainting(e)
@@ -162,6 +187,11 @@ class ZenSceneTest {
             val name = "%s_%s_%02d%02d_%s.png".format(
                 if (offWork) "nature" else "desk", e.season.name.lowercase(), time.hour, time.minute, e.timeOfDay.name.lowercase(),
             )
+            ImageIO.write(render(e, 20f, offWork, scale = 3), "png", File(dir, name))
+        }
+        for (offWork in listOf(false, true)) for (time in listOf(LocalTime.of(12, 0), LocalTime.of(21, 0))) {
+            val e = env(autumnDay, time).wet()
+            val name = "%s_rain_%02d%02d.png".format(if (offWork) "nature" else "desk", time.hour, time.minute)
             ImageIO.write(render(e, 20f, offWork, scale = 3), "png", File(dir, name))
         }
     }

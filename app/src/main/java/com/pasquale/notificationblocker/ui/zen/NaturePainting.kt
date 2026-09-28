@@ -9,7 +9,8 @@ import kotlin.math.sin
 /**
  * After work: a quiet Japanese landscape. A snow-capped mountain in the open center, the seasonal
  * tree pair, a stone lantern, a clear stream with stepping stones and a heron fishing, bamboo swaying
- * in the foreground. Spring petals, autumn leaves, winter snow; fireflies on summer nights.
+ * in the foreground. Spring petals, autumn leaves, winter snow; fireflies on summer nights; koi in
+ * the stream. On rainy days a grey sky, rain and rings on the water.
  */
 class NaturePainting(env: ZenState) : ScenePainting(env) {
 
@@ -18,8 +19,9 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
 
     override fun sky(p: ZenPainter) {
         skyGradient(p, GROUND_Y)
-        p.rect(0f, GROUND_Y, W, H - GROUND_Y, lit(flora.ground))
         sunOrMoon(p, sunX, sunY)
+        overcast(p, GROUND_Y)
+        p.rect(0f, GROUND_Y, W, H - GROUND_Y, lit(flora.ground))
     }
 
     override fun skyMotion(p: ZenPainter, t: Float) {
@@ -260,11 +262,13 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
         bamboo(p, t)
         rays(p, t)
         particles(p, t)
+        if (rain) shower(p, t)
         lanternGlow(p, t)
         if (env.timeOfDay == TimeOfDay.DAWN) fog(p, t, DAWN_MIST)
     }
 
     private fun water(p: ZenPainter, t: Float) {
+        koi(p, t)
         // Current flowing to the right, faster near the viewer
         for (i in 0 until 16) {
             val y = STREAM_TOP + 3 + hash(i, 1) % (STREAM_BOTTOM - STREAM_TOP - 5).toInt()
@@ -273,7 +277,7 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
             val x = (t * speed + hash(i, 3)) % (W + 20) - 10
             p.line(x, y, x + len, y, 1f, a(light.waterLight, 0.65f))
         }
-        if (sun.isSun && light.rays > 0.05f) {
+        if (sun.isSun && light.rays > 0.05f && !rain) {
             for (i in 0 until 16) {
                 val flash = sin(t * 5 + i * 2.1f)
                 if (flash < 0.55f) continue
@@ -294,6 +298,38 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
                 y += 3
                 k++
             }
+        }
+    }
+
+    /** Two koi gliding downstream under the surface, their tails swinging. */
+    private fun koi(p: ZenPainter, t: Float) {
+        val alpha = 0.7f * (0.35f + 0.65f * light.rays)
+        for (i in 0 until 2) {
+            val x = (t * (5f + i * 2f) + i * 170) % (W + 40) - 20
+            val y = STREAM_TOP + 7 + i * 6 + sin(t * 0.5f + i * 2f) * 1.5f
+            val swing = sin(t * 5f + i) * 1.4f
+            begin()
+            pt(x - 3.5f, y)
+            pt(x - 7f, y - 1.8f + swing)
+            pt(x - 7f, y + 1.8f + swing)
+            fill(p, a(lit(P.Koi), alpha))
+            p.ellipse(x, y, 4.2f, 1.5f, a(lit(if (i == 0) P.Koi else P.KoiWhite), alpha))
+            p.ellipse(x + 1f, y - 0.3f, 1.6f, 0.8f, a(lit(if (i == 0) P.KoiWhite else P.Koi), alpha))
+        }
+    }
+
+    /** Rain over the whole scene and rings spreading on the stream. */
+    private fun shower(p: ZenPainter, t: Float) {
+        for (i in 0 until 110) rainDrop(p, t, i, 0f, 0f, W, H, 0.3f)
+        for (i in 0 until 10) {
+            val period = 1.2f + (hash(i, 121) % 10) / 10f
+            val phase = ((t + hash(i, 122) % 100 / 10f) / period) % 1f
+            val cycle = ((t + hash(i, 122) % 100 / 10f) / period).toInt()
+            val x = (hash(i, cycle, 123) % W.toInt()).toFloat()
+            val y = STREAM_TOP + 3 + hash(i, cycle, 124) % (STREAM_BOTTOM - STREAM_TOP - 5).toInt()
+            val r = 1f + phase * 5f
+            p.ellipse(x, y, r, r * 0.3f, a(light.waterLight, 0.6f * (1f - phase)))
+            p.ellipse(x, y, r - 0.6f, (r - 0.6f) * 0.3f, a(light.waterDeep, 0.6f * (1f - phase)))
         }
     }
 
@@ -373,7 +409,7 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
 
     /** Slanted shafts of sunlight filtering through the bamboo, gently pulsing. */
     private fun rays(p: ZenPainter, t: Float) {
-        if (!sun.isSun || light.rays < 0.05f) return
+        if (!sun.isSun || light.rays < 0.05f || rain) return
         val strength = light.rays * when (season) {
             Season.SUMMER -> 0.2f
             Season.WINTER -> 0.09f
@@ -437,7 +473,7 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
     }
 
     private fun fireflies(p: ZenPainter, t: Float) {
-        if (light.lantern < 0.4f) return
+        if (light.lantern < 0.4f || rain) return
         for (i in 0 until 12) {
             val pulse = sin(t * 1.7f + i * 2.3f)
             if (pulse <= 0f) continue
@@ -496,8 +532,8 @@ class NaturePainting(env: ZenState) : ScenePainting(env) {
 
         /** Foreground bamboo: x and thickness of each stalk (left grove, right grove). */
         private val STALKS = listOf(
-            floatArrayOf(6f, 6f), floatArrayOf(19f, 5f), floatArrayOf(31f, 6f), floatArrayOf(44f, 4f),
-            floatArrayOf(277f, 4.5f), floatArrayOf(289f, 6f), floatArrayOf(301f, 4.5f), floatArrayOf(313f, 6f),
+            floatArrayOf(7f, 6f), floatArrayOf(22f, 5f), floatArrayOf(35f, 4f),
+            floatArrayOf(287f, 4.5f), floatArrayOf(300f, 6f), floatArrayOf(314f, 5f),
         )
     }
 }
