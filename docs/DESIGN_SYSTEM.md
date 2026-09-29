@@ -173,7 +173,7 @@ Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 
 ## Componenti
 
-Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con lucchetto → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App da silenziare".
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App da silenziare".
 
 | Componente | File | Note |
 |---|---|---|
