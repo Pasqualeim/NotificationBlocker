@@ -1,4 +1,6 @@
-# NotificationBlocker
+# Sosta
+
+*Prima si chiamava NotificationBlocker: la repo mantiene il vecchio nome.*
 
 App Android che silenzia le notifiche delle app di lavoro quando non stai lavorando.
 
@@ -17,7 +19,7 @@ Scegli le app da bloccare (Gmail, Teams, Slack…), imposta la fascia oraria di 
 - **Notifica zen**: notifica silenziosa e fissa, mostrata mentre il blocco è attivo dentro la fascia, con un messaggio calmo, la fine della fascia e il conteggio delle notifiche trattenute (Android 13+, facoltativa).
 - **Riquadro Impostazioni rapide** "Stacco & Sole": attiva o disattiva il blocco dalla tendina.
 - **Rapporto del mattino**: a fine fascia mostra quante notifiche di lavoro hanno aspettato fuori e da quali app.
-- **Tema**: palette calda "Chai" (chiara) e "Lo-fi night" (scura), font Manrope, edge-to-edge.
+- **Tema**: palette calda e desaturata "Chai" (chiara) e "Lo-fi night" (scura): terracotta morbida, salvia e blu polvere, font Manrope, edge-to-edge.
 - **Lingue**: inglese e italiano.
 
 ## Requisiti
@@ -27,7 +29,7 @@ Scegli le app da bloccare (Gmail, Teams, Slack…), imposta la fascia oraria di 
 
 ## Primo utilizzo
 
-1. Apri l'app e tocca **Concedi l'accesso alle notifiche**, poi abilita *NotificationBlocker* nelle impostazioni di sistema.
+1. Apri l'app e tocca **Concedi l'accesso alle notifiche**, poi abilita *Sosta* nelle impostazioni di sistema.
 2. Imposta inizio e fine della fascia di blocco.
 3. Tocca **App da silenziare** e attiva le app di lavoro.
    (Facoltativo, Android 13+: tocca **Consenti** sulla card *Notifica zen* per vedere lo stato nella tendina.)
@@ -79,7 +81,7 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Architettura, regole e convenzioni (anche per assistenti AI) |
 | [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Stile visivo: colori, tipografia, forme, componenti, tono dei testi |
-| [`docs/MOTION.md`](docs/MOTION.md) | Linee guida sulle animazioni e flusso di lavoro con Lottie |
+| [`docs/MOTION.md`](docs/MOTION.md) | Linee guida sulle animazioni |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Miglioramenti pianificati, in ordine di priorità |
 
 ## Privacy

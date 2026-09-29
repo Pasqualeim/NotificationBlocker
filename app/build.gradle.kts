@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.pasquale.notificationblocker"
+        applicationId = "com.pasquale.sosta"
         minSdk = 28
         targetSdk = 37
         versionCode = 1
@@ -75,7 +75,6 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.kotlinx.serialization.core)
-    implementation(libs.lottie.compose)
 
     testImplementation(libs.junit)
 

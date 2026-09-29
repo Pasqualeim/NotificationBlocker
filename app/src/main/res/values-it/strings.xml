@@ -1,8 +1,6 @@
 <resources>
-    <string name="service_label">Servizio Notification Blocker</string>
 
     <!-- Main Screen -->
-    <string name="main_title">Notification Blocker</string>
 
     <!-- Hero Statuses -->
     <string name="status_disabled">Disattivato</string>
@@ -24,7 +22,7 @@
     <string name="permission_warning_title">Permesso richiesto</string>
     <string name="permission_warning_text">Per sospendere le notifiche di lavoro, Android deve permettere a questa app di vedere le notifiche che ricevi. L\'app controlla solo quale app le ha inviate e le rimuove se quell\'app è nella tua lista durante la fascia fuori orario. Non legge né salva mai il contenuto e nulla lascia il tuo telefono. Puoi revocare l\'accesso in qualsiasi momento dalle impostazioni di sistema.</string>
     <string name="permission_warning_button">Accetto e apri le impostazioni</string>
-    <string name="privacy_policy_link">Informativa sulla privacy</string>
+    <string name="privacy_policy_link">Privacy</string>
 
     <!-- Schedule Section -->
     <string name="schedule_title">Orario di blocco</string>
@@ -75,10 +73,6 @@
     <string name="cd_end_time_picker">Seleziona ora di fine</string>
     <string name="cd_master_switch">Attiva o disattiva blocco notifiche</string>
     <string name="cd_toggle_app_blocking">Attiva/disattiva blocco per %1$s</string>
-
-    <!-- End of shift celebration -->
-    <string name="end_of_shift_title">Fine turno</string>
-    <string name="end_of_shift_subtitle">Le app di lavoro aspettano il tuo ritorno. Il resto è tempo tuo.</string>
 
     <!-- Notifica di stato zen (tendina e schermata di blocco) -->
     <string name="zen_channel_name">Stato zen</string>

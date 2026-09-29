@@ -1,6 +1,6 @@
 # Motion
 
-Linee guida per le animazioni di NotificationBlocker. Per colori e componenti vedi [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md).
+Linee guida per le animazioni di Sosta. Per colori e componenti vedi [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md).
 
 ## Principi
 
@@ -53,7 +53,6 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 | Notifica zen (tendina / blocco schermo) | Illustrazione animata per la fase del giorno: sole con raggi lenti tra i bambù, tramonto sui colli con riflessi, lanterna con fiamma e lucciole | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
 | Messaggio "vita" (`HeroHeader`) | La frase su sole e tempo libero cambia con dissolvenza | `AnimatedContent` fade-in `LONG` / fade-out `SHORT`, ricalcolo al minuto solo con l'app in primo piano (`rememberCurrentMinutes()`: `repeatOnLifecycle(STARTED)`, rilegge l'orologio a ogni ritorno in primo piano) |
 | Riquadro "Stacco & Sole" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
-| `EndOfShiftCard` | "Fine turno": le notifiche volano via, il sole tramonta, sorge la luna con le stelle | Lottie `res/raw/end_of_shift.json` (5s, 60fps), una volta per fascia, poi la card resta ferma per `AMBIENT` (2000 ms) e si chiude da sola; comparsa/scomparsa come `PermissionCard` |
 
 ## Regole di implementazione
 
@@ -119,7 +118,7 @@ Listener service┘   (posta / aggiorna / rimuove)      └─ RemoteViews: noti
 
 ## Lottie
 
-Per illustrazioni più ricche (onboarding, stato vuoto, "tutto tranquillo" notturno) si può usare Lottie.
+Per illustrazioni più ricche (onboarding, stato vuoto) si può usare Lottie. Oggi l'app **non** include `lottie-compose`: è stata tolta con la card "Fine turno". Reintrodurla è una nuova dipendenza da motivare in `ROADMAP.md`.
 
 ### Quando sì, quando no
 
@@ -149,7 +148,7 @@ LottieAnimation(
 
 ### Animazioni generate da script
 
-`end_of_shift.json` è generato da `tools/lottie/end_of_shift.py` (helper in `tools/lottie/lottie_kit.py`): modifica lo script, non il JSON. I nomi dei gruppi sono le keypath che `EndOfShiftCard` ricolora con `MaterialTheme.colorScheme`.
+Gli helper in `tools/lottie/lottie_kit.py` scrivono Lottie JSON a mano (usati per la vecchia card "Fine turno"): un'animazione generata va tenuta come script, non come JSON modificato a mano.
 
 Tre trappole di lottie-android (già gestite dal kit, vedi il docstring di `lottie_kit.py`):
 

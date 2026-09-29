@@ -18,8 +18,8 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / "app/src/main/res/drawable"
 
-CREAM = "#F8EDD7"
-BG_TOP, BG_BOTTOM = "#CF6D43", "#BB5931"
+CREAM = "#F8EFE3"
+BG_TOP, BG_BOTTOM = "#BA6C4D", "#A45A3D"
 
 # Path data uses only M, L, H, V, C, Z (absolute) so the PNG renderer can flatten it.
 SHAPES = {

@@ -1,4 +1,4 @@
-# Roadmap
+# Roadmap (Sosta)
 
 Miglioramenti pianificati per rendere l'app più "Android nativa", animata e pronta per il Play Store. Ordinati per priorità dentro ogni sezione. Quando completi o scarti una voce, aggiornala qui.
 
@@ -27,7 +27,6 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 | Selezione giorni della settimana | M | Es. weekend tutto il giorno. Estendere `OffHours` + test; nuova chiave nelle preferenze |
 | Contatore nella card di stato | S | Il contatore per fascia esiste già (`filtered_count`, deduplicato per notifica, mostrato nella notifica zen): mostrarlo anche nella `HeroHeader` |
 | Scelta "notifica zen sì/no" nell'app | S | Oggi si spegne dal canale di sistema o negando il permesso: un interruttore in app è più chiaro |
-| Card "Fine turno" | S | Decidere se toglierla (la scena e la notifica raccontano già lo stacco): libera anche la dipendenza Lottie |
 | Onboarding al primo avvio | M | 2–3 pagine con illustrazione (candidata per Lottie, vedi `MOTION.md`) e richiesta del permesso |
 | Widget home | L | Glance: nuova dipendenza, da motivare |
 | Pulire le notifiche già visibili all'inizio della fascia | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
@@ -51,6 +50,8 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 | Firma release | `signingConfigs.release` letto da `keystore.properties` (ignorato da git); `bundleRelease` produce l'AAB firmato con la chiave di upload. APK release con R8 provato su emulatore (avvio e UI senza crash; blocco end-to-end solo in debug, perché `run-as` non funziona su release) |
 | README e backup | README allineato all'app (scena, notifica zen, riquadro, rapporto, palette). Backup Android limitato a `notification_blocker_prefs.xml` (`backup_rules.xml`, `data_extraction_rules.xml`) invece dei file di esempio |
 | Nuova icona | Tazza fumante su terracotta al posto del lucchetto con la luna (parlava di notte), anche nell'header della Home (`ic_mug`). Vettoriale adattiva + monocromatica, PNG 512 per lo store, generati da `tools/icon/launcher_icon.py` |
+| Nome "Sosta" e palette desaturata | Nome scelto dopo una ricerca su Play e marchi (motivi in `DESIGN_SYSTEM.md`), `applicationId` `com.pasquale.sosta`. Palette Chai / Lo-fi night desaturata (saturazione del `primary` 0.87 → 0.50 in chiaro), salvia e blu polvere al posto di smeraldo e viola; contrasto verificato da `tools/palette/contrast.py`. Icona allineata |
+| Card "Fine turno" tolta | Luna e stelle contraddicevano il brand e spingevano la Home in basso; tolta insieme a `lottie-compose` (APK più leggero) |
 
 ## 4. Qualità
 
@@ -67,6 +68,6 @@ Ogni nuova dipendenza va motivata qui (regola "dipendenze minime").
 
 | Libreria | Per cosa | Stato |
 |---|---|---|
-| `com.airbnb.android:lottie-compose` | Animazione "Fine turno" (`EndOfShiftCard`), poi onboarding / stato vuoto. Se "Fine turno" viene assorbito da `ZenScene`, la dipendenza si può togliere | Aggiunta (6.7.1) |
+| `com.airbnb.android:lottie-compose` | Animazione "Fine turno" | Tolta con la card (luna e stelle contraddicevano il brand, e la scena racconta già lo stacco). Riaggiungerla solo per l'onboarding, se serve |
 | `androidx.core:core-splashscreen` | Splash screen API su API < 31 | Proposta |
 | `androidx.glance:glance-appwidget` | Widget | In attesa |

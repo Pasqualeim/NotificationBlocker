@@ -4,9 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps during a daily off-hours window.
+**Sosta** (formerly NotificationBlocker): Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps during a daily off-hours window.
 
-Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`, package `com.pasquale.notificationblocker`.
+Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`. `applicationId` is `com.pasquale.sosta` (fixed forever once published); the Kotlin namespace stays `com.pasquale.notificationblocker`, so class names in `adb` commands need the full path. Naming and color rationale: `docs/DESIGN_SYSTEM.md`.
 
 - minSdk 28, targetSdk 37, compileSdk 37
 - AGP 9.4 with built-in Kotlin, pinned to 2.4 through the `kotlin` version in the catalog (no `kotlin-android` plugin), Gradle 9.8, version catalog in `gradle/libs.versions.toml`
@@ -16,7 +16,7 @@ Purpose: we have a life beyond work. "Off-hours" means any time you are not work
 Related docs (read before UI work):
 
 - `docs/DESIGN_SYSTEM.md`: colors, type, shapes, components, copy tone
-- `docs/MOTION.md`: animation tokens and rules, Lottie workflow
+- `docs/MOTION.md`: animation tokens and rules
 - `docs/ROADMAP.md`: prioritized improvements; update it when you ship or drop an item
 
 ## Build & test
@@ -38,8 +38,8 @@ Install and run on emulator: `adb install -r app/build/outputs/apk/debug/app-deb
 ### Testing the blocking end-to-end without UI
 
 ```bash
-P=com.pasquale.notificationblocker
-adb shell cmd notification allow_listener $P/.service.NotificationBlockerService
+P=com.pasquale.sosta
+adb shell cmd notification allow_listener $P/com.pasquale.notificationblocker.service.NotificationBlockerService
 # write shared_prefs/notification_blocker_prefs.xml via `run-as $P` with
 # blocking_enabled=true, start_time=end_time (whole day), blocked_apps={com.android.shell}
 adb shell cmd notification post -t Test tag "hello"   # posted as com.android.shell
@@ -74,7 +74,6 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── ScheduleCard.kt          # start/end TimeCards + quiet duration
     │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
     │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
-    │   ├── EndOfShiftCard.kt        # Lottie "end of shift" celebration, once per off-hours window
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
     │   ├── SceneCard.kt             # 2:1 card framing the scene on Home (fixed height inside the scrolling column)
     │   ├── ZenScene.kt              # animated scene: desk (work) / nature (off work)
@@ -101,7 +100,7 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Preferences keys (`notification_blocker_prefs`)
 
-`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, ISO date of the window start that last played the "end of shift" animation; see `OffHours.windowStartDate`), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nkey`, older ones the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
+`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nkey`, older ones the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
 
 ### App list
 
@@ -126,7 +125,7 @@ The Quick Settings tile (`ZenTileService`, active tile: no polling) toggles `blo
 - Components: stateless composables in `ui/components`, taking state + lambdas, `modifier: Modifier = Modifier` as the first optional parameter. Every component gets `@Preview`s for its main states.
 - Animations: follow `docs/MOTION.md` (`label =` on every animation, no motion on first composition unless it is an entrance). Durations, easing and press springs come from `ui/theme/Motion.kt` (`Motion.standard(Motion.SHORT)`, `Motion.press()`, `Motion.Stagger`…), never inline numbers; choreography owned by one component is a named `private const` listed in the `MOTION.md` catalog. Animated state that must survive a status change lives **outside** `AnimatedContent`.
 - Icons: only `material-icons-core` is on the classpath. Adding `material-icons-extended` roughly doubles the debug APK; prefer copying the single needed icon as an `ImageVector` or vector drawable (see `res/drawable/ic_moon*.xml`).
-- Keep dependencies minimal: the original scaffold pulled in Room, Retrofit, CameraX, Coil, Play Services etc. without using them; they were removed on purpose. Any new dependency needs a reason in `docs/ROADMAP.md` (`lottie-compose` is in, for `EndOfShiftCard`). Lottie JSON generated by `tools/lottie/*.py` (shared helpers in `lottie_kit.py`): edit the script, not the JSON. Same for the launcher icon: `tools/icon/launcher_icon.py` writes the adaptive-icon drawables and `docs/store/icon-512.png`.
+- Keep dependencies minimal: the original scaffold pulled in Room, Retrofit, CameraX, Coil, Play Services etc. without using them; they were removed on purpose. Any new dependency needs a reason in `docs/ROADMAP.md` (`lottie-compose` was removed with the "end of shift" card; `tools/lottie/lottie_kit.py` stays for a future Lottie asset). Generated assets: edit the script, not the output. The launcher icon: `tools/icon/launcher_icon.py` writes the adaptive-icon drawables and `docs/store/icon-512.png`; `tools/palette/contrast.py` checks `Color.kt` and prints the contrast tables of `DESIGN_SYSTEM.md` (run it after any color change).
 - Log tag for the service: `NotificationBlocker`.
 
 ## Known gaps / ideas

@@ -48,9 +48,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _blockedAppsCount = MutableStateFlow(preferencesManager.getBlockedApps().size)
     val blockedAppsCount: StateFlow<Int> = _blockedAppsCount.asStateFlow()
 
-    private val _showEndOfShift = MutableStateFlow(false)
-    val showEndOfShift: StateFlow<Boolean> = _showEndOfShift.asStateFlow()
-
     private val _zenPromptDismissed = MutableStateFlow(preferencesManager.zenPromptDismissed)
     val zenPromptDismissed: StateFlow<Boolean> = _zenPromptDismissed.asStateFlow()
 
@@ -97,7 +94,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _isBlockingEnabled.value = enabled
         // Turning blocking back on is an explicit request: show the zen notification again
         if (enabled) preferencesManager.zenDismissedWindow = null
-        maybeCelebrateEndOfShift()
         refreshZenNotification()
         refreshLife()
         ZenTileService.requestUpdate(getApplication())
@@ -120,7 +116,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Called on resume: the clock may have crossed the window boundary while the app was away. */
     fun refreshOffHoursStatus() {
         _isInOffHoursNow.value = preferencesManager.isInOffHoursNow()
-        maybeCelebrateEndOfShift()
         refreshZenNotification()
         refreshLife()
         refreshMorningReport()
@@ -181,24 +176,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _zenPromptDismissed.value = true
         }
         refreshZenNotification()
-    }
-
-    fun onEndOfShiftShown() {
-        _showEndOfShift.value = false
-    }
-
-    // Plays the "end of shift" animation once per off-hours window, the first time the app sees it active
-    private fun maybeCelebrateEndOfShift() {
-        if (!preferencesManager.isBlockingEnabled || !preferencesManager.isInOffHoursNow()) return
-        val window = OffHours.windowStartDate(
-            today = LocalDate.now(),
-            currentMinutes = OffHours.currentMinutes(),
-            start = preferencesManager.startTimeMinutes,
-            end = preferencesManager.endTimeMinutes,
-        ).toString()
-        if (preferencesManager.lastCelebratedWindow == window) return
-        preferencesManager.lastCelebratedWindow = window
-        _showEndOfShift.value = true
     }
 
     fun toggleAppBlocked(packageName: String, blocked: Boolean) {

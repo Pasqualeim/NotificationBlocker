@@ -1,6 +1,6 @@
 # Design system
 
-Linee guida visive di NotificationBlocker. La base è **Material 3**: se una regola qui non copre un caso, vale la [specifica M3](https://m3.material.io/). Le animazioni hanno un documento a parte: [`MOTION.md`](MOTION.md).
+Linee guida visive di **Sosta**. La base è **Material 3**: se una regola qui non copre un caso, vale la [specifica M3](https://m3.material.io/). Le animazioni hanno un documento a parte: [`MOTION.md`](MOTION.md).
 
 ## Principi
 
@@ -14,16 +14,32 @@ Linee guida visive di NotificationBlocker. La base è **Material 3**: se una reg
 
 Una **tazza fumante su fondo terracotta**: la pausa che ti riprendi, non il lavoro che manca. L'icona non deve parlare di notte, sonno o "non disturbare" (luna, stelle, zzz), né di un divieto (campanella barrata, cartello di stop): sono concetti di un'app per dormire, non di questa.
 
-- Tazza e volute crema (`#F8EDD7`) su gradiente terracotta (`#CF6D43` → `#BB5931`), leggermente più chiaro in alto.
+- Tazza e volute crema (`#F8EFE3`) su gradiente terracotta desaturato (`#BA6C4D` → `#A45A3D`), leggermente più chiaro in alto: stessa famiglia del `primary`, un po' più chiara perché l'icona non porta testo.
 - Icona adattiva (sfondo + primo piano vettoriale) e variante monocromatica: lo stesso primo piano, un solo colore. Simbolo nella zona sicura del 66%, leggibile a 48 px.
 - Generata da `tools/icon/launcher_icon.py` (modifica lo script, non i file): scrive `ic_launcher_foreground.xml`, `ic_launcher_background.xml` e il PNG 512 dello store (`docs/store/icon-512.png`). Nata da una bozza di Gemini, ridisegnata a mano in vettoriale.
+
+## Nome
+
+L'app si chiama **Sosta**: la pausa che ti prendi, non un blocco che subisci. Nomi da utility ("Blocker", "Shield", "Guard", "Mute", "Lock", "Filter") ricordano il lavoro e la difesa; un nome breve e morbido no.
+
+- Due sillabe, accento sulla prima (SÒ-sta), consonanti continue (S) e una sola occlusiva leggera.
+- Chiaro in italiano; in inglese è un nome proprio breve e pronunciabile. Sullo store il titolo aggiunge le parole chiave (max 30 caratteri): "Sosta: pausa dal lavoro" / "Sosta: Work-Life Balance".
+- Scartati dopo una ricerca: *Nook* (marchio Barnes & Noble, con app su Play), *Lume* (app di focus omonima), *Lull* e *Mellow* (molte app di calma e sonno), *Oltre* (suite di presenze Zucchetti), *Sundown* (parla di sera).
+- `applicationId` `com.pasquale.sosta` (non si cambia più dopo la pubblicazione); il package Kotlin resta `com.pasquale.notificationblocker`, invisibile all'utente.
 
 ## Colore
 
 Palette calda "lo-fi anime", definita in `ui/theme/Color.kt` e applicata in `Theme.kt` (`QuietHoursTheme`):
 
-- **Chiaro "Chai"**: carta crema, card in terracotta chiara, inchiostro cioccolato, accento arancio bruciato.
-- **Scuro "Lo-fi night"**: una stanza illuminata da una lampada calda, pareti prugna-marrone, luce ambra.
+- **Chiaro "Chai"**: carta crema (mai bianco puro), card in terracotta pallida, inchiostro cioccolato, accento terracotta morbida; salvia per il tempo tuo, blu polvere per le informazioni.
+- **Scuro "Lo-fi night"**: una stanza illuminata da una lampada calda, pareti color carbone caldo, luce pesca tenue.
+
+### Perché questi colori
+
+- **La saturazione conta più della tinta.** Nello studio di Valdez & Mehrabian (1994, *Journal of Experimental Psychology: General*) l'attivazione emotiva cresce soprattutto con la saturazione (arousal ≈ −0.31 luminosità + 0.60 saturazione), la piacevolezza con la luminosità (pleasure ≈ 0.69 luminosità + 0.22 saturazione). Quindi: accenti desaturati, superfici chiare e calde. Saturazione HSL del `primary` scesa da 0.87 a 0.50 (Chai) e da 1.00 a 0.65 (Lo-fi night).
+- **Tinte**: blu, blu-verde e verde sono tra le più piacevoli nello stesso studio; per questo il `secondary` è salvia e il `tertiary` blu polvere (carta da zucchero). La terracotta resta l'unico accento forte: calda, domestica, senza l'allerta del rosso puro.
+- **Niente affermazioni sulla salute.** Questi principi guidano il design; non scriviamo nello store che l'app "abbassa lo stress" o la pressione.
+- **Leggibilità prima di tutto**: nessuna riduzione di contrasto sotto 4.5:1 per il testo. `tools/palette/contrast.py` rigenera le tabelle qui sotto e fallisce se una coppia obbligatoria scende sotto soglia.
 
 `Theme.kt` assegna **tutti** i ruoli M3 in entrambi i temi (anche `surfaceContainer*`, `outline*`, `inverse*`): nessun ruolo ricade sui default viola di Material. Edge-to-edge: barre di sistema trasparenti, icone scure nel tema chiaro e chiare nello scuro. Nel codice usa **sempre** i ruoli di `MaterialTheme.colorScheme`, mai i valori esadecimali (né `Color.White`/`Color.Black`). Unica eccezione: un colore usato solo come maschera con un `BlendMode` (il ritaglio della barra in `MutedBellIcon`), con un commento.
 
@@ -31,22 +47,22 @@ Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.sv
 
 | Ruolo | Chai (chiaro) | Lo-fi night (scuro) | Uso |
 |---|---|---|---|
-| `primary` / `onPrimary` | `#A6490C` arancio bruciato / `#FFFFFF` | `#FFB575` ambra lampada / `#4D2200` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro della tazza nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
-| `primaryContainer` / `onPrimaryContainer` | `#F0B899` terracotta chiara / `#3E1B0A` | `#7A3A12` / `#FFDCC4` | Card di stato "sto bloccando ora", badge contatore nella CTA, riga app selezionata (alpha 0.35) |
-| `secondary` / `onSecondary` | `#0B7350` smeraldo / `#FFFFFF` | `#7FD6AC` / `#00391F` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, badge pieno "9 ore per te" nella `ScheduleCard` (con `onSecondary`) |
-| `secondaryContainer` / `onSecondaryContainer` | `#C9EEDA` / `#073A28` | `#145B3F` / `#BFF2D6` | Card di stato "in attesa" (attivo, ma ora è consentito) |
-| `tertiary` / `onTertiary` | `#7A4A9E` viola del crepuscolo / `#FFFFFF` | `#D8B8F2` / `#3C1D57` | Accenti di sera e riposo: luna nella `ScheduleCard` quando la fascia non ha sole; icona e bottone della card del permesso |
-| `tertiaryContainer` / `onTertiaryContainer` | `#EEDDF8` / `#35164F` | `#56377A` / `#F2DCFF` | Avvisi soft (card del permesso mancante) |
-| `background` / `onBackground` | `#FBF3E6` crema / `#3E2417` cioccolato | `#1A1210` prugna-marrone / `#F7E8DB` | Sfondo schermate e bottom bar della Home (la CTA galleggia, niente banda) |
-| `surface` / `onSurface` | `#FFF9F1` / `#3E2417` | `#1F1613` / `#F7E8DB` | Intestazioni della lista app |
-| `surfaceVariant` / `onSurfaceVariant` | `#F1DAC4` / `#6B4633` | `#4A3931` / `#DBC2B1` | Binario della timeline, skeleton; `onSurfaceVariant` per testi secondari |
-| `surfaceContainerLowest` | `#FFFCF8` | `#140D0B` | Disco della campanella in `ACTIVE_INSIDE` e `DISABLED`, pillole degli orari |
-| `surfaceContainerLow` | `#FAEEE1` | `#241A17` | Card dello skeleton |
-| `surfaceContainer` | `#F9E8D6` | `#2B201C` | `SceneCard`, `EndOfShiftCard`, `ZenNotificationCard`, riga app non selezionata |
-| `surfaceContainerHigh` | `#F6DFC8` | `#362924` | `ScheduleCard`, barra di ricerca, dialog del `TimePicker` |
-| `surfaceContainerHighest` | `#F3D5B9` | `#42332C` | Card di stato `DISABLED` (un gradino più scura della `ScheduleCard`); default M3 (binario dello Switch spento, con bordo `outline`; quadrante del `TimePicker`) |
-| `outline` / `outlineVariant` | `#8F6D5B` / `#E2C6AE` | `#A68C7D` / `#54433A` | Fascia della timeline a blocco spento; bordo della riga app (`outlineVariant`) |
-| `inverseSurface` / `inverseOnSurface` / `inversePrimary` | `#3A2A22` / `#FBEDE2` / `#FFB575` | `#F7E8DB` / `#3E2417` / `#A6490C` | Solo default M3 (Snackbar, tooltip): oggi non usati |
+| `primary` / `onPrimary` | `#9A4F34` terracotta morbida / `#FFFFFF` | `#E8B093` pesca lampada / `#4A2414` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro della tazza nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
+| `primaryContainer` / `onPrimaryContainer` | `#EBCDBC` terracotta pallida / `#3B1E11` | `#6B3B27` / `#FBDCCB` | Card di stato "sto bloccando ora", badge contatore nella CTA, riga app selezionata (alpha 0.35) |
+| `secondary` / `onSecondary` | `#4B6A55` salvia / `#FFFFFF` | `#ABC8B2` / `#1B3424` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, badge pieno "9 ore per te" nella `ScheduleCard` (con `onSecondary`) |
+| `secondaryContainer` / `onSecondaryContainer` | `#D6E5D8` / `#16301F` | `#34503D` / `#D2E7D7` | Card di stato "in attesa" (attivo, ma ora è consentito) |
+| `tertiary` / `onTertiary` | `#4C6682` blu polvere / `#FFFFFF` | `#B1C5DC` / `#1C3048` | Informazioni e accenti tranquilli: luna nella `ScheduleCard` quando la fascia non ha sole; icona e bottone della card del permesso |
+| `tertiaryContainer` / `onTertiaryContainer` | `#DCE5EF` / `#1A2E43` | `#384C64` / `#D9E5F3` | Avvisi soft (card del permesso mancante) |
+| `background` / `onBackground` | `#F8F2E9` crema / `#3A2B22` cioccolato | `#1B1714` carbone caldo / `#F2E7DD` | Sfondo schermate e bottom bar della Home (la CTA galleggia, niente banda) |
+| `surface` / `onSurface` | `#FCF8F2` / `#3A2B22` | `#201B18` / `#F2E7DD` | Intestazioni della lista app |
+| `surfaceVariant` / `onSurfaceVariant` | `#EDE0D2` / `#65503F` | `#4A3F37` / `#D6C5B8` | Binario della timeline, skeleton; `onSurfaceVariant` per testi secondari |
+| `surfaceContainerLowest` | `#FFFDF9` | `#151210` | Disco della campanella in `ACTIVE_INSIDE` e `DISABLED`, pillole degli orari |
+| `surfaceContainerLow` | `#F6EEE4` | `#241E1B` | Card dello skeleton |
+| `surfaceContainer` | `#F2E8DC` | `#2A2420` | `SceneCard`, `ZenNotificationCard`, riga app non selezionata |
+| `surfaceContainerHigh` | `#EEE2D4` | `#352E29` | `ScheduleCard`, barra di ricerca, dialog del `TimePicker` |
+| `surfaceContainerHighest` | `#E9DBCB` | `#403833` | Card di stato `DISABLED` (un gradino più scura della `ScheduleCard`); default M3 (binario dello Switch spento, con bordo `outline`; quadrante del `TimePicker`) |
+| `outline` / `outlineVariant` | `#8C7565` / `#DDCDBD` | `#A0907F` / `#52463E` | Fascia della timeline a blocco spento; bordo della riga app (`outlineVariant`) |
+| `inverseSurface` / `inverseOnSurface` / `inversePrimary` | `#3A2E27` / `#F7EEE5` / `#EBB396` | `#F2E7DD` / `#3A2B22` / `#9A4F34` | Solo default M3 (Snackbar, tooltip): oggi non usati |
 
 L'illustrazione (`ZenScene`) mantiene la sua palette in `ui/theme/ZenPalette.kt`, invariata in questa fase: le scene lo-fi arrivano nella fase 2 (vedi "Luce del giorno e stagioni").
 
@@ -56,7 +72,7 @@ L'illustrazione (`ZenScene`) mantiene la sua palette in `ui/theme/ZenPalette.kt`
 |---|---|---|---|
 | `DISABLED` | `surfaceContainerHighest` | campanella, `onSurfaceVariant` | Blocco spento |
 | `ACTIVE_OUTSIDE` | `secondaryContainer` | campanella barrata, `secondary` | Acceso, fuori fascia |
-| `ACTIVE_INSIDE` | `primaryContainer` + alone che respira | campanella barrata `primary` su disco opaco `surfaceContainerLowest` (5.74 / 11.1, anche al picco dell'alone) | Sta bloccando ora |
+| `ACTIVE_INSIDE` | `primaryContainer` + alone che respira | campanella barrata `primary` su disco opaco `surfaceContainerLowest` (5.84 / 9.83, anche al picco dell'alone) | Sta bloccando ora |
 
 ### Contrasto
 
@@ -66,38 +82,45 @@ Coppie `onX` / `X`:
 
 | Coppia | Chai | Lo-fi night |
 |---|---|---|
-| `onPrimary` / `primary` | 5.87 | 7.85 |
-| `onPrimaryContainer` / `primaryContainer` | 8.80 | 6.67 |
-| `onSecondary` / `secondary` | 5.86 | 7.55 |
-| `onSecondaryContainer` / `secondaryContainer` | 10.17 | 6.50 |
-| `onTertiary` / `tertiary` | 6.36 | 8.01 |
-| `onTertiaryContainer` / `tertiaryContainer` | 11.84 | 7.40 |
-| `onBackground` / `background` | 12.97 | 15.40 |
-| `onSurface` / `surface` | 13.66 | 14.82 |
-| `onSurfaceVariant` / `surfaceVariant` | 6.11 | 6.44 |
-| `inverseOnSurface` / `inverseSurface` | 11.94 | 11.92 |
+| `onPrimary` / `primary` | 5.93 | 7.12 |
+| `onPrimaryContainer` / `primaryContainer` | 10.14 | 7.11 |
+| `onSecondary` / `secondary` | 6.01 | 7.44 |
+| `onSecondaryContainer` / `secondaryContainer` | 10.87 | 6.84 |
+| `onTertiary` / `tertiary` | 5.95 | 7.59 |
+| `onTertiaryContainer` / `tertiaryContainer` | 10.88 | 6.90 |
+| `onBackground` / `background` | 12.18 | 14.63 |
+| `onSurface` / `surface` | 12.82 | 14.01 |
+| `onSurfaceVariant` / `surfaceVariant` | 5.84 | 6.09 |
+| `inverseOnSurface` / `inverseSurface` | 11.45 | 11.14 |
 
 Testo sulle superfici (Chai / Lo-fi night; in grassetto i valori sotto 4.5):
 
 | Superficie | `onSurface` | `onSurfaceVariant` | `primary` come testo |
 |---|---|---|---|
-| `background` | 12.97 / 15.40 | 7.48 / 10.87 | 5.33 / 10.65 |
-| `surface` | 13.66 / 14.82 | 7.87 / 10.46 | 5.61 / 10.25 |
-| `surfaceContainerLowest` | 13.97 / 16.04 | 8.05 / 11.32 | 5.74 / 11.10 |
-| `surfaceContainerLow` | 12.51 / 14.18 | 7.21 / 10.01 | 5.13 / 9.81 |
-| `surfaceContainer` | 11.94 / 13.21 | 6.88 / 9.32 | 4.90 / 9.14 |
-| `surfaceContainerHigh` | 11.10 / 11.68 | 6.40 / 8.25 | 4.56 / 8.08 |
-| `surfaceContainerHighest` | 10.23 / 10.06 | 5.90 / 7.10 | **4.20** / 6.96 |
-| `surfaceVariant` | 10.59 / 9.12 | 6.11 / 6.44 | **4.35** / 6.31 |
-| `primaryContainer` | 8.18 / 7.18 | 4.72 / 5.06 | **3.36** / 4.96 |
+| `background` | 12.18 / 14.63 | 6.81 / 10.63 | 5.33 / 9.38 |
+| `surface` | 12.82 / 14.01 | 7.16 / 10.18 | 5.60 / 8.98 |
+| `surfaceContainerLowest` | 13.35 / 15.32 | 7.46 / 11.14 | 5.84 / 9.83 |
+| `surfaceContainerLow` | 11.80 / 13.51 | 6.59 / 9.82 | 5.16 / 8.67 |
+| `surfaceContainer` | 11.20 / 12.58 | 6.26 / 9.14 | 4.90 / 8.07 |
+| `surfaceContainerHigh` | 10.63 / 10.96 | 5.94 / 7.96 | 4.65 / 7.03 |
+| `surfaceContainerHighest` | 9.98 / 9.42 | 5.58 / 6.85 | **4.36** / 6.04 |
+| `surfaceVariant` | 10.46 / 8.38 | 5.84 / 6.09 | 4.57 / 5.38 |
+| `primaryContainer` | 9.03 / 7.57 | 5.05 / 5.50 | **3.95** / 4.85 |
 
-Bianco su `primary`: 5.87 in Chai (è `onPrimary`), **1.73** in Lo-fi night, dove il testo su `primary` è `onPrimary` `#4D2200` (7.85). Per questo sul `primary` si usa sempre `onPrimary`, mai un bianco fisso.
+Card di stato, caso peggiore (gradiente al 6% verso l'accento, sottotitolo con alpha 0.85):
+
+- `ACTIVE_INSIDE`: 6.64 in Chai, 5.12 in Lo-fi night
+- `ACTIVE_OUTSIDE`: 6.87 in Chai, 4.94 in Lo-fi night
+
+Saturazione HSL degli accenti (Chai / Lo-fi night): `primary` 0.50 / 0.65, `secondary` 0.17 / 0.21, `tertiary` 0.26 / 0.38
+
+Bianco su `primary`: 5.93 in Chai (è `onPrimary`); in Lo-fi night il testo su `primary` è `onPrimary` `#4A2414` (7.12), perché il `primary` scuro è chiaro. Per questo sul `primary` si usa sempre `onPrimary`, mai un bianco fisso.
 
 ### Regole
 
-- **`primary` come testo mai su `surfaceContainerHighest` né su `primaryContainer`** (in Chai scende a 4.20 e 3.36); lo stesso vale per `surfaceVariant` (4.35). Come testo va bene su `background`, `surface`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh` (≥ 4.5 in entrambi i temi). Sul `primaryContainer` il testo è `onPrimaryContainer`; come **icona** (≥ 3:1) il `primary` regge il `primaryContainer` pieno (3.36, icona del messaggio "vita"), ma non una superficie schiarita da trasparenze o dall'alone: per questo la campanella di `ACTIVE_INSIDE` sta su un disco opaco `surfaceContainerLowest`.
-- `secondary` ha la stessa luminanza di `primary` (stessi rapporti, ±0.01): stessa regola.
-- La card di stato ha un gradiente verso `primary`/`secondary` al **6%**: più forte, il sottotitolo (alpha 0.85) nel tema scuro scende sotto 4.5 (al 18% era 3.96). Caso peggiore, all'estremità del gradiente: 4.83 (`ACTIVE_INSIDE`) e 4.73 (`ACTIVE_OUTSIDE`) in Lo-fi night, ≥ 5.96 in Chai.
+- **`primary` come testo mai su `surfaceContainerHighest` né su `primaryContainer`** (in Chai scende a 4.36 e 3.95). Come testo va bene su `background`, `surface`, `surfaceContainerLow`, `surfaceContainer`, `surfaceContainerHigh` (≥ 4.5 in entrambi i temi). Sul `primaryContainer` il testo è `onPrimaryContainer`; come **icona** (≥ 3:1) il `primary` regge il `primaryContainer` pieno (3.95, icona del messaggio "vita"), ma non una superficie schiarita da trasparenze o dall'alone: per questo la campanella di `ACTIVE_INSIDE` sta su un disco opaco `surfaceContainerLowest`.
+- `secondary` e `tertiary` hanno quasi la stessa luminanza di `primary` (rapporti entro ±0.1): stessa regola.
+- La card di stato ha un gradiente verso `primary`/`secondary` al **6%**: più forte, il sottotitolo (alpha 0.85) nel tema scuro scende verso 4.5. Casi peggiori nella tabella sopra.
 - Indicatore "ora" della `Timeline24h`: anello `onSurface` con centro `surface`, alone `onSurface` al 12%. Il centro si vede sulla fascia `primary` (5.61 / 10.25), l'anello sul binario (10.59 / 9.12). Non usare `secondary`: ha la stessa luminanza di `primary` (1:1) e sparisce sulla fascia.
 - `FilterChip` selezionati (lista app): `primaryContainer` / `onPrimaryContainer`, non il default M3 `secondaryContainer` (smeraldo).
 - Se cambi un esadecimale in `Color.kt`, ricalcola le tabelle qui sopra per entrambi i temi.
@@ -154,7 +177,7 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 |---|---|---|
 | `extraSmall` | 8dp | Righe dello skeleton (`ShimmerSkeleton`) |
 | `small` | 12dp | Bottoni dentro le card (`PermissionCard`, `ZenNotificationCard`) |
-| `medium` | 20dp | Card secondarie (`PermissionCard`, `EndOfShiftCard`, `ZenNotificationCard`), riga app, pillole degli orari |
+| `medium` | 20dp | Card secondarie (`PermissionCard`, `ZenNotificationCard`), riga app, pillole degli orari |
 | `large` | 28dp | Card principali (card di stato, `ScheduleCard`), dialog del `TimePicker` |
 | `extraLarge` | 32dp | `SceneCard` |
 | `CircleShape` | pill | Bottone CTA, barra di ricerca, filtri, badge, contenitori icone |

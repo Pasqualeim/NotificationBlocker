@@ -23,11 +23,6 @@ class PreferencesManager private constructor(context: Context) {
         get() = prefs.getInt(KEY_END_TIME, 7 * 60) // Default 07:00
         set(value) = prefs.edit { putInt(KEY_END_TIME, value) }
 
-    // ISO date of the last off-hours window that played the "end of shift" celebration
-    var lastCelebratedWindow: String?
-        get() = prefs.getString(KEY_LAST_CELEBRATED_WINDOW, null)
-        set(value) = prefs.edit { putString(KEY_LAST_CELEBRATED_WINDOW, value) }
-
     // Asked once: the user tapped "Not now" (or denied) on the zen notification prompt
     var zenPromptDismissed: Boolean
         get() = prefs.getBoolean(KEY_ZEN_PROMPT_DISMISSED, false)
@@ -114,7 +109,6 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_BLOCKING_ENABLED = "blocking_enabled"
         private const val KEY_START_TIME = "start_time"
         private const val KEY_END_TIME = "end_time"
-        private const val KEY_LAST_CELEBRATED_WINDOW = "last_celebrated_window"
         private const val KEY_ZEN_PROMPT_DISMISSED = "zen_prompt_dismissed"
         private const val KEY_ZEN_DISMISSED_WINDOW = "zen_dismissed_window"
         private const val KEY_FILTERED_WINDOW = "filtered_window"

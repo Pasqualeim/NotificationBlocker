@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name" translatable="false">NotificationBlocker</string>
-    <string name="service_label">Notification Blocker service</string>
+    <string name="app_name" translatable="false">Sosta</string>
+    <string name="service_label" translatable="false">Sosta</string>
 
     <!-- Main Screen -->
-    <string name="main_title">Notification Blocker</string>
+    <string name="main_title" translatable="false">Sosta</string>
 
     <!-- Hero Statuses -->
     <string name="status_disabled">Disabled</string>
@@ -25,7 +25,7 @@
     <string name="permission_warning_title">Permission required</string>
     <string name="permission_warning_text">To pause work notifications, Android must let this app see the notifications you receive. The app only checks which app sent each one and dismisses it if that app is on your list during off-hours. It never reads or stores their content, and nothing leaves your phone. You can revoke access anytime in system settings.</string>
     <string name="permission_warning_button">Agree and open settings</string>
-    <string name="privacy_policy_link">Privacy policy</string>
+    <string name="privacy_policy_link">Privacy</string>
     <string name="privacy_policy_url" translatable="false">https://pasqualeim.github.io/NotificationBlocker/</string>
 
     <!-- Schedule Section -->
@@ -75,10 +75,6 @@
     <string name="cd_end_time_picker">Select end time</string>
     <string name="cd_master_switch">Toggle notification blocking</string>
     <string name="cd_toggle_app_blocking">Toggle blocking for %1$s</string>
-
-    <!-- End of shift celebration -->
-    <string name="end_of_shift_title">Work is done</string>
-    <string name="end_of_shift_subtitle">Your work apps will wait until you are back. The rest of the day is yours.</string>
 
     <!-- Zen status notification (shade and lock screen) -->
     <string name="zen_channel_name">Zen status</string>

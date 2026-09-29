@@ -68,7 +68,6 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.MainViewModel
-import com.pasquale.notificationblocker.ui.components.EndOfShiftCard
 import com.pasquale.notificationblocker.ui.components.HeroHeader
 import com.pasquale.notificationblocker.ui.components.MorningReportCard
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
@@ -94,7 +93,6 @@ fun MainScreen(
     val startTimeMinutes by viewModel.startTimeMinutes.collectAsStateWithLifecycle()
     val endTimeMinutes by viewModel.endTimeMinutes.collectAsStateWithLifecycle()
     val blockedAppsCount by viewModel.blockedAppsCount.collectAsStateWithLifecycle()
-    val showEndOfShift by viewModel.showEndOfShift.collectAsStateWithLifecycle()
     val lifeMessage by viewModel.lifeMessage.collectAsStateWithLifecycle()
     val sunshineMinutes by viewModel.sunshineMinutes.collectAsStateWithLifecycle()
     val zenPromptDismissed by viewModel.zenPromptDismissed.collectAsStateWithLifecycle()
@@ -127,7 +125,6 @@ fun MainScreen(
         endTimeMinutes = endTimeMinutes,
         blockedAppsCount = blockedAppsCount,
         hasListenerPermission = hasListenerPermission,
-        showEndOfShift = showEndOfShift,
         lifeMessage = lifeMessage,
         sunshineMinutes = sunshineMinutes,
         // Asked once, only after the listener permission, which is the one blocking needs
@@ -145,7 +142,6 @@ fun MainScreen(
             context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
         },
         onNavigateToAppSelection = onNavigateToAppSelection,
-        onEndOfShiftShown = viewModel::onEndOfShiftShown,
         modifier = modifier,
         morningReport = morningReport,
         onDismissMorningReport = viewModel::onMorningReportDismissed,
@@ -160,13 +156,11 @@ fun MainScreenContent(
     endTimeMinutes: Int,
     blockedAppsCount: Int,
     hasListenerPermission: Boolean,
-    showEndOfShift: Boolean,
     onBlockingEnabledChanged: (Boolean) -> Unit,
     onStartTimeChanged: (Int) -> Unit,
     onEndTimeChanged: (Int) -> Unit,
     onRequestPermission: () -> Unit,
     onNavigateToAppSelection: () -> Unit,
-    onEndOfShiftShown: () -> Unit,
     modifier: Modifier = Modifier,
     lifeMessage: LifeMessage? = null,
     sunshineMinutes: Int? = null,
@@ -331,11 +325,6 @@ fun MainScreenContent(
                 onDismiss = onDismissMorningReport,
             )
 
-            EndOfShiftCard(
-                visible = showEndOfShift && animatedHeroVisible,
-                onFinished = onEndOfShiftShown,
-            )
-
             AnimatedVisibility(
                 visible = animatedHeroVisible,
                 enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
@@ -465,13 +454,11 @@ fun MainScreenPreviewLight() {
             endTimeMinutes = 7 * 60,
             blockedAppsCount = 4,
             hasListenerPermission = true,
-            showEndOfShift = false,
             onBlockingEnabledChanged = {},
             onStartTimeChanged = {},
             onEndTimeChanged = {},
             onRequestPermission = {},
             onNavigateToAppSelection = {},
-            onEndOfShiftShown = {},
         )
     }
 }
@@ -487,13 +474,11 @@ fun MainScreenPreviewDark() {
             endTimeMinutes = 7 * 60,
             blockedAppsCount = 12,
             hasListenerPermission = false,
-            showEndOfShift = false,
             onBlockingEnabledChanged = {},
             onStartTimeChanged = {},
             onEndTimeChanged = {},
             onRequestPermission = {},
             onNavigateToAppSelection = {},
-            onEndOfShiftShown = {},
         )
     }
 }
