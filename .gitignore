@@ -20,3 +20,7 @@ local.properties
 /.idea/deploymentTargetSelector.xml
 /.idea/deviceManager.xml
 /.claude/settings.local.json
+
+# Third-party agent skills (not part of the app)
+/.claude/skills/
+/skills-lock.json
