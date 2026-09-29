@@ -78,7 +78,7 @@
 
     <!-- End of shift celebration -->
     <string name="end_of_shift_title">Fine turno</string>
-    <string name="end_of_shift_subtitle">Le notifiche delle app di lavoro aspettano fino a domani. Buona serata.</string>
+    <string name="end_of_shift_subtitle">Le app di lavoro aspettano il tuo ritorno. Il resto è tempo tuo.</string>
 
     <!-- Notifica di stato zen (tendina e schermata di blocco) -->
     <string name="zen_channel_name">Stato zen</string>

@@ -1,6 +1,8 @@
 # NotificationBlocker
 
-App Android che silenzia le notifiche delle app di lavoro fuori dall'orario lavorativo.
+App Android che silenzia le notifiche delle app di lavoro quando non stai lavorando.
+
+L'idea: abbiamo una vita oltre il lavoro. Non si tratta di dormire tranquilli, ma di riprendersi il tempo che resta (un pomeriggio di sole, una cena, un weekend) senza che il lavoro bussi dal telefono.
 
 Scegli le app da bloccare (Gmail, Teams, Slack…), imposta la fascia oraria di "fuori orario" (predefinita 22:00 → 07:00) e attiva il blocco: durante quella fascia le notifiche di quelle app vengono rimosse appena arrivano, mentre tutte le altre restano visibili.
 

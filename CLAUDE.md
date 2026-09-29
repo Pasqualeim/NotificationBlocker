@@ -4,7 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps during a daily off-hours window. Single module `:app`, package `com.pasquale.notificationblocker`.
+Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps during a daily off-hours window.
+
+Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`, package `com.pasquale.notificationblocker`.
 
 - minSdk 28, targetSdk 37, compileSdk 37
 - AGP 9.4 with built-in Kotlin, pinned to 2.4 through the `kotlin` version in the catalog (no `kotlin-android` plugin), Gradle 9.8, version catalog in `gradle/libs.versions.toml`

@@ -8,7 +8,17 @@ Linee guida visive di NotificationBlocker. La base è **Material 3**: se una reg
 2. **Stato leggibile in un secondo.** Aprendo l'app devi capire subito se le notifiche vengono bloccate *adesso*. Colore della card, icona e titolo dicono tutti la stessa cosa.
 3. **Nativo Android.** Componenti Material 3 standard (Switch, TimePicker, TopAppBar, FilterChip) prima di quelli custom. Un componente custom si giustifica solo se comunica meglio lo stato (es. `Timeline24h`, `MutedBellIcon`).
 4. **Un tocco per l'azione principale.** Il toggle è sempre visibile senza scroll; la CTA "Seleziona app" è fissa in basso, nella zona del pollice. Fuori dall'app, il riquadro "Stacco & Sole" nelle Impostazioni rapide fa la stessa cosa.
-5. **Staccare è vivere.** Il tempo libero non è "notte e sonno": è luce, tempo, vita. L'app valorizza le ore di sole che restano dopo il lavoro (d'estate, staccare alle 17 vuol dire ancora tre ore di sole) e segue la luce reale del giorno e della stagione.
+5. **Staccare è vivere.** Abbiamo una vita oltre il lavoro: l'app esiste per restituirla, non per "far dormire". Il tempo libero non è "notte e sonno": è luce, tempo, vita, a qualsiasi ora finisca il lavoro. L'app valorizza le ore di sole che restano dopo il lavoro (d'estate, staccare alle 17 vuol dire ancora tre ore di sole) e segue la luce reale del giorno e della stagione.
+
+## Icona dell'app
+
+L'icona racconta lo scopo: **il lavoro resta chiuso fuori, la vita continua**. Non deve parlare di notte, sonno o "non disturbare" (luna, stelle, zzz), né di un divieto (campanella barrata, cartello di stop): sono concetti di un'app per dormire, non di questa.
+
+- Direzione: un simbolo del lavoro messo da parte (lucchetto, valigetta chiusa, porta) combinato con un segno di vita all'aperto (sole, foglia, orizzonte).
+- Colori dalla palette Chai: fondo arancio bruciato `primary`, simbolo crema `background`.
+- Icona adattiva (primo piano vettoriale + sfondo) e variante monocromatica; simbolo nella zona sicura centrale del 66%, leggibile a 48 px.
+
+L'icona attuale (lucchetto crema con la luna come buco della serratura) è da rifare con questa direzione: vedi `ROADMAP.md`.
 
 ## Colore
 

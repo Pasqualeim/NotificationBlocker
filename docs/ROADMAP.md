@@ -14,10 +14,11 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 |---|---|---|
 | Transizioni di navigazione + predictive back | S | `transitionSpec` / `popTransitionSpec` in `NavDisplay`, `android:enableOnBackInvokedCallback="true"` |
 | Haptic su toggle e selezione app | S | `LocalHapticFeedback` |
-| Splash screen API | S | `androidx.core:core-splashscreen`, icona con sfondo `background` notte |
+| Splash screen API | S | `androidx.core:core-splashscreen`, icona con sfondo `background` |
 | Lingua per app | S | `locales_config.xml` → l'utente sceglie italiano/inglese dalle impostazioni di sistema (Android 13+) |
 | Material 3 Expressive | M | `MotionScheme.expressive()`, componenti espressivi dove hanno senso. Richiede BOM aggiornata |
 | Sole → luna, timeline "ora" animata, `animateItem()` | M | Vedi `MOTION.md` |
+| Nuova icona dell'app | S | L'attuale (lucchetto con la luna) parla di notte; la nuova segue "Icona dell'app" in `DESIGN_SYSTEM.md` (vita oltre il lavoro). Serve anche il PNG 512 per lo store |
 | Rifiniture della lista app | S | Lista app a strisce `surface`/`background` fra top bar, header e lista (emersa con la palette Chai) |
 
 ## 3. Funzionalità

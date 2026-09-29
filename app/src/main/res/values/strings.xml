@@ -78,7 +78,7 @@
 
     <!-- End of shift celebration -->
     <string name="end_of_shift_title">Work is done</string>
-    <string name="end_of_shift_subtitle">Notifications from your work apps will wait until tomorrow. Enjoy your evening.</string>
+    <string name="end_of_shift_subtitle">Your work apps will wait until you are back. The rest of the day is yours.</string>
 
     <!-- Zen status notification (shade and lock screen) -->
     <string name="zen_channel_name">Zen status</string>
