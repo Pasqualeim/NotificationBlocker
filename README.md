@@ -11,7 +11,11 @@ Scegli le app da bloccare (Gmail, Teams, Slack…), imposta la fascia oraria di 
 - **Interruttore principale**: attiva o disattiva il blocco in un tocco, senza perdere le impostazioni. La campanella nella card di stato "suona" e viene barrata quando il blocco si attiva.
 - **Stato in tempo reale**: tre stati visivi (disattivato, attivo fuori fascia, attivo dentro la fascia) con colori e testi dedicati.
 - **Permesso guidato**: se manca l'accesso alle notifiche compare una card che porta direttamente alle impostazioni di sistema. Viene ricontrollato ogni volta che torni nell'app.
-- **Tema**: palette "Quiet Hours" (scura, notturna) e "Dawn" (chiara), font Manrope, edge-to-edge.
+- **Scena animata**: una scrivania sulla città durante il lavoro, un giardino giapponese fuori orario, con luce reale, quattro stagioni e pioggia.
+- **Notifica zen**: notifica silenziosa e fissa, mostrata mentre il blocco è attivo dentro la fascia, con un messaggio calmo, la fine della fascia e il conteggio delle notifiche trattenute (Android 13+, facoltativa).
+- **Riquadro Impostazioni rapide** "Stacco & Sole": attiva o disattiva il blocco dalla tendina.
+- **Rapporto del mattino**: a fine fascia mostra quante notifiche di lavoro hanno aspettato fuori e da quali app.
+- **Tema**: palette calda "Chai" (chiara) e "Lo-fi night" (scura), font Manrope, edge-to-edge.
 - **Lingue**: inglese e italiano.
 
 ## Requisiti
@@ -41,15 +45,16 @@ La fascia viene valutata **al momento dell'arrivo della notifica** leggendo l'or
 
 ## Sviluppo
 
-Serve Android Studio (JDK incluso) o un JDK 17+.
+Serve Android Studio (JDK incluso) o un JDK 17+. La CI (`.github/workflows/ci.yml`) esegue build, test e lint a ogni push.
 
 ```bash
 export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"   # se java non è nel PATH (macOS)
 
 ./gradlew assembleDebug                 # APK in app/build/outputs/apk/debug/
-./gradlew testDebugUnitTest             # test unitari (logica della fascia oraria)
+./gradlew testDebugUnitTest             # test unitari (fascia oraria, regola di blocco, rapporto del mattino, notifica e riquadro)
 ./gradlew lintDebug                     # analisi statica, deve riportare 0 errori
 ./gradlew connectedDebugAndroidTest     # test strumentali, serve emulatore o dispositivo
+./gradlew bundleRelease                 # AAB per il Play Store, firmato se esiste keystore.properties
 ```
 
 Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debug.apk`.
@@ -58,13 +63,13 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 
 | Area | Scelta |
 |---|---|
-| Linguaggio | Kotlin 2.2 (Kotlin integrato in AGP 9) |
+| Linguaggio | Kotlin 2.4 (Kotlin integrato in AGP 9) |
 | UI | Jetpack Compose, Material 3, `material-icons-core` |
 | Navigazione | Navigation 3 (`androidx.navigation3`) |
 | Stato | `AndroidViewModel` + `StateFlow`, `collectAsStateWithLifecycle` |
 | Persistenza | `SharedPreferences` |
 | Font | Manrope via Google Fonts scaricabili |
-| Build | Gradle 9, version catalog, minSdk 28, targetSdk 36, compileSdk 37 |
+| Build | Gradle 9.8, version catalog, minSdk 28, targetSdk 37, compileSdk 37 |
 
 ### Documentazione
 
@@ -77,4 +82,4 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 
 ## Privacy
 
-L'app legge solo il **nome del pacchetto** delle notifiche in arrivo, per decidere se rimuoverle. Non legge, salva né invia il contenuto delle notifiche. Le impostazioni restano sul dispositivo e l'app non ha backend né analytics.
+L'app legge solo il **nome del pacchetto** delle notifiche in arrivo, per decidere se rimuoverle. Non legge, salva né invia il contenuto delle notifiche. Le impostazioni restano sul dispositivo e l'app non ha backend né analytics. Informativa completa: https://pasqualeim.github.io/NotificationBlocker/
