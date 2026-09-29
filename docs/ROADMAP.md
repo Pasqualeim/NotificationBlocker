@@ -18,7 +18,6 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 | Lingua per app | S | `locales_config.xml` → l'utente sceglie italiano/inglese dalle impostazioni di sistema (Android 13+) |
 | Material 3 Expressive | M | `MotionScheme.expressive()`, componenti espressivi dove hanno senso. Richiede BOM aggiornata |
 | Sole → luna, timeline "ora" animata, `animateItem()` | M | Vedi `MOTION.md` |
-| Nuova icona dell'app | S | L'attuale (lucchetto con la luna) parla di notte; la nuova segue "Icona dell'app" in `DESIGN_SYSTEM.md` (vita oltre il lavoro). Serve anche il PNG 512 per lo store |
 | Rifiniture della lista app | S | Lista app a strisce `surface`/`background` fra top bar, header e lista (emersa con la palette Chai) |
 
 ## 3. Funzionalità
@@ -51,6 +50,7 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 | Disclosure e informativa privacy | `PermissionCard` spiega cosa vede l'app (solo il pacchetto), cosa fa e che nulla lascia il telefono; il pulsante "Accetto e apri le impostazioni" è il consenso. Link all'informativa (`docs/index.html`, EN+IT, servita da GitHub Pages: URL in `privacy_policy_url`) |
 | Firma release | `signingConfigs.release` letto da `keystore.properties` (ignorato da git); `bundleRelease` produce l'AAB firmato con la chiave di upload. APK release con R8 provato su emulatore (avvio e UI senza crash; blocco end-to-end solo in debug, perché `run-as` non funziona su release) |
 | README e backup | README allineato all'app (scena, notifica zen, riquadro, rapporto, palette). Backup Android limitato a `notification_blocker_prefs.xml` (`backup_rules.xml`, `data_extraction_rules.xml`) invece dei file di esempio |
+| Nuova icona | Tazza fumante su terracotta al posto del lucchetto con la luna (parlava di notte). Vettoriale adattiva + monocromatica, PNG 512 per lo store, generati da `tools/icon/launcher_icon.py` |
 
 ## 4. Qualità
 

@@ -12,13 +12,11 @@ Linee guida visive di NotificationBlocker. La base è **Material 3**: se una reg
 
 ## Icona dell'app
 
-L'icona racconta lo scopo: **il lavoro resta chiuso fuori, la vita continua**. Non deve parlare di notte, sonno o "non disturbare" (luna, stelle, zzz), né di un divieto (campanella barrata, cartello di stop): sono concetti di un'app per dormire, non di questa.
+Una **tazza fumante su fondo terracotta**: la pausa che ti riprendi, non il lavoro che manca. L'icona non deve parlare di notte, sonno o "non disturbare" (luna, stelle, zzz), né di un divieto (campanella barrata, cartello di stop): sono concetti di un'app per dormire, non di questa.
 
-- Direzione: un simbolo del lavoro messo da parte (lucchetto, valigetta chiusa, porta) combinato con un segno di vita all'aperto (sole, foglia, orizzonte).
-- Colori dalla palette Chai: fondo arancio bruciato `primary`, simbolo crema `background`.
-- Icona adattiva (primo piano vettoriale + sfondo) e variante monocromatica; simbolo nella zona sicura centrale del 66%, leggibile a 48 px.
-
-L'icona attuale (lucchetto crema con la luna come buco della serratura) è da rifare con questa direzione: vedi `ROADMAP.md`.
+- Tazza e volute crema (`#F8EDD7`) su gradiente terracotta (`#CF6D43` → `#BB5931`), leggermente più chiaro in alto.
+- Icona adattiva (sfondo + primo piano vettoriale) e variante monocromatica: lo stesso primo piano, un solo colore. Simbolo nella zona sicura del 66%, leggibile a 48 px.
+- Generata da `tools/icon/launcher_icon.py` (modifica lo script, non i file): scrive `ic_launcher_foreground.xml`, `ic_launcher_background.xml` e il PNG 512 dello store (`docs/store/icon-512.png`). Nata da una bozza di Gemini, ridisegnata a mano in vettoriale.
 
 ## Colore
 
