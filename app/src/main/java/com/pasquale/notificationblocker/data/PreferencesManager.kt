@@ -99,8 +99,14 @@ class PreferencesManager private constructor(context: Context) {
     fun isInOffHoursNow(): Boolean =
         OffHours.isWithin(OffHours.currentMinutes(), startTimeMinutes, endTimeMinutes)
 
-    fun shouldBlock(packageName: String): Boolean =
-        isBlockingEnabled && isInOffHoursNow() && packageName in getBlockedApps()
+    fun shouldBlock(packageName: String): Boolean = BlockingRule.shouldBlock(
+        packageName = packageName,
+        blockingEnabled = isBlockingEnabled,
+        blockedApps = getBlockedApps(),
+        currentMinutes = OffHours.currentMinutes(),
+        start = startTimeMinutes,
+        end = endTimeMinutes,
+    )
 
     companion object {
         private const val PREFS_NAME = "notification_blocker_prefs"
