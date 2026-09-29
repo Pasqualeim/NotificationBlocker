@@ -22,8 +22,9 @@
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Permesso richiesto</string>
-    <string name="permission_warning_text">L\'accesso alle notifiche è necessario per consentire all\'app di rilevare e rimuovere le notifiche delle app selezionate fuori orario.</string>
-    <string name="permission_warning_button">Concedi l\'accesso alle notifiche</string>
+    <string name="permission_warning_text">Per sospendere le notifiche di lavoro, Android deve permettere a questa app di vedere le notifiche che ricevi. L\'app controlla solo quale app le ha inviate e le rimuove se quell\'app è nella tua lista durante la fascia fuori orario. Non legge né salva mai il contenuto e nulla lascia il tuo telefono. Puoi revocare l\'accesso in qualsiasi momento dalle impostazioni di sistema.</string>
+    <string name="permission_warning_button">Accetto e apri le impostazioni</string>
+    <string name="privacy_policy_link">Informativa sulla privacy</string>
 
     <!-- Schedule Section -->
     <string name="schedule_title">Orario di blocco</string>

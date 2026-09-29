@@ -23,8 +23,10 @@
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Permission required</string>
-    <string name="permission_warning_text">Notification Listener access is required for the app to detect and dismiss notifications from blocked apps during off-hours.</string>
-    <string name="permission_warning_button">Grant notification access</string>
+    <string name="permission_warning_text">To pause work notifications, Android must let this app see the notifications you receive. The app only checks which app sent each one and dismisses it if that app is on your list during off-hours. It never reads or stores their content, and nothing leaves your phone. You can revoke access anytime in system settings.</string>
+    <string name="permission_warning_button">Agree and open settings</string>
+    <string name="privacy_policy_link">Privacy policy</string>
+    <string name="privacy_policy_url" translatable="false">https://pasqualeim.github.io/NotificationBlocker/</string>
 
     <!-- Schedule Section -->
     <string name="schedule_title">Off-hours schedule</string>
