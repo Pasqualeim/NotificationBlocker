@@ -31,7 +31,7 @@ Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.sv
 
 | Ruolo | Chai (chiaro) | Lo-fi night (scuro) | Uso |
 |---|---|---|---|
-| `primary` / `onPrimary` | `#A6490C` arancio bruciato / `#FFFFFF` | `#FFB575` ambra lampada / `#4D2200` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro del lucchetto nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
+| `primary` / `onPrimary` | `#A6490C` arancio bruciato / `#FFFFFF` | `#FFB575` ambra lampada / `#4D2200` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro della tazza nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
 | `primaryContainer` / `onPrimaryContainer` | `#F0B899` terracotta chiara / `#3E1B0A` | `#7A3A12` / `#FFDCC4` | Card di stato "sto bloccando ora", badge contatore nella CTA, riga app selezionata (alpha 0.35) |
 | `secondary` / `onSecondary` | `#0B7350` smeraldo / `#FFFFFF` | `#7FD6AC` / `#00391F` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, badge pieno "9 ore per te" nella `ScheduleCard` (con `onSecondary`) |
 | `secondaryContainer` / `onSecondaryContainer` | `#C9EEDA` / `#073A28` | `#145B3F` / `#BFF2D6` | Card di stato "in attesa" (attivo, ma ora è consentito) |
