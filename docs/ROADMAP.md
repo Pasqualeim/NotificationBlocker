@@ -6,9 +6,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 
 ## 1. Fondamenta (prima di tutto il resto)
 
-| Voce | Costo | Note |
-|---|---|---|
-| Kotlin 2.4 + kotlinx-serialization 1.11 | M | Oggi Kotlin 2.2.10 (integrato in AGP 9): aggiornare plugin compose/serialization insieme. Sono gli unici 3 avvisi lint rimasti |
+Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto").
 
 ## 2. Look & feel Android
 
@@ -48,6 +46,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 | Rapporto del mattino | `MorningReportCard` sulla Home dopo la fine della fascia: quante notifiche di lavoro hanno aspettato fuori e da quali app (le due con più notifiche + "altre N"), "niente è perso". Una volta per fascia, finché non tocchi "Ok, grazie"; solo per fasce iniziate oggi o ieri. Dati dal contatore esistente (`filtered_keys` ora salva anche il pacchetto) |
 | CI e test della regola di blocco | `.github/workflows/ci.yml` (`assembleDebug`, `testDebugUnitTest`, `lintDebug` a ogni push e PR). `BlockingRule` è la regola pura, `PreferencesManager.shouldBlock` la usa con clock e preferenze reali; coperta da `BlockingRuleTest` |
 | `targetSdk` 37 e Gradle 9.8 | Wrapper 9.8.0 con checksum ufficiale; lint a 0 errori. Blocco verificato su emulatore API 36 (nessuna immagine API 37 provata: rifare la prova quando c'è) |
+| Kotlin 2.4.20 + kotlinx-serialization 1.11 | Versioni nel catalogo (`kotlin`, `kotlinxSerializationCore`); il plugin Kotlin di AGP risolve a 2.4.20. Lint senza avvisi |
 
 ## 4. Qualità
 
