@@ -24,3 +24,8 @@ local.properties
 # Third-party agent skills (not part of the app)
 /.claude/skills/
 /skills-lock.json
+
+# Release signing (never commit)
+/keystore.properties
+*.jks
+*.keystore

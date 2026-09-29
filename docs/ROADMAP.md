@@ -48,6 +48,7 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 | `targetSdk` 37 e Gradle 9.8 | Wrapper 9.8.0 con checksum ufficiale; lint a 0 errori. Blocco verificato su emulatore API 36 (nessuna immagine API 37 provata: rifare la prova quando c'è) |
 | Kotlin 2.4.20 + kotlinx-serialization 1.11 | Versioni nel catalogo (`kotlin`, `kotlinxSerializationCore`); il plugin Kotlin di AGP risolve a 2.4.20. Lint senza avvisi |
 | Disclosure e informativa privacy | `PermissionCard` spiega cosa vede l'app (solo il pacchetto), cosa fa e che nulla lascia il telefono; il pulsante "Accetto e apri le impostazioni" è il consenso. Link all'informativa (`docs/index.html`, EN+IT, servita da GitHub Pages: URL in `privacy_policy_url`) |
+| Firma release | `signingConfigs.release` letto da `keystore.properties` (ignorato da git); `bundleRelease` produce l'AAB firmato con la chiave di upload. APK release con R8 provato su emulatore (avvio e UI senza crash; blocco end-to-end solo in debug, perché `run-as` non funziona su release) |
 
 ## 4. Qualità
 

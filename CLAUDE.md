@@ -29,6 +29,8 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 ./gradlew connectedDebugAndroidTest   # needs emulator/device
 ```
 
+Release: `./gradlew bundleRelease` (AAB for Play) or `assembleRelease`. Signing reads `keystore.properties` in the repo root (git-ignored; keys `storeFile`, `storePassword`, `keyAlias`, `keyPassword`); the upload keystore lives outside the repo in `~/keystores/`. Without that file the release build is unsigned, so CI and fresh clones still build.
+
 Install and run on emulator: `adb install -r app/build/outputs/apk/debug/app-debug.apk`.
 
 ### Testing the blocking end-to-end without UI
