@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.pasquale.notificationblocker"
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
