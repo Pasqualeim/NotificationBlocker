@@ -7,6 +7,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <group android:translateX="-4.2">
     <!-- Mug body -->
     <path
         android:fillColor="#FFF8EFE3"
@@ -27,4 +28,5 @@
     <path
         android:fillColor="#FFF8EFE3"
         android:pathData="M57.20,35.10 L57.42,35.79 L57.69,36.47 L57.81,37.16 L57.73,37.84 L57.43,38.53 L56.98,39.21 L56.45,39.90 L55.96,40.59 L55.63,41.27 L55.54,41.96 L55.73,42.64 L56.23,43.33 L56.98,44.01 L58.00,44.70 L58.00,44.70 L57.78,44.01 L57.51,43.33 L57.39,42.64 L57.47,41.96 L57.77,41.27 L58.22,40.59 L58.75,39.90 L59.24,39.21 L59.57,38.53 L59.66,37.84 L59.47,37.16 L58.97,36.47 L58.22,35.79 L57.20,35.10 Z" />
+    </group>
 </vector>

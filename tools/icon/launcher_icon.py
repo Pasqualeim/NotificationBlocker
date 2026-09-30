@@ -22,6 +22,9 @@ CREAM = "#F8EFE3"
 BG_TOP, BG_BOTTOM = "#BA6C4D", "#A45A3D"
 
 # Path data uses only M, L, H, V, C, Z (absolute) so the PNG renderer can flatten it.
+# The glyph (mug + handle) spans x 42.4..74, so its center is 58.2: shift it to the icon center (54).
+DX = 54 - (42.4 + 74) / 2
+
 SHAPES = {
     "Mug body": "M42.4,50 C42.4,49.56 42.76,49.2 43.2,49.2 H64.8 C65.24,49.2 65.6,49.56 65.6,50 "
                 "V73.2 C65.6,74.75 64.35,76 62.8,76 H45.2 C43.65,76 42.4,74.75 42.4,73.2 Z",
@@ -69,7 +72,7 @@ def write_xml():
         '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
         '    android:width="108dp"\n    android:height="108dp"\n'
         '    android:viewportWidth="108"\n    android:viewportHeight="108">\n'
-        f"{paths}\n</vector>\n"
+        f'    <group android:translateX="{DX:.1f}">\n{paths}\n    </group>\n</vector>\n'
     )
     (RES / "ic_launcher_background.xml").write_text(
         '<?xml version="1.0" encoding="utf-8"?>\n'
@@ -147,7 +150,7 @@ def write_png(size=512, ss=4):
         t = y / (big - 1)
         draw.line([(0, y), (big, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(top, bottom)))
     for d in SHAPES.values():
-        draw.polygon(flatten(d, big / 108), fill=rgb(CREAM))
+        draw.polygon([(x + DX * big / 108, y) for x, y in flatten(d, big / 108)], fill=rgb(CREAM))
     out = ROOT / "docs/store/icon-512.png"
     img.resize((size, size), Image.LANCZOS).save(out)
 
