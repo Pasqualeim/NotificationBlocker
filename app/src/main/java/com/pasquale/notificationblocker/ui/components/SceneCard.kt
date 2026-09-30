@@ -13,7 +13,7 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.ZenState
 
 /**
- * The room scene on Home, framed as a card with a fixed 2:1 ratio so it keeps its size inside
+ * The room scene on Home, framed as a card with a fixed 2.6:1 ratio so it keeps its size inside
  * the scrolling column: at work the desk, off work the calm scene.
  */
 @Composable
@@ -34,7 +34,8 @@ fun SceneCard(
     }
 }
 
-private const val SCENE_ASPECT_RATIO = 2f
+// Wide and short on purpose: with 2:1 the schedule card slipped under the bottom button on a 20:9 phone
+private const val SCENE_ASPECT_RATIO = 2.6f
 
 @Preview(showBackground = true, name = "Scene card - off work")
 @Composable
