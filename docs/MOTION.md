@@ -50,7 +50,7 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 | `AppItemRow` | Selezione | `animateColorAsState` `SHORT` su container e bordo |
 | `ShimmerSkeleton` | Caricamento lista app | Gradiente che scorre in loop infinito, una passata ogni `SLOW` (1200 ms) |
 | `ZenScene` | Scena animata in fondo alla Home, con la luce reale del giorno (alba, sole, tramonto, notte) e la stagione. Al lavoro: la vista dalla scrivania, una finestra sulla città con laptop, tazza fumante e pianta. Fuori orario: paesaggio giapponese (monte innevato, ruscello, airone che pesca, lanterna, bambù; sakura, foglie d'autunno, neve, lucciole) | Livelli vettoriali in `ui/zen` (2:1, 30 fps); livelli fermi in texture GPU. Cambio di stato = `Crossfade` `SLOW` (1200 ms), niente altro; con "Rimuovi animazioni" frame fermo e cambio istantaneo |
-| Notifica zen (tendina / blocco schermo) | Illustrazione animata per la fase del giorno: sole con raggi lenti tra i bambù, tramonto sui colli con riflessi, lanterna con fiamma e lucciole | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
+| Notifica della pausa (tendina / blocco schermo) | Illustrazione animata per la fase del giorno: sole con raggi lenti tra i bambù, tramonto sui colli con riflessi, lanterna con fiamma e lucciole | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
 | Messaggio "vita" (`HeroHeader`) | La frase su sole e tempo libero cambia con dissolvenza | `AnimatedContent` fade-in `LONG` / fade-out `SHORT`, ricalcolo al minuto solo con l'app in primo piano (`rememberCurrentMinutes()`: `repeatOnLifecycle(STARTED)`, rilegge l'orologio a ogni ritorno in primo piano) |
 | Riquadro "Nook" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
 
@@ -85,7 +85,7 @@ In ordine di rapporto valore/costo (dettagli in [`ROADMAP.md`](ROADMAP.md)):
 - `DeskPainting` (al lavoro): finestra d'ufficio sulla città (stesso cielo, finestre accese la sera, alberi del parco nei colori della stagione), laptop, tazza con vapore, quaderno, pianta. Gli interni usano `indoor()`: luce del giorno, poi luce calda della lampada quando fuori è buio. Di giorno il sole disegna i tre riquadri della finestra sulla scrivania (si spostano con il sole); dopo il tramonto lo schermo passa al tema scuro e getta una luce fredda sulla scrivania. In movimento: nuvole, uccelli, un aereo ogni tanto, vapore, cursore, barre del grafico che salgono e scendono piano; con la pioggia gocce che cadono e scivolano sul vetro.
 - `NaturePainting` (fuori orario): monte innevato al centro, ruscello con pietre, airone che ogni tanto abbassa il becco verso l'acqua, lanterna (accesa al tramonto e di notte), due alberi di stagione, bambù nella brezza. Due carpe koi che scendono lungo il ruscello. Particelle di stagione, lucciole d'estate di notte, nebbia all'alba; con la pioggia gocce su tutta la scena e cerchi che si allargano sull'acqua (niente raggi, riflessi né lucciole).
 - `ZenPainter`: 7 primitive (rect, gradiente, cerchio, ellisse, alone radiale, poligono, linea). Implementato su `DrawScope` nell'app e su AWT nei test.
-- Prestazioni: i livelli fermi usano `CompositingStrategy.Offscreen` (rasterizzati una volta in texture); a ogni frame (max 30 fps) si ridisegnano solo i due livelli in movimento. Sull'emulatore: RenderThread ~0–5 % di CPU. Niente allocazioni per frame nei calcoli (`hash` ad arità fissa, buffer dei poligoni e `Path` riusati).
+- Prestazioni: i livelli fermi usano `CompositingStrategy.Offscreen` (rasterizzati una volta in texture); a ogni frame (max 30 fps) si ridisegnano solo i due livelli in movimento. Niente allocazioni per frame nei calcoli (`hash` ad arità fissa, buffer dei poligoni e `Path` riusati, gradienti delle luci in cache per colore e raggio). La scena si ferma mentre la Home scorre (`ZenScene(animate = false)`) e riprende dallo stesso istante. Su un Galaxy A32 (GPU Mali-G52) la scena gira a circa 24 fps: il collo di bottiglia è la GPU, che ridisegna tutta la Home a ogni frame (circa 12 ms) più la scena (circa 9 ms). Misure e metodo in `CLAUDE.md` ("Performance").
 - `ZenScene` rilegge l'orologio a ogni minuto (`rememberCurrentMinutes()`, anche con "Rimuovi animazioni"); il parametro `environment` fissa stagione/ora nelle preview.
 - Palette fissa in `ui/theme/ZenPalette.kt`: colori base, `Light` per ora del giorno, `Flora` per stagione (unica eccezione alla regola "solo `MaterialTheme.colorScheme`": è un'illustrazione incorniciata, uguale nei due temi).
 - Anteprime senza device: `./gradlew testDebugUnitTest --tests '*ZenSceneTest*'` scrive PNG di entrambe le scene per ogni stagione × ora in `app/build/zen-previews/`.
@@ -122,7 +122,7 @@ Per illustrazioni più ricche (onboarding, stato vuoto) si può usare Lottie. Og
 
 ### Quando sì, quando no
 
-- **Sì:** illustrazioni una tantum, a più elementi, difficili da disegnare in codice (luna con stelle che si accendono, personaggio che dorme).
+- **Sì:** illustrazioni una tantum, a più elementi, difficili da disegnare in codice (per esempio una tazza che si riempie in un onboarding). Sempre nel tono dell'app: niente lune, stelle o personaggi che dormono.
 - **No:** micro-interazioni legate allo stato (toggle, selezione, colori del tema). Quelle restano in Compose: seguono il tema chiaro/scuro, costano zero dipendenze e si testano con le preview.
 
 ### Integrazione (da fare solo quando serve la prima animazione)
@@ -133,7 +133,7 @@ implementation("com.airbnb.android:lottie-compose:<versione>")
 ```
 
 ```kotlin
-val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.quiet_night))
+val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.onboarding_break))
 LottieAnimation(
     composition = composition,
     iterations = LottieConstants.IterateForever,

@@ -4,10 +4,10 @@ Linee guida visive di **Nook**. La base è **Material 3**: se una regola qui non
 
 ## Principi
 
-1. **Calma.** L'app parla di silenzio: niente colori saturi urlati, niente badge rossi, niente allarmismi. Toni caldi da "lo-fi anime" (carta crema, terracotta, cioccolato): l'arancio della lampada è il colore del "silenzio attivo", lo smeraldo quello di "acceso, tutto sotto controllo".
+1. **Calma.** L'app parla di silenzio: niente colori saturi urlati, niente badge rossi, niente allarmismi. Toni caldi e desaturati (carta crema, terracotta, cioccolato): la terracotta è il colore della "pausa in corso", la salvia quello di "programmato, tutto sotto controllo".
 2. **Stato leggibile in un secondo.** Aprendo l'app devi capire subito se le notifiche vengono bloccate *adesso*. Colore della card, icona e titolo dicono tutti la stessa cosa.
 3. **Nativo Android.** Componenti Material 3 standard (Switch, TimePicker, TopAppBar, FilterChip) prima di quelli custom. Un componente custom si giustifica solo se comunica meglio lo stato (es. `Timeline24h`, `MutedBellIcon`).
-4. **Un tocco per l'azione principale.** Il toggle è sempre visibile senza scroll; la CTA "Seleziona app" è fissa in basso, nella zona del pollice. Fuori dall'app, il riquadro "Stacco & Sole" nelle Impostazioni rapide fa la stessa cosa.
+4. **Un tocco per l'azione principale.** Il toggle è sempre visibile senza scroll; la CTA "App di lavoro" è fissa in basso, nella zona del pollice. Fuori dall'app, il riquadro "Nook" nelle Impostazioni rapide accende e spegne la pausa.
 5. **Staccare è vivere.** Abbiamo una vita oltre il lavoro: l'app esiste per restituirla, non per "far dormire". Il tempo libero non è "notte e sonno": è luce, tempo, vita, a qualsiasi ora finisca il lavoro. L'app valorizza le ore di sole che restano dopo il lavoro (d'estate, staccare alle 17 vuol dire ancora tre ore di sole) e segue la luce reale del giorno e della stagione.
 
 ## Icona dell'app
@@ -45,13 +45,13 @@ Palette calda "lo-fi anime", definita in `ui/theme/Color.kt` e applicata in `The
 
 `Theme.kt` assegna **tutti** i ruoli M3 in entrambi i temi (anche `surfaceContainer*`, `outline*`, `inverse*`): nessun ruolo ricade sui default viola di Material. Edge-to-edge: barre di sistema trasparenti, icone scure nel tema chiaro e chiare nello scuro. Nel codice usa **sempre** i ruoli di `MaterialTheme.colorScheme`, mai i valori esadecimali (né `Color.White`/`Color.Black`). Unica eccezione: un colore usato solo come maschera con un `BlendMode` (il ritaglio della barra in `MutedBellIcon`), con un commento.
 
-Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.svg) (Home con blocco attivo, palette calda). La palette dell'app nasce da lì; il layout del mock-up arriva nella fase 3 della revisione.
+Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.svg) (Home con blocco attivo, palette calda). La palette e il layout della Home nascono da lì (i colori del mock-up sono quelli precedenti alla desaturazione).
 
 | Ruolo | Chai (chiaro) | Lo-fi night (scuro) | Uso |
 |---|---|---|---|
-| `primary` / `onPrimary` | `#9A4F34` terracotta morbida / `#FFFFFF` | `#E8B093` pesca lampada / `#4A2414` | CTA "Seleziona app", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro della tazza nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
+| `primary` / `onPrimary` | `#9A4F34` terracotta morbida / `#FFFFFF` | `#E8B093` pesca lampada / `#4A2414` | CTA "App di lavoro", Switch acceso, fascia della `Timeline24h`, campanella e alone in `ACTIVE_INSIDE`, intestazioni di sezione nella lista app, icone d'accento (sole nella `ScheduleCard`, `ZenNotificationCard`), riquadro della tazza nel titolo e cerchio della freccia tra gli orari (con `onPrimary`), etichetta "Ora" della timeline dentro la fascia |
 | `primaryContainer` / `onPrimaryContainer` | `#EBCDBC` terracotta pallida / `#3B1E11` | `#6B3B27` / `#FBDCCB` | Card di stato "sto bloccando ora", badge contatore nella CTA, riga app selezionata (alpha 0.35) |
-| `secondary` / `onSecondary` | `#4B6A55` salvia / `#FFFFFF` | `#ABC8B2` / `#1B3424` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, badge pieno "9 ore per te" nella `ScheduleCard` (con `onSecondary`) |
+| `secondary` / `onSecondary` | `#4B6A55` salvia / `#FFFFFF` | `#ABC8B2` / `#1B3424` | Tempo per te, badge positivi: icona in `ACTIVE_OUTSIDE`, badge pieno "9 ore libere" nella `ScheduleCard` (con `onSecondary`) |
 | `secondaryContainer` / `onSecondaryContainer` | `#D6E5D8` / `#16301F` | `#34503D` / `#D2E7D7` | Card di stato "in attesa" (attivo, ma ora è consentito) |
 | `tertiary` / `onTertiary` | `#4C6682` blu polvere / `#FFFFFF` | `#B1C5DC` / `#1C3048` | Informazioni e accenti tranquilli: luna nella `ScheduleCard` quando la fascia non ha sole; icona e bottone della card del permesso |
 | `tertiaryContainer` / `onTertiaryContainer` | `#DCE5EF` / `#1A2E43` | `#384C64` / `#D9E5F3` | Avvisi soft (card del permesso mancante) |
@@ -66,7 +66,7 @@ Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.sv
 | `outline` / `outlineVariant` | `#8C7565` / `#DDCDBD` | `#A0907F` / `#52463E` | Fascia della timeline a blocco spento; bordo della riga app (`outlineVariant`) |
 | `inverseSurface` / `inverseOnSurface` / `inversePrimary` | `#3A2E27` / `#F7EEE5` / `#EBB396` | `#F2E7DD` / `#3A2B22` / `#9A4F34` | Solo default M3 (Snackbar, tooltip): oggi non usati |
 
-L'illustrazione (`ZenScene`) mantiene la sua palette in `ui/theme/ZenPalette.kt`, invariata in questa fase: le scene lo-fi arrivano nella fase 2 (vedi "Luce del giorno e stagioni").
+L'illustrazione (`ZenScene`) ha una palette propria in `ui/theme/ZenPalette.kt`, uguale nei due temi (vedi "Luce del giorno e stagioni").
 
 ### Mappa degli stati
 
@@ -124,7 +124,7 @@ Bianco su `primary`: 5.93 in Chai (è `onPrimary`); in Lo-fi night il testo su `
 - `secondary` e `tertiary` hanno quasi la stessa luminanza di `primary` (rapporti entro ±0.1): stessa regola.
 - La card di stato ha un gradiente verso `primary`/`secondary` al **6%**: più forte, il sottotitolo (alpha 0.85) nel tema scuro scende verso 4.5. Casi peggiori nella tabella sopra.
 - Indicatore "ora" della `Timeline24h`: anello `onSurface` con centro `surface`, alone `onSurface` al 12%. Il centro si vede sulla fascia `primary` (5.61 / 10.25), l'anello sul binario (10.59 / 9.12). Non usare `secondary`: ha la stessa luminanza di `primary` (1:1) e sparisce sulla fascia.
-- `FilterChip` selezionati (lista app): `primaryContainer` / `onPrimaryContainer`, non il default M3 `secondaryContainer` (smeraldo).
+- `FilterChip` selezionati (lista app): `primaryContainer` / `onPrimaryContainer`, non il default M3 `secondaryContainer` (salvia).
 - Se cambi un esadecimale in `Color.kt`, ricalcola le tabelle qui sopra per entrambi i temi.
 - `dynamicColor` è `false` di proposito: la palette calda fa parte dell'identità. Se un giorno lo abiliti, gli stati devono restare distinguibili.
 - L'errore (`error`) si usa solo per veri errori, non per il permesso mancante (quello è un avviso: `tertiaryContainer`).
@@ -135,12 +135,12 @@ Scena, notifica, riquadro e testi seguono la luce **reale**: un solo modello, `u
 
 ### Ciclo 24h
 
-| `TimeOfDay` | Quando | Scena | Notifica zen | Riquadro | Testo Home |
+| `TimeOfDay` | Quando | Scena | Notifica della pausa | Icona del riquadro | Testo Home (dentro la pausa) |
 |---|---|---|---|---|---|
-| `DAWN` | da 40' prima a 50' dopo l'alba | cielo rosato, nebbia | illustrazione giorno, "Il giorno inizia piano…" | foglia | "Un nuovo giorno sta iniziando…" (prima dell'alba) |
-| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, raggi | sole tra i bambù, "Il sole è ancora alto…" | sole, "Nook" | "Ti restano 3 h 20 min di sole…" |
-| `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, lanterna che si accende | tramonto sui colli, "Il tramonto è solo per te…" | lanterna, "Stacco zen" | ore di sole rimaste, poi "la serata è tutta tua" |
-| `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate | lanterna e lucciole, "La foresta riposa…" | lanterna | "Il sole è tramontato: la serata è tutta tua." |
+| `DAWN` | da 40' prima a 50' dopo l'alba | cielo rosato, nebbia | illustrazione giorno, "Prenditela comoda stamattina" | foglia | "Il lavoro può aspettare." (prima dell'alba) |
+| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, raggi | sole tra i bambù, "Goditi la luce del giorno" | sole | "Ti restano 3 h 20 min di luce. Il lavoro può aspettare." |
+| `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, lanterna che si accende | tramonto sui colli, "Goditi il tramonto" | lanterna | luce rimasta, poi "La serata è tua." |
+| `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate | lanterna e lucciole, "Il lavoro può aspettare" | lanterna | "La serata è tua." |
 
 I colori della scena non scattano al cambio di fase: la palette `Light` è interpolata minuto per minuto tra keyframe attorno ad alba e tramonto.
 
@@ -169,7 +169,7 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 | `TimeDisplayTextStyle` | Orari grandi (64sp, cifre tabulari `tnum`) |
 
 - Orari sempre in formato `HH:mm` tramite `OffHours.format()`, con cifre tabulari, così non "ballano" quando cambiano.
-- **Sentence case** in entrambe le lingue ("Seleziona app da bloccare", non "Seleziona App da Bloccare"). Alcune stringhe italiane oggi sono in Title Case: vanno sistemate.
+- **Sentence case** in entrambe le lingue ("App di lavoro", non "App di Lavoro"; "When to switch off", non "When To Switch Off").
 
 ## Forme e spaziature
 
@@ -198,27 +198,27 @@ Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 
 ## Componenti
 
-Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App da silenziare".
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App di lavoro".
 
 | Componente | File | Note |
 |---|---|---|
-| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("Attivo" / "In attesa" / "Disattivato", `headlineSmall` ExtraBold) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
+| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `headlineSmall` ExtraBold) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
 | Campanella animata | `MutedBellIcon.kt` | Stato "silenziato" = barra diagonale; vedi `MOTION.md` |
-| Orari | `ScheduleCard.kt`, `Timeline24h.kt` | Titolo + badge "N ore per te", pillole INIZIO → FINE (`surfaceContainerLowest`, orario 24sp ExtraBold, freccia in un cerchio `primary`), timeline con l'etichetta "Ora 16:30" sopra l'indicatore. Tocca un orario per aprire il `TimePicker` 24h in `AlertDialog` |
+| Orari | `ScheduleCard.kt`, `Timeline24h.kt` | Titolo "Quando staccare" + badge "N ore libere", pillole INIZIO → FINE (`surfaceContainerLowest`, orario 24sp ExtraBold, freccia in un cerchio `primary`), timeline con l'etichetta "Ora 16:30" sopra l'indicatore. Tocca un orario per aprire il `TimePicker` 24h in `AlertDialog` |
 | Permesso | `PermissionCard.kt` | Visibile solo senza accesso; porta alle impostazioni di sistema |
 | Riga app | `AppItemRow.kt` | Bordo e container animati (`Motion.SHORT`) quando l'app è selezionata |
 | Caricamento / vuoto | `ShimmerSkeleton.kt`, `EmptyState.kt` | Mai spinner a tutto schermo: skeleton con la forma del contenuto |
 | Messaggio "vita" | `HeroHeader.kt` (`lifeMessage`), `LifeMessageText.kt` | Sotto il titolo della card di stato: sole o luna + frase da `LifeCopy`. Aggiornato ogni minuto con l'app in primo piano |
-| Luce nella fascia | `ScheduleCard.kt` (`sunshineMinutes`) | "La tua fascia include 3 h 42 min di luce del sole" (sera + mattina dopo), oppure "luna e lanterne" |
+| Luce nella fascia | `ScheduleCard.kt` (`sunshineMinutes`) | "3 h 42 min di luce nel tuo tempo libero" (sera + mattina dopo), oppure "Il tuo tempo libero inizia dopo il tramonto" |
 | Scena | `ZenScene.kt` | Scrivania al lavoro, paesaggio fuori orario; vedi `MOTION.md` |
-| Invito notifica zen | `ZenNotificationCard.kt` | Solo Android 13+, dopo il permesso essenziale; "Non ora" non viene più riproposto |
+| Invito alla notifica della pausa | `ZenNotificationCard.kt` | Solo Android 13+, dopo il permesso essenziale; "Non ora" non viene più riproposto |
 
 ### Superfici di sistema
 
 | Superficie | File | Note |
 |---|---|---|
-| Notifica zen | `notification/ZenNotificationManager.kt`, `res/layout/notification_zen_*.xml` | Silenziosa, fissa, `DecoratedCustomViewStyle` (header di sistema coerente). Illustrazione 40dp chiusa / 72dp espansa, testi con gli stili `TextAppearance.Compat.Notification*` così seguono tema e OEM |
-| Riquadro "Nook" | `tile/ZenTileService.kt` | Attivo = blocco acceso. Icona monocromatica per fase (foglia, sole, lanterna), sottotitolo "Fino alle 09:00" / "Dalle 17:00" / "Spento" |
+| Notifica della pausa (nel codice "zen") | `notification/ZenNotificationManager.kt`, `res/layout/notification_zen_*.xml` | Silenziosa, fissa, `DecoratedCustomViewStyle` (header di sistema coerente). Illustrazione 40dp chiusa / 72dp espansa, testi con gli stili `TextAppearance.Compat.Notification*` così seguono tema e OEM |
+| Riquadro "Nook" | `tile/ZenTileService.kt` | Attivo = blocco acceso. Icona monocromatica per fase (foglia, sole, lanterna), etichetta sempre "Nook", sottotitolo "Fino alle 09:00" / "Dalle 17:00" / "Spento" |
 | Icona barra di stato | `ic_notification_zen.xml` | Ensō monocromatico |
 
 Nuovi componenti: stateless, in `ui/components/`, con `modifier` come primo parametro opzionale e una `@Preview` per stato (chiaro + scuro).

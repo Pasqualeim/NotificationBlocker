@@ -17,7 +17,9 @@ Related docs (read before UI work):
 
 - `docs/DESIGN_SYSTEM.md`: colors, type, shapes, components, copy tone
 - `docs/MOTION.md`: animation tokens and rules
-- `docs/ROADMAP.md`: prioritized improvements; update it when you ship or drop an item
+- `docs/ROADMAP.md`: project status (publishing, open items, done); update it when you ship or drop an item
+- `docs/PUBLISHING.md`: the owner's step-by-step Google Play checklist (manual steps: accounts, testing, forms)
+- `docs/store/LISTING.md`: store texts IT/EN, screenshots in `docs/store/screenshots/`, Play Console form answers. Keep it in sync with the app (a new permission, data flow or feature changes the Data safety answers)
 
 ## Build & test
 
@@ -111,6 +113,8 @@ Apps come from `queryIntentActivities(ACTION_MAIN + CATEGORY_LAUNCHER)`, matched
 Only notification listener access is required, granted by the user in system settings (`Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`). `MainScreen` re-checks it on `ON_RESUME` and shows `PermissionCard` when missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ `ZenNotificationCard` asks for it once, after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
 
 ### Zen status notification
+
+User-facing name: "notifica della pausa" / "break notification" ("zen" survives only in code and resource names).
 
 Silent ongoing notification (channel `zen_status`, `IMPORTANCE_LOW`, `DecoratedCustomViewStyle`) shown while blocking is active inside the window: animated illustration for the phase of the day (`avd_zen_day/sunset/night`, hosted by an indeterminate `ProgressBar` because RemoteViews do not start animated vectors in an `ImageView`), a calm message, window end and held-notification count. Still no alarms: the system removes it at the window end via `setTimeoutAfter`; `ZenNotificationManager.refresh()` runs from the app (toggle, times, resume), from the listener service on each posted notification, and from a receiver the service registers at runtime for `TIME_TICK` (screen on only), `SCREEN_ON`, `USER_PRESENT` and time/zone changes. It re-posts only when the visible content changes (`contentKey`). Swiped away → hidden until the next window (or until blocking is turned on again).
 

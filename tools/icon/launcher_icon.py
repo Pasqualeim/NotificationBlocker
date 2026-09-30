@@ -168,7 +168,8 @@ def write_png(size=512, ss=4):
     for d in SHAPES.values():
         draw.polygon([(x + DX * big / 108, y + DY * big / 108) for x, y in flatten(d, big / 108)], fill=rgb(CREAM))
     out = ROOT / "docs/store/icon-512.png"
-    img.resize((size, size), Image.LANCZOS).save(out)
+    # Play wants a 32-bit PNG: RGBA, fully opaque
+    img.resize((size, size), Image.LANCZOS).convert("RGBA").save(out)
 
 
 if __name__ == "__main__":
