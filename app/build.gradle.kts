@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.pasquale.sosta"
+        applicationId = "com.pasquale.nook"
         minSdk = 28
         targetSdk = 37
         versionCode = 1

@@ -1,6 +1,6 @@
 # Design system
 
-Linee guida visive di **Sosta**. La base è **Material 3**: se una regola qui non copre un caso, vale la [specifica M3](https://m3.material.io/). Le animazioni hanno un documento a parte: [`MOTION.md`](MOTION.md).
+Linee guida visive di **Nook**. La base è **Material 3**: se una regola qui non copre un caso, vale la [specifica M3](https://m3.material.io/). Le animazioni hanno un documento a parte: [`MOTION.md`](MOTION.md).
 
 ## Principi
 
@@ -20,12 +20,13 @@ Una **tazza fumante su fondo terracotta**: la pausa che ti riprendi, non il lavo
 
 ## Nome
 
-L'app si chiama **Sosta**: la pausa che ti prendi, non un blocco che subisci. Nomi da utility ("Blocker", "Shield", "Guard", "Mute", "Lock", "Filter") ricordano il lavoro e la difesa; un nome breve e morbido no.
+L'app si chiama **Nook**, lo stesso in italiano e in inglese (niente traduzione del nome): l'angolo tutto tuo, fuori dal lavoro. Nomi da utility ("Blocker", "Shield", "Guard", "Mute", "Lock", "Filter") ricordano il lavoro e la difesa; un nome breve e domestico no.
 
-- Due sillabe, accento sulla prima (SÒ-sta), consonanti continue (S) e una sola occlusiva leggera.
-- Chiaro in italiano; in inglese è un nome proprio breve e pronunciabile. Sullo store il titolo aggiunge le parole chiave (max 30 caratteri): "Sosta: pausa dal lavoro" / "Sosta: Work-Life Balance".
-- Scartati dopo una ricerca: *Nook* (marchio Barnes & Noble, con app su Play), *Lume* (app di focus omonima), *Lull* e *Mellow* (molte app di calma e sonno), *Oltre* (suite di presenze Zucchetti), *Sundown* (parla di sera).
-- `applicationId` `com.pasquale.sosta` (non si cambia più dopo la pubblicazione); il package Kotlin resta `com.pasquale.notificationblocker`, invisibile all'utente.
+- Una sillaba, consonanti nasali e continue (N) con vocale lunga e arrotondata; richiama il rituale e lo spazio proprio (chai, nook, haven).
+- Sullo store il titolo aggiunge le parole chiave (max 30 caratteri) e può cambiare per lingua: "Nook: stacca dal lavoro" / "Nook: Work-Life Balance".
+- **Rischio marchio, da chiudere prima di pubblicare**: NOOK è un marchio di Barnes & Noble (e-reader, con app "NOOK" su Play, categoria libri). L'app è in un'altra categoria (produttività), ma una segnalazione è possibile. Prima del lancio: cercare "Nook" su EUIPO/UIBM e USPTO (classi 9 e 42) e sulla ricerca di Play; se serve, ripiegare su un nome composto o su un'alternativa (vedi sotto).
+- Scartati dopo una ricerca: *Sosta* (in italiano è il parcheggio, "divieto di sosta"; esiste anche un'app di parcheggi), *Respiro* (app medica omonima su Play), *Lume* (app di focus omonima), *Lull* e *Mellow* (molte app di calma e sonno), *Oltre* (suite di presenze Zucchetti), *Sundown* (parla di sera). Riserve: *Tempo Mio*, *Dopo*, *Riva*.
+- `applicationId` `com.pasquale.nook` (non si cambia più dopo la pubblicazione); il package Kotlin resta `com.pasquale.notificationblocker`, invisibile all'utente.
 
 ## Colore
 

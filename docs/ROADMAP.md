@@ -1,4 +1,4 @@
-# Roadmap (Sosta)
+# Roadmap (Nook)
 
 Miglioramenti pianificati per rendere l'app più "Android nativa", animata e pronta per il Play Store. Ordinati per priorità dentro ogni sezione. Quando completi o scarti una voce, aggiornala qui.
 
@@ -6,7 +6,9 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 
 ## 1. Fondamenta (prima di tutto il resto)
 
-Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto").
+| Voce | Costo | Note |
+|---|---|---|
+| Verifica del marchio "Nook" | S | Prima di pubblicare. NOOK è di Barnes & Noble: cerca su EUIPO/UIBM e USPTO (classi 9 e 42) e sulla ricerca di Play. Piano B e riserve in `DESIGN_SYSTEM.md` ("Nome") |
 
 ## 2. Look & feel Android
 
@@ -50,7 +52,7 @@ Nessuna voce aperta: Kotlin, `targetSdk` e Gradle sono aggiornati (vedi "Fatto")
 | Firma release | `signingConfigs.release` letto da `keystore.properties` (ignorato da git); `bundleRelease` produce l'AAB firmato con la chiave di upload. APK release con R8 provato su emulatore (avvio e UI senza crash; blocco end-to-end solo in debug, perché `run-as` non funziona su release) |
 | README e backup | README allineato all'app (scena, notifica zen, riquadro, rapporto, palette). Backup Android limitato a `notification_blocker_prefs.xml` (`backup_rules.xml`, `data_extraction_rules.xml`) invece dei file di esempio |
 | Nuova icona | Tazza fumante su terracotta al posto del lucchetto con la luna (parlava di notte), anche nell'header della Home (`ic_mug`). Vettoriale adattiva + monocromatica, PNG 512 per lo store, generati da `tools/icon/launcher_icon.py` |
-| Nome "Sosta" e palette desaturata | Nome scelto dopo una ricerca su Play e marchi (motivi in `DESIGN_SYSTEM.md`), `applicationId` `com.pasquale.sosta`. Palette Chai / Lo-fi night desaturata (saturazione del `primary` 0.87 → 0.50 in chiaro), salvia e blu polvere al posto di smeraldo e viola; contrasto verificato da `tools/palette/contrast.py`. Icona allineata |
+| Nome "Nook" e palette desaturata | Nome scelto insieme (uguale in italiano e inglese; motivi e rischio marchio in `DESIGN_SYSTEM.md`), `applicationId` `com.pasquale.nook`. Palette Chai / Lo-fi night desaturata (saturazione del `primary` 0.87 → 0.50 in chiaro), salvia e blu polvere al posto di smeraldo e viola; contrasto verificato da `tools/palette/contrast.py`. Icona allineata |
 | Card "Fine turno" tolta | Luna e stelle contraddicevano il brand e spingevano la Home in basso; tolta insieme a `lottie-compose` (APK più leggero) |
 
 ## 4. Qualità

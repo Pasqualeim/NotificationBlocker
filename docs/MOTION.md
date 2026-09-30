@@ -1,6 +1,6 @@
 # Motion
 
-Linee guida per le animazioni di Sosta. Per colori e componenti vedi [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md).
+Linee guida per le animazioni di Nook. Per colori e componenti vedi [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md).
 
 ## Principi
 

@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name" translatable="false">Sosta</string>
-    <string name="service_label" translatable="false">Sosta</string>
+    <string name="app_name" translatable="false">Nook</string>
+    <string name="service_label" translatable="false">Nook</string>
 
     <!-- Main Screen -->
-    <string name="main_title" translatable="false">Sosta</string>
+    <string name="main_title" translatable="false">Nook</string>
 
     <!-- Hero Statuses -->
     <string name="status_disabled">Disabled</string>

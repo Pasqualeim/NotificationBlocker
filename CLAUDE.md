@@ -4,9 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-**Sosta** (formerly NotificationBlocker): Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps during a daily off-hours window.
+**Nook** (formerly NotificationBlocker): Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps during a daily off-hours window.
 
-Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`. `applicationId` is `com.pasquale.sosta` (fixed forever once published); the Kotlin namespace stays `com.pasquale.notificationblocker`, so class names in `adb` commands need the full path. Naming and color rationale: `docs/DESIGN_SYSTEM.md`.
+Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`. `applicationId` is `com.pasquale.nook` (fixed forever once published); the Kotlin namespace stays `com.pasquale.notificationblocker`, so class names in `adb` commands need the full path. Naming and color rationale: `docs/DESIGN_SYSTEM.md`.
 
 - minSdk 28, targetSdk 37, compileSdk 37
 - AGP 9.4 with built-in Kotlin, pinned to 2.4 through the `kotlin` version in the catalog (no `kotlin-android` plugin), Gradle 9.8, version catalog in `gradle/libs.versions.toml`
@@ -38,7 +38,7 @@ Install and run on emulator: `adb install -r app/build/outputs/apk/debug/app-deb
 ### Testing the blocking end-to-end without UI
 
 ```bash
-P=com.pasquale.sosta
+P=com.pasquale.nook
 adb shell cmd notification allow_listener $P/com.pasquale.notificationblocker.service.NotificationBlockerService
 # write shared_prefs/notification_blocker_prefs.xml via `run-as $P` with
 # blocking_enabled=true, start_time=end_time (whole day), blocked_apps={com.android.shell}

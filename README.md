@@ -1,4 +1,4 @@
-# Sosta
+# Nook
 
 *Prima si chiamava NotificationBlocker: la repo mantiene il vecchio nome.*
 
@@ -29,7 +29,7 @@ Scegli le app da bloccare (Gmail, Teams, Slack…), imposta la fascia oraria di 
 
 ## Primo utilizzo
 
-1. Apri l'app e tocca **Concedi l'accesso alle notifiche**, poi abilita *Sosta* nelle impostazioni di sistema.
+1. Apri l'app e tocca **Concedi l'accesso alle notifiche**, poi abilita *Nook* nelle impostazioni di sistema.
 2. Imposta inizio e fine della fascia di blocco.
 3. Tocca **App da silenziare** e attiva le app di lavoro.
    (Facoltativo, Android 13+: tocca **Consenti** sulla card *Notifica zen* per vedere lo stato nella tendina.)
