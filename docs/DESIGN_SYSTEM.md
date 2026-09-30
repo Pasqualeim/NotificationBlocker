@@ -16,6 +16,7 @@ Una **tazza fumante su fondo terracotta**: la pausa che ti riprendi, non il lavo
 
 - Tazza e volute crema (`#F8EFE3`) su gradiente terracotta desaturato (`#BA6C4D` → `#A45A3D`), leggermente più chiaro in alto: stessa famiglia del `primary`, un po' più chiara perché l'icona non porta testo.
 - Icona adattiva (sfondo + primo piano vettoriale) e variante monocromatica: lo stesso primo piano, un solo colore. Simbolo nella zona sicura del 66%, leggibile a 48 px.
+- **Centratura**: lo script calcola il baricentro del disegno (tazza, manico e vapore) e lo porta esattamente al centro, sia nel launcher sia nell'header (`ic_mug`). Centrare il rettangolo che contiene tutto non basta: il corpo pieno pesa più del vapore e la tazza sembra bassa. Con il baricentro il corpo della tazza cade al centro e il vapore sta sopra.
 - Generata da `tools/icon/launcher_icon.py` (modifica lo script, non i file): scrive `ic_launcher_foreground.xml`, `ic_launcher_background.xml` e il PNG 512 dello store (`docs/store/icon-512.png`). Nata da una bozza di Gemini, ridisegnata a mano in vettoriale.
 
 ## Nome

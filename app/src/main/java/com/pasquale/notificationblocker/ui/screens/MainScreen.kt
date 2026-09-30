@@ -289,7 +289,7 @@ fun MainScreenContent(
                         Icon(
                             painter = painterResource(R.drawable.ic_mug),
                             contentDescription = null,
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(6.dp),
                         )
                     }
                     Text(
