@@ -22,8 +22,11 @@ CREAM = "#F8EFE3"
 BG_TOP, BG_BOTTOM = "#BA6C4D", "#A45A3D"
 
 # Path data uses only M, L, H, V, C, Z (absolute) so the PNG renderer can flatten it.
-# The glyph (mug + handle) spans x 42.4..74, so its center is 58.2: shift it to the icon center (54).
-DX = 54 - (42.4 + 74) / 2
+# Optical centering. The bounding box of mug + handle + steam is centered when DX = 54 - 58.2, but the
+# solid body sits low and to the left of the light steam, so the glyph reads as off-center. Halfway
+# between "box centered" and "mass centered" looks right: nudge right by 1.3 and up by 1.5 (dp).
+DX = 54 - (42.4 + 74) / 2 + 1.3
+DY = -1.5
 
 SHAPES = {
     "Mug body": "M42.4,50 C42.4,49.56 42.76,49.2 43.2,49.2 H64.8 C65.24,49.2 65.6,49.56 65.6,50 "
@@ -72,7 +75,7 @@ def write_xml():
         '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
         '    android:width="108dp"\n    android:height="108dp"\n'
         '    android:viewportWidth="108"\n    android:viewportHeight="108">\n'
-        f'    <group android:translateX="{DX:.1f}">\n{paths}\n    </group>\n</vector>\n'
+        f'    <group android:translateX="{DX:.1f}" android:translateY="{DY:.1f}">\n{paths}\n    </group>\n</vector>\n'
     )
     (RES / "ic_launcher_background.xml").write_text(
         '<?xml version="1.0" encoding="utf-8"?>\n'
@@ -150,7 +153,7 @@ def write_png(size=512, ss=4):
         t = y / (big - 1)
         draw.line([(0, y), (big, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(top, bottom)))
     for d in SHAPES.values():
-        draw.polygon([(x + DX * big / 108, y) for x, y in flatten(d, big / 108)], fill=rgb(CREAM))
+        draw.polygon([(x + DX * big / 108, y + DY * big / 108) for x, y in flatten(d, big / 108)], fill=rgb(CREAM))
     out = ROOT / "docs/store/icon-512.png"
     img.resize((size, size), Image.LANCZOS).save(out)
 
