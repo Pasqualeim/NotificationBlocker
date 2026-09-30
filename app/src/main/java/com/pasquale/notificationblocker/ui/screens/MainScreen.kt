@@ -291,8 +291,9 @@ fun MainScreenContent(
                 // reaches an edge, and the stretch redraws the whole page offscreen (18 ms of GPU per frame
                 // on a Galaxy A32 against 5 ms without it)
                 .verticalScroll(scrollState, overscrollEffect = null)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
+            // Tight on purpose: the scene keeps its size and Home still fits a 20:9 screen without scrolling
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             AnimatedVisibility(
                 visible = animatedHeaderVisible,
@@ -303,7 +304,6 @@ fun MainScreenContent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.padding(vertical = 4.dp),
                 ) {
                     Surface(
                         shape = MaterialTheme.shapes.medium,

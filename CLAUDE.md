@@ -77,7 +77,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
     │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
-    │   ├── SceneCard.kt             # 2.6:1 card framing the scene on Home (short so Home fits a 20:9 screen) (fixed height inside the scrolling column)
+    │   ├── SceneCard.kt             # 2:1 card framing the scene on Home (fixed height inside the scrolling column)
     │   ├── ZenScene.kt              # animated scene: desk (work) / nature (off work)
     │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, shown after the listener permission
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
