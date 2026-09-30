@@ -138,7 +138,7 @@ Scena, notifica, riquadro e testi seguono la luce **reale**: un solo modello, `u
 | `TimeOfDay` | Quando | Scena | Notifica zen | Riquadro | Testo Home |
 |---|---|---|---|---|---|
 | `DAWN` | da 40' prima a 50' dopo l'alba | cielo rosato, nebbia | illustrazione giorno, "Il giorno inizia piano…" | foglia | "Un nuovo giorno sta iniziando…" (prima dell'alba) |
-| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, raggi | sole tra i bambù, "Il sole è ancora alto…" | sole, "Stacco & Sole" | "Ti restano 3 h 20 min di sole…" |
+| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, raggi | sole tra i bambù, "Il sole è ancora alto…" | sole, "Nook" | "Ti restano 3 h 20 min di sole…" |
 | `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, lanterna che si accende | tramonto sui colli, "Il tramonto è solo per te…" | lanterna, "Stacco zen" | ore di sole rimaste, poi "la serata è tutta tua" |
 | `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate | lanterna e lucciole, "La foresta riposa…" | lanterna | "Il sole è tramontato: la serata è tutta tua." |
 
@@ -218,7 +218,7 @@ Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazz
 | Superficie | File | Note |
 |---|---|---|
 | Notifica zen | `notification/ZenNotificationManager.kt`, `res/layout/notification_zen_*.xml` | Silenziosa, fissa, `DecoratedCustomViewStyle` (header di sistema coerente). Illustrazione 40dp chiusa / 72dp espansa, testi con gli stili `TextAppearance.Compat.Notification*` così seguono tema e OEM |
-| Riquadro "Stacco & Sole" | `tile/ZenTileService.kt` | Attivo = blocco acceso. Icona monocromatica per fase (foglia, sole, lanterna), sottotitolo "Fino alle 09:00" / "Dalle 17:00" / "Spento" |
+| Riquadro "Nook" | `tile/ZenTileService.kt` | Attivo = blocco acceso. Icona monocromatica per fase (foglia, sole, lanterna), sottotitolo "Fino alle 09:00" / "Dalle 17:00" / "Spento" |
 | Icona barra di stato | `ic_notification_zen.xml` | Ensō monocromatico |
 
 Nuovi componenti: stateless, in `ui/components/`, con `modifier` come primo parametro opzionale e una `@Preview` per stato (chiaro + scuro).
@@ -228,7 +228,11 @@ Nuovi componenti: stateless, in `ui/components/`, con `modifier` come primo para
 - Seconda persona, frasi brevi, niente gergo tecnico ("accesso alle notifiche", non "Notification Listener").
 - Rassicurante sul fatto che nulla va perso nell'app di origine; onesto sul fatto che le notifiche bloccate non ritornano.
 - Ogni stringa in `values/strings.xml` **e** `values-it/strings.xml`; `plurals` per i conteggi (in italiano `one`, `many`, `other`).
-- **Tono "vita"** (messaggi di Home, notifica, riquadro): celebra il tempo e la luce che restano, non il lavoro che manca. Concreto quando possibile ("Ti restano 3 h 20 min di sole"), mai colpevolizzante, mai "vai a dormire". Frasi brevi, un invito gentile alla fine ("goditeli", "respira e rilassati"). Esempi in `strings.xml` alle chiavi `life_*`, `zen_msg_*`, `tile_*`.
+- **Scritti da una persona, non da una macchina.** Parole di tutti i giorni, come le direbbe un amico: "Il lavoro può aspettare", "Stacchi alle 22:00", "Le trovi nelle rispettive app". Niente frasi poetiche o motivazionali ("respira e rilassati", "bentornato alla tua vita"), niente due punti a effetto, niente trattini lunghi, niente elenchi forzati da tre. Una frase dice un fatto concreto (un orario, una durata, un numero) o non c'è.
+- **Revisione con `unslop`.** Prima di aggiungere o cambiare testi, passali con le regole della skill `unslop` (`npx skills add cursor/plugins@unslop`, installata in `.agents/`, ignorata da git): voce attiva, parola semplice, niente riempitivi. I testi attuali partono da una riscrittura più naturale fatta con Gemini, poi corretta così.
+- **Parole fisse.** "Pausa" per il tempo libero (mai "blocco" o "quiete" nei testi dell'app), "app di lavoro" per quelle scelte, "stacchi" per la fine del lavoro. Il nome del riquadro e dell'app è **Nook** in tutte le lingue.
+- **Tono "vita"** (messaggi di Home, notifica): parla del tempo e della luce che restano, non del lavoro che manca. Concreto ("Ti restano 5 h 58 min di luce"), mai colpevolizzante, mai "vai a dormire". Esempi in `strings.xml` alle chiavi `life_*` e `zen_msg_*`.
+- **Disclosure del permesso** (`permission_warning_text`): deve sempre dire cosa vede l'app, cosa non fa (non legge, non salva, niente esce dal telefono) e che si può revocare. È richiesta da Google Play: accorciala solo senza perdere questi quattro punti.
 
 ## Accessibilità
 

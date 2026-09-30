@@ -62,7 +62,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   └── NotificationBlockerService.kt  # NotificationListenerService, cancels notifications (also sweeps the active ones on connect), drives zen refresh
 ├── tile/
 │   ├── ZenTileState.kt              # pure: tile icon/label/subtitle (unit tested)
-│   └── ZenTileService.kt            # Quick Settings tile "Unplug & Sun": toggles blocking
+│   └── ZenTileService.kt            # Quick Settings tile "Nook": toggles blocking
 └── ui/
     ├── MainViewModel.kt             # AndroidViewModel shared by both screens (StateFlows)
     ├── screens/
@@ -127,6 +127,7 @@ The Quick Settings tile (`ZenTileService`, active tile: no polling) toggles `blo
 - Icons: only `material-icons-core` is on the classpath. Adding `material-icons-extended` roughly doubles the debug APK; prefer copying the single needed icon as an `ImageVector` or vector drawable (see `res/drawable/ic_moon*.xml`).
 - Keep dependencies minimal: the original scaffold pulled in Room, Retrofit, CameraX, Coil, Play Services etc. without using them; they were removed on purpose. Any new dependency needs a reason in `docs/ROADMAP.md` (`lottie-compose` was removed with the "end of shift" card; `tools/lottie/lottie_kit.py` stays for a future Lottie asset). Generated assets: edit the script, not the output. The launcher icon: `tools/icon/launcher_icon.py` writes the adaptive-icon drawables and `docs/store/icon-512.png`; `tools/palette/contrast.py` checks `Color.kt` and prints the contrast tables of `DESIGN_SYSTEM.md` (run it after any color change).
 - Log tag for the service: `NotificationBlocker`.
+- User-facing copy: plain, human, concrete (see "Testi e tono" in `docs/DESIGN_SYSTEM.md`). Review new strings with the `unslop` skill rules; the permission disclosure must keep its four points (what the app sees, what it doesn't do, nothing leaves the phone, revocable).
 
 ## Known gaps / ideas
 

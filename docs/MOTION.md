@@ -52,7 +52,7 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 | `ZenScene` | Scena animata in fondo alla Home, con la luce reale del giorno (alba, sole, tramonto, notte) e la stagione. Al lavoro: la vista dalla scrivania, una finestra sulla città con laptop, tazza fumante e pianta. Fuori orario: paesaggio giapponese (monte innevato, ruscello, airone che pesca, lanterna, bambù; sakura, foglie d'autunno, neve, lucciole) | Livelli vettoriali in `ui/zen` (2:1, 30 fps); livelli fermi in texture GPU. Cambio di stato = `Crossfade` `SLOW` (1200 ms), niente altro; con "Rimuovi animazioni" frame fermo e cambio istantaneo |
 | Notifica zen (tendina / blocco schermo) | Illustrazione animata per la fase del giorno: sole con raggi lenti tra i bambù, tramonto sui colli con riflessi, lanterna con fiamma e lucciole | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
 | Messaggio "vita" (`HeroHeader`) | La frase su sole e tempo libero cambia con dissolvenza | `AnimatedContent` fade-in `LONG` / fade-out `SHORT`, ricalcolo al minuto solo con l'app in primo piano (`rememberCurrentMinutes()`: `repeatOnLifecycle(STARTED)`, rilegge l'orologio a ogni ritorno in primo piano) |
-| Riquadro "Stacco & Sole" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
+| Riquadro "Nook" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
 
 ## Regole di implementazione
 

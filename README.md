@@ -17,7 +17,7 @@ Scegli le app da bloccare (Gmail, Teams, Slack…), imposta la fascia oraria di 
 - **Permesso guidato**: se manca l'accesso alle notifiche compare una card che porta direttamente alle impostazioni di sistema. Viene ricontrollato ogni volta che torni nell'app.
 - **Scena animata**: una scrivania sulla città durante il lavoro, un giardino giapponese fuori orario, con luce reale, quattro stagioni e pioggia.
 - **Notifica zen**: notifica silenziosa e fissa, mostrata mentre il blocco è attivo dentro la fascia, con un messaggio calmo, la fine della fascia e il conteggio delle notifiche trattenute (Android 13+, facoltativa).
-- **Riquadro Impostazioni rapide** "Stacco & Sole": attiva o disattiva il blocco dalla tendina.
+- **Riquadro Impostazioni rapide** "Nook": mette in pausa le app di lavoro dalla tendina.
 - **Rapporto del mattino**: a fine fascia mostra quante notifiche di lavoro hanno aspettato fuori e da quali app.
 - **Tema**: palette calda e desaturata "Chai" (chiara) e "Lo-fi night" (scura): terracotta morbida, salvia e blu polvere, font Manrope, edge-to-edge.
 - **Lingue**: inglese e italiano.

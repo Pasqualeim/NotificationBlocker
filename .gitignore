@@ -29,3 +29,6 @@ local.properties
 /keystore.properties
 *.jks
 *.keystore
+
+# Agent skills installed with `npx skills` (not part of the app)
+/.agents/

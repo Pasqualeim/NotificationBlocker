@@ -3,58 +3,58 @@
     <!-- Main Screen -->
 
     <!-- Hero Statuses -->
-    <string name="status_disabled">Disattivato</string>
-    <string name="status_active">Attivo</string>
-    <string name="status_standby">In attesa</string>
+    <string name="status_disabled">Spento</string>
+    <string name="status_active">In pausa ora</string>
+    <string name="status_standby">Programmato</string>
 
     <!-- Hero Subtitles -->
-    <string name="hero_subtitle_disabled">Il blocco è spento: arrivano tutte le notifiche.</string>
-    <string name="hero_subtitle_outside">Orario di lavoro: le notifiche arrivano fino all\'inizio del tuo tempo libero.</string>
-    <string name="hero_subtitle_inside">Le notifiche di lavoro sono silenziate.</string>
+    <string name="hero_subtitle_disabled">Le notifiche arrivano tutte, come sempre.</string>
+    <string name="hero_subtitle_outside">Le notifiche di lavoro arrivano fino all\'inizio della pausa.</string>
+    <string name="hero_subtitle_inside">Le notifiche delle app di lavoro sono in pausa.</string>
 
-    <!-- Warm Greetings & Quotes -->
-    <string name="greeting_welcome_life">Bentornato alla tua vita</string>
-    <string name="greeting_time_breathe">È tempo di respirare</string>
-    <string name="greeting_enjoy_sun">Goditi il sole</string>
-    <string name="greeting_time_begins">Il tuo tempo comincia adesso</string>
+    <!-- Simple Greetings -->
+    <string name="greeting_welcome_life">Buonasera</string>
+    <string name="greeting_time_breathe">Buongiorno</string>
+    <string name="greeting_enjoy_sun">Buon pomeriggio</string>
+    <string name="greeting_time_begins">Buonasera</string>
 
     <!-- Permission Warning -->
-    <string name="permission_warning_title">Permesso richiesto</string>
-    <string name="permission_warning_text">Per sospendere le notifiche di lavoro, Android deve permettere a questa app di vedere le notifiche che ricevi. L\'app controlla solo quale app le ha inviate e le rimuove se quell\'app è nella tua lista durante la fascia fuori orario. Non legge né salva mai il contenuto e nulla lascia il tuo telefono. Puoi revocare l\'accesso in qualsiasi momento dalle impostazioni di sistema.</string>
-    <string name="permission_warning_button">Accetto e apri le impostazioni</string>
+    <string name="permission_warning_title">Consenti l\'accesso alle notifiche</string>
+    <string name="permission_warning_text">Per mettere in pausa le app di lavoro, Nook deve vedere le notifiche che ricevi. Controlla solo quale app le ha inviate. Non legge e non salva cosa c\'è scritto, e niente esce dal telefono. Puoi disattivarlo quando vuoi dalle Impostazioni.</string>
+    <string name="permission_warning_button">Apri impostazioni</string>
     <string name="privacy_policy_link">Privacy</string>
 
     <!-- Schedule Section -->
-    <string name="schedule_title">Orario di blocco</string>
+    <string name="schedule_title">Quando staccare</string>
     <string name="schedule_start_time">Inizio</string>
     <string name="schedule_end_time">Fine</string>
     <plurals name="schedule_hours_dedicated">
-        <item quantity="one">%1$d ora per te</item>
-        <item quantity="many">%1$d ore per te</item>
-        <item quantity="other">%1$d ore per te</item>
+        <item quantity="one">%1$d ora libera</item>
+        <item quantity="many">%1$d ore libere</item>
+        <item quantity="other">%1$d ore libere</item>
     </plurals>
-    <string name="schedule_time_dedicated">%1$s per te</string>
+    <string name="schedule_time_dedicated">%1$s liberi</string>
     <string name="timeline_now">Ora %1$s</string>
     <string name="duration_format">%1$d h %2$d min</string>
-    <string name="duration_hours_only">%1$d h di quiete</string>
+    <string name="duration_hours_only">%1$d h libere</string>
 
     <!-- App Selection & Main Action -->
-    <string name="select_apps">App da silenziare</string>
+    <string name="select_apps">App di lavoro</string>
 
     <!-- Plurals -->
     <plurals name="blocked_apps_count">
-        <item quantity="one">%1$d app bloccata</item>
-        <item quantity="many">%1$d app bloccate</item>
-        <item quantity="other">%1$d app bloccate</item>
+        <item quantity="one">%1$d app selezionata</item>
+        <item quantity="many">%1$d app selezionate</item>
+        <item quantity="other">%1$d app selezionate</item>
     </plurals>
 
     <!-- App Selection Screen -->
-    <string name="app_selection_title">App da bloccare</string>
+    <string name="app_selection_title">App di lavoro</string>
     <string name="search_apps">Cerca app</string>
     <string name="search_empty_title">Nessuna app trovata</string>
-    <string name="search_empty_subtitle">Prova a cercare con un termine diverso o con il nome del pacchetto</string>
+    <string name="search_empty_subtitle">Prova con un altro nome.</string>
     <string name="selected_empty_title">Nessuna app selezionata</string>
-    <string name="selected_empty_subtitle">Passa a Tutte e scegli le app di lavoro da silenziare.</string>
+    <string name="selected_empty_subtitle">Scegli le app che ti mandano notifiche di lavoro.</string>
     <string name="filter_all">Tutte</string>
     <string name="filter_selected">Selezionate</string>
     <string name="section_selected">Selezionate (%1$d)</string>
@@ -71,55 +71,52 @@
     <string name="cd_clear_search">Cancella testo di ricerca</string>
     <string name="cd_start_time_picker">Seleziona ora di inizio</string>
     <string name="cd_end_time_picker">Seleziona ora di fine</string>
-    <string name="cd_master_switch">Attiva o disattiva blocco notifiche</string>
-    <string name="cd_toggle_app_blocking">Attiva/disattiva blocco per %1$s</string>
+    <string name="cd_master_switch">Metti in pausa le notifiche di lavoro</string>
+    <string name="cd_toggle_app_blocking">Metti in pausa le notifiche di %1$s</string>
 
-    <!-- Notifica di stato zen (tendina e schermata di blocco) -->
-    <string name="zen_channel_name">Stato zen</string>
-    <string name="zen_channel_description">Un promemoria sereno nella tendina mentre le notifiche di lavoro sono in pausa.</string>
-    <string name="zen_msg_morning">Il giorno inizia piano. Prenditi il tuo tempo.</string>
-    <string name="zen_msg_daylight">Il sole è ancora alto. Goditi il tuo tempo libero!</string>
-    <string name="zen_msg_sunset">Il tramonto è solo per te. Respira e rilassati.</string>
-    <string name="zen_msg_night">La foresta riposa. Concediti una serata serena.</string>
+    <!-- Notifica di stato (tendina e schermata di blocco) -->
+    <string name="zen_channel_name">Stato della pausa</string>
+    <string name="zen_channel_description">Mostra che le notifiche di lavoro sono in pausa e fino a quando.</string>
+    <string name="zen_msg_morning">Prenditela comoda stamattina</string>
+    <string name="zen_msg_daylight">Goditi la luce del giorno</string>
+    <string name="zen_msg_sunset">Goditi il tramonto</string>
+    <string name="zen_msg_night">Il lavoro può aspettare</string>
     <string name="zen_until">Fino alle %1$s</string>
     <string name="zen_all_day">Tutto il giorno</string>
     <string name="zen_subtitle">%1$s · %2$s</string>
-    <string name="zen_filtered_none">ancora nessuna notifica di lavoro</string>
+    <string name="zen_filtered_none">ancora niente in attesa</string>
     <plurals name="zen_filtered">
-        <item quantity="one">%1$d notifica di lavoro filtrata</item>
-        <item quantity="many">%1$d notifiche di lavoro filtrate</item>
-        <item quantity="other">%1$d notifiche di lavoro filtrate</item>
+        <item quantity="one">%1$d notifica in attesa</item>
+        <item quantity="many">%1$d notifiche in attesa</item>
+        <item quantity="other">%1$d notifiche in attesa</item>
     </plurals>
-    <string name="zen_permission_title">Notifica zen</string>
-    <string name="zen_permission_text">Consenti le notifiche per vedere un promemoria sereno nella tendina e sulla schermata di blocco mentre le app di lavoro sono in pausa.</string>
+    <string name="zen_permission_title">Notifica della pausa</string>
+    <string name="zen_permission_text">Nook può mostrare una notifica silenziosa mentre le app di lavoro sono in pausa, con l\'ora in cui finisce la pausa.</string>
     <string name="zen_permission_allow">Consenti</string>
     <string name="zen_permission_later">Non ora</string>
+
     <!-- Riquadro Impostazioni rapide -->
-    <string name="tile_name">Stacco &amp; Sole</string>
-    <string name="tile_label_day">Stacco &amp; Sole</string>
-    <string name="tile_label_evening">Stacco zen</string>
-    <string name="tile_subtitle_off">Spento</string>
+    <string name="tile_subtitle_off">Disattivato</string>
     <string name="tile_subtitle_from">Dalle %1$s</string>
 
     <!-- Testi "vita": luce e tempo libero rimasti nella giornata -->
-    <string name="life_turn_on">Attiva il blocco e riprenditi le tue ore di sole.</string>
-    <string name="life_sun_left">Ti restano %1$s di sole. Il lavoro può aspettare: goditeli.</string>
-    <string name="life_evening_yours">Il sole è tramontato: la serata è tutta tua.</string>
-    <string name="life_day_beginning">Un nuovo giorno sta iniziando: prenditi il tuo tempo.</string>
-    <string name="life_sun_after_work">Stacchi alle %1$s: ti aspettano %2$s di sole.</string>
-    <string name="life_evening_after_work">Stacchi alle %1$s: la serata sarà tutta tua.</string>
-    <string name="schedule_sunshine">La tua fascia include %1$s di luce del sole</string>
-    <string name="schedule_no_sunshine">La tua fascia inizia dopo il tramonto: luna e lanterne</string>
+    <string name="life_turn_on">Attivalo per mettere in pausa le notifiche di lavoro fuori orario.</string>
+    <string name="life_sun_left">Ti restano %1$s di luce. Il lavoro può aspettare.</string>
+    <string name="life_evening_yours">La serata è tua.</string>
+    <string name="life_day_beginning">Il lavoro può aspettare.</string>
+    <string name="life_sun_after_work">Stacchi alle %1$s e ti restano %2$s di luce.</string>
+    <string name="life_evening_after_work">Stacchi alle %1$s.</string>
+    <string name="schedule_sunshine">%1$s di luce nel tuo tempo libero</string>
+    <string name="schedule_no_sunshine">Il tuo tempo libero inizia dopo il tramonto</string>
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>
 
-
     <!-- Rapporto del mattino: cosa ha aspettato fuori nell'ultima fascia -->
-    <string name="report_title">Mentre eri via</string>
+    <string name="report_title">Durante la pausa</string>
     <plurals name="report_count">
-        <item quantity="one">%1$d notifica di lavoro ha aspettato fuori.</item>
-        <item quantity="many">%1$d notifiche di lavoro hanno aspettato fuori.</item>
-        <item quantity="other">%1$d notifiche di lavoro hanno aspettato fuori.</item>
+        <item quantity="one">È arrivata %1$d notifica di lavoro.</item>
+        <item quantity="many">Sono arrivate %1$d notifiche di lavoro.</item>
+        <item quantity="other">Sono arrivate %1$d notifiche di lavoro.</item>
     </plurals>
     <string name="report_apps_one">Da %1$s.</string>
     <string name="report_apps_two">Da %1$s e %2$s.</string>
@@ -128,6 +125,6 @@
         <item quantity="many">Da %1$s, %2$s e altre %3$d app.</item>
         <item quantity="other">Da %1$s, %2$s e altre %3$d app.</item>
     </plurals>
-    <string name="report_nothing_lost">Niente è perso: i messaggi sono ancora nelle app, quando vorrai.</string>
-    <string name="report_dismiss">Ok, grazie</string>
+    <string name="report_nothing_lost">Le trovi nelle rispettive app.</string>
+    <string name="report_dismiss">OK</string>
 </resources>
