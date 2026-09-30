@@ -47,16 +47,20 @@ def wisp(x0, y0, x1, y1, amplitude, width, n=14):
     return "M" + " L".join(f"{x:.2f},{y:.2f}" for x, y in pts) + " Z"
 
 
-SHAPES["Steam, center"] = wisp(52.4, 31.8, 53.8, 47.3, 1.7, 2.7)
-SHAPES["Steam, left"] = wisp(47.2, 37.7, 49.6, 46.4, 1.3, 2.3)
-SHAPES["Steam, right"] = wisp(57.2, 35.1, 58.0, 44.7, 1.3, 2.3)
+# The steam is centered on the same axis as the cup (body + handle), whose center of mass is at x = 55.7,
+# not on the body alone (x = 54.0): on the body it reads as sitting left of the handle side.
+SD = 2.5
+SHAPES["Steam, center"] = wisp(52.4 + SD, 31.8, 53.8 + SD, 47.3, 1.7, 2.7)
+SHAPES["Steam, left"] = wisp(47.2 + SD, 37.7, 49.6 + SD, 46.4, 1.3, 2.3)
+SHAPES["Steam, right"] = wisp(57.2 + SD, 35.1, 58.0 + SD, 44.7, 1.3, 2.3)
 
 
-def centroid(res=20):
-    """Center of mass of the drawn glyph (all shapes, unshifted), in viewport units.
+def glyph_center(res=20):
+    """(mass_x, mass_y, box_x, box_y): center of mass and bounding-box center of the drawn glyph, in viewport units.
 
-    Centering the bounding box looks off: the solid mug sits low and to the left of the light steam.
-    Centering the center of mass is what the eye reads as "in the middle"."""
+    Centering the bounding box looks too low (the light steam adds height), centering the center of mass
+    looks too high (the solid mug dominates). Vertically we split the difference; horizontally the center
+    of mass wins, since the handle makes the box lopsided."""
     import numpy as np
     size = 108 * res
     mask = Image.new("L", (size, size), 0)
@@ -64,7 +68,7 @@ def centroid(res=20):
     for d in SHAPES.values():
         draw.polygon(flatten(d, res), fill=255)
     ys, xs = np.nonzero(np.asarray(mask))
-    return xs.mean() / res, ys.mean() / res
+    return xs.mean() / res, ys.mean() / res, (xs.min() + xs.max()) / 2 / res, (ys.min() + ys.max()) / 2 / res
 
 
 def argb(hex_color):
@@ -168,8 +172,9 @@ def write_png(size=512, ss=4):
 
 
 if __name__ == "__main__":
-    # Shift that puts the center of mass on the center of the 108 x 108 canvas (64 x 64 for the in-app mug)
-    CX, CY = centroid()
+    # Shift that centers the glyph on the 108 x 108 canvas (in-app mug: same shift, re-based to 64 x 64)
+    MX, MY, BX, BY = glyph_center()
+    CX, CY = MX, (MY + BY) / 2
     DX, DY = 54 - CX, 54 - CY
     write_xml()
     write_mug_icon()
