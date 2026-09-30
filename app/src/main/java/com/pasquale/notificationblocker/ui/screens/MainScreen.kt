@@ -204,6 +204,8 @@ fun MainScreenContent(
         label = "ButtonPressScale",
     )
 
+    val scrollState = rememberScrollState()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -285,7 +287,10 @@ fun MainScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+                // No stretch at the edges: the page is barely taller than the screen, so almost every scroll
+                // reaches an edge, and the stretch redraws the whole page offscreen (18 ms of GPU per frame
+                // on a Galaxy A32 against 5 ms without it)
+                .verticalScroll(scrollState, overscrollEffect = null)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -365,7 +370,11 @@ fun MainScreenContent(
                     animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
             ) {
-                SceneCard(isOffWork = isBlockingEnabled && isInOffHoursNow)
+                // The scene pauses while the page scrolls: on slower phones both together drop frames
+                SceneCard(
+                    isOffWork = isBlockingEnabled && isInOffHoursNow,
+                    animate = !scrollState.isScrollInProgress,
+                )
             }
 
             AnimatedVisibility(

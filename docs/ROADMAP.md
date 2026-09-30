@@ -56,6 +56,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 | Card "Fine turno" tolta | Luna e stelle contraddicevano il brand e spingevano la Home in basso; tolta insieme a `lottie-compose` (APK più leggero) |
 | Prove complete prima del lancio | Blocco su 8 combinazioni di fascia (confini, mezzanotte), raffica di 40 notifiche, aggiornamenti della stessa notifica contati una volta, riavvio del telefono, notifica di stato (creazione, swipe, ricomparsa), rapporto del mattino, riquadro, selettore d'orario, ricerca e filtro, rotazione, testo al 200%, release con R8. Corretti: pulsante in basso e titolo del programma con testo grande, lingue dichiarate ridotte a en/it (`localeFilters`), notifiche arrivate a servizio non agganciato (`sweepActiveNotifications`), test strumentali con il nome pacchetto vecchio |
 | Testi più umani | Riscrittura di Gemini (più naturale) corretta con le regole della skill `unslop`: disclosure del permesso completa, "pausa" al posto di "blocco", riquadro "Nook", niente saluti da buonanotte. Regole in `DESIGN_SYSTEM.md` ("Testi e tono") |
+| Fluidità su telefoni di fascia media | Misurato su Galaxy A32 (Mali-G52, 90 Hz). Scroll della Home da 43 ms a 14,8 ms per frame (come le Impostazioni Samsung): tolto l'effetto elastico ai bordi della Home (costava 18 ms di GPU a frame), scena in pausa durante lo scroll, gradienti delle luci riusati. Da sapere: la build debug è circa il doppio più lenta, giudicare sempre la release |
 
 ## 4. Qualità
 
@@ -64,7 +65,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 | Test UI Compose | M | `HeroHeader` (3 stati + messaggio "vita"), `AppSelectionScreen` (ricerca, filtro) |
 | Test strumentali della notifica zen e del riquadro | M | Oggi verificati a mano su emulatore (`cmd statusbar add-tile/click-tile`, `cmd alarm set-time`): automatizzarli |
 | Screenshot test delle preview | M | Compose Preview Screenshot Testing (plugin AGP) |
-| Baseline profile | M | Avvio e scroll della lista app più fluidi |
+| Baseline profile | M | Avvio e scroll della lista app più fluidi (lista app oggi 22 ms a frame su Galaxy A32; scena animata 24 fps invece di 30: il ridisegno della Home costa già 12 ms di GPU) |
 
 ## Dipendenze da valutare
 

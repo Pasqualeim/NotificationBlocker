@@ -20,6 +20,7 @@ import com.pasquale.notificationblocker.ui.zen.ZenState
 fun SceneCard(
     isOffWork: Boolean,
     modifier: Modifier = Modifier,
+    animate: Boolean = true,
     environment: ZenState? = null,
 ) {
     Surface(
@@ -29,7 +30,7 @@ fun SceneCard(
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
-        ZenScene(isOffWork = isOffWork, environment = environment)
+        ZenScene(isOffWork = isOffWork, animate = animate, environment = environment)
     }
 }
 

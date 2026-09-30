@@ -49,12 +49,15 @@ import java.time.LocalTime
  * GPU textures; only the two moving layers redraw, capped at 30 fps. The clock is re-read every minute.
  * With "Remove animations" the scene is a still frame and the swap is instant.
  *
+ * @param animate false freezes the scene on its current frame (e.g. while the page scrolls, so the
+ *   scroll gets the whole frame budget); it resumes from the same instant, without a jump
  * @param environment fixed light/season for previews; null follows the clock
  */
 @Composable
 fun ZenScene(
     isOffWork: Boolean,
     modifier: Modifier = Modifier,
+    animate: Boolean = true,
     environment: ZenState? = null,
 ) {
     var time by remember { mutableFloatStateOf(0f) }
@@ -63,9 +66,10 @@ fun ZenScene(
     val minutes by rememberCurrentMinutes()
     val clockEnvironment = remember(minutes) { ZenEnvironment.now() }
 
-    LaunchedEffect(Unit) {
-        if (coroutineContext[MotionDurationScale]?.scaleFactor == 0f) return@LaunchedEffect
-        val start = withFrameNanos { it }
+    LaunchedEffect(animate) {
+        if (!animate || coroutineContext[MotionDurationScale]?.scaleFactor == 0f) return@LaunchedEffect
+        // Continue from the frozen instant: the clock of the scene only runs while it animates
+        val start = withFrameNanos { it } - (time * 1e9f).toLong()
         var lastFrame = start
         while (true) {
             withFrameNanos { now ->
@@ -120,6 +124,10 @@ private class ComposeZenPainter : ZenPainter {
     private lateinit var scope: DrawScope
     private val path = Path()
 
+    // Radial gradients centered on the origin, one per color and radius: glows are drawn translated,
+    // so a moving light reuses its shader instead of building a new one on every frame
+    private val glowBrushes = HashMap<Long, Brush>()
+
     fun paint(drawScope: DrawScope, draw: ZenPainter.() -> Unit) {
         scope = drawScope
         val scale = maxOf(drawScope.size.width / ScenePainting.W, drawScope.size.height / ScenePainting.H)
@@ -143,8 +151,11 @@ private class ComposeZenPainter : ZenPainter {
         scope.drawOval(Color(color), Offset(cx - rx, cy - ry), Size(rx * 2, ry * 2))
 
     override fun glow(cx: Float, cy: Float, r: Float, color: Int) {
-        val center = Offset(cx, cy)
-        scope.drawCircle(Brush.radialGradient(listOf(Color(color), Color(color).copy(alpha = 0f)), center, r), r, center)
+        val key = (color.toLong() shl 32) or r.toRawBits().toLong().and(0xFFFFFFFFL)
+        val brush = glowBrushes.getOrPut(key) {
+            Brush.radialGradient(listOf(Color(color), Color(color).copy(alpha = 0f)), Offset.Zero, r)
+        }
+        scope.translate(cx, cy) { drawCircle(brush, r, Offset.Zero) }
     }
 
     override fun polygon(points: FloatArray, count: Int, color: Int) {
