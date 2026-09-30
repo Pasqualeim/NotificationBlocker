@@ -28,7 +28,7 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 ./gradlew assembleDebug          # build APK
 ./gradlew testDebugUnitTest      # JVM unit tests (app/src/test)
 ./gradlew lintDebug              # must report 0 errors
-./gradlew connectedDebugAndroidTest   # needs emulator/device
+./gradlew connectedDebugAndroidTest   # needs emulator/device (11 tests: manifest wiring, PreferencesManager); uninstalls the app when done
 ```
 
 Release: `./gradlew bundleRelease` (AAB for Play) or `assembleRelease`. Signing reads `keystore.properties` in the repo root (git-ignored; keys `storeFile`, `storePassword`, `keyAlias`, `keyPassword`); the upload keystore lives outside the repo in `~/keystores/`. Without that file the release build is unsigned, so CI and fresh clones still build.
@@ -59,7 +59,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   ├── ZenNotificationState.kt      # pure: what the zen notification shows now (unit tested)
 │   └── ZenNotificationManager.kt    # posts/updates/removes the silent ongoing zen notification
 ├── service/
-│   └── NotificationBlockerService.kt  # NotificationListenerService, cancels notifications, drives zen refresh
+│   └── NotificationBlockerService.kt  # NotificationListenerService, cancels notifications (also sweeps the active ones on connect), drives zen refresh
 ├── tile/
 │   ├── ZenTileState.kt              # pure: tile icon/label/subtitle (unit tested)
 │   └── ZenTileService.kt            # Quick Settings tile "Unplug & Sun": toggles blocking
@@ -132,7 +132,7 @@ The Quick Settings tile (`ZenTileService`, active tile: no polling) toggles `blo
 
 See `docs/ROADMAP.md` for the full list. Most relevant:
 
-- Notifications already visible when the window starts are not cleared.
+- Notifications already visible when the window starts are not cleared. (When the listener service connects, e.g. after boot or an update, `sweepActiveNotifications()` does remove the ones that `shouldBlock`, so nothing posted while it was unbound leaks.)
 - No weekday selection (the window applies every day).
 - `.agent/plan.md` is the original scaffolding brief: historical, outdated (mentions AlarmManager and components that no longer exist).
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.

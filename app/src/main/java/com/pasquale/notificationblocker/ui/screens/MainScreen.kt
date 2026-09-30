@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -55,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -80,6 +82,9 @@ import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
 import kotlinx.coroutines.delay
+
+// Above this system font scale the bottom button stacks its label and badge (they do not fit side by side)
+private const val LARGE_FONT_SCALE = 1.3f
 
 @Composable
 fun MainScreen(
@@ -220,7 +225,7 @@ fun MainScreenContent(
                         interactionSource = buttonInteractionSource,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .heightIn(min = 56.dp)
                             .graphicsLayer {
                                 scaleX = buttonScale
                                 scaleY = buttonScale
@@ -234,27 +239,42 @@ fun MainScreenContent(
                             modifier = Modifier.size(22.dp),
                         )
                         Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = stringResource(R.string.select_apps),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        ) {
+                        val appsBadge: @Composable () -> Unit = {
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ) {
+                                Text(
+                                    text = pluralStringResource(
+                                        R.plurals.blocked_apps_count,
+                                        blockedAppsCount,
+                                        blockedAppsCount,
+                                    ),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                )
+                            }
+                        }
+                        if (LocalDensity.current.fontScale > LARGE_FONT_SCALE) {
+                            // Large text: label and badge stacked, each with the full width
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(
+                                    text = stringResource(R.string.select_apps),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                appsBadge()
+                            }
+                        } else {
                             Text(
-                                text = pluralStringResource(
-                                    R.plurals.blocked_apps_count,
-                                    blockedAppsCount,
-                                    blockedAppsCount,
-                                ),
-                                style = MaterialTheme.typography.labelMedium,
+                                text = stringResource(R.string.select_apps),
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             )
+                            Spacer(modifier = Modifier.weight(1f))
+                            appsBadge()
                         }
                     }
                 }

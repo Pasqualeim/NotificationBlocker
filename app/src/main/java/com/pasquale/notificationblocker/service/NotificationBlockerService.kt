@@ -34,16 +34,34 @@ class NotificationBlockerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val notification = sbn ?: return
         // The off-hours window is evaluated at post time, so no alarm is needed to keep it in sync
-        if (prefs.shouldBlock(notification.packageName)) {
-            Log.d(TAG, "Canceling notification from ${notification.packageName}")
-            cancelNotification(notification.key)
-            // Group summaries duplicate their children; ongoing ones cannot be canceled at all
-            val isSummary = notification.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
-            if (notification.isClearable && !isSummary) {
-                prefs.recordFiltered(prefs.currentWindowKey(), notification.packageName, notification.key)
-            }
-        }
+        blockIfNeeded(notification)
         if (notification.packageName != packageName) ZenNotificationManager.refresh(this)
+    }
+
+    private fun blockIfNeeded(notification: StatusBarNotification) {
+        if (!prefs.shouldBlock(notification.packageName)) return
+        Log.d(TAG, "Canceling notification from ${notification.packageName}")
+        cancelNotification(notification.key)
+        // Group summaries duplicate their children; ongoing ones cannot be canceled at all
+        val isSummary = notification.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
+        if (notification.isClearable && !isSummary) {
+            prefs.recordFiltered(prefs.currentWindowKey(), notification.packageName, notification.key)
+        }
+    }
+
+    /**
+     * Notifications posted while the listener was not bound (the first seconds after boot, a reconnection
+     * after an update or after access was re-granted) never reach [onNotificationPosted]; catch them here.
+     * This is not an alarm: it only runs when the system connects the service.
+     */
+    private fun sweepActiveNotifications() {
+        val active = try {
+            activeNotifications
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Cannot read active notifications", e)
+            null
+        }
+        active?.forEach(::blockIfNeeded)
     }
 
     override fun onListenerConnected() {
@@ -60,6 +78,7 @@ class NotificationBlockerService : NotificationListenerService() {
             ContextCompat.registerReceiver(this, clockReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
             clockRegistered = true
         }
+        sweepActiveNotifications()
         ZenNotificationManager.refresh(this)
     }
 

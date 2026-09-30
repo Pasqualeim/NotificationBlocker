@@ -57,6 +57,10 @@ android {
     buildFeatures {
         compose = true
     }
+    androidResources {
+        // The app ships English and Italian only: keep library translations out of the APK and the store's language list
+        localeFilters += listOf("en", "it")
+    }
 }
 
 dependencies {

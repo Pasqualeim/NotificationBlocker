@@ -54,6 +54,7 @@ Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 | Nuova icona | Tazza fumante su terracotta al posto del lucchetto con la luna (parlava di notte), anche nell'header della Home (`ic_mug`). Vettoriale adattiva + monocromatica, PNG 512 per lo store, generati da `tools/icon/launcher_icon.py` |
 | Nome "Nook" e palette desaturata | Nome scelto insieme (uguale in italiano e inglese; motivi e rischio marchio in `DESIGN_SYSTEM.md`), `applicationId` `com.pasquale.nook`. Palette Chai / Lo-fi night desaturata (saturazione del `primary` 0.87 → 0.50 in chiaro), salvia e blu polvere al posto di smeraldo e viola; contrasto verificato da `tools/palette/contrast.py`. Icona allineata |
 | Card "Fine turno" tolta | Luna e stelle contraddicevano il brand e spingevano la Home in basso; tolta insieme a `lottie-compose` (APK più leggero) |
+| Prove complete prima del lancio | Blocco su 8 combinazioni di fascia (confini, mezzanotte), raffica di 40 notifiche, aggiornamenti della stessa notifica contati una volta, riavvio del telefono, notifica di stato (creazione, swipe, ricomparsa), rapporto del mattino, riquadro, selettore d'orario, ricerca e filtro, rotazione, testo al 200%, release con R8. Corretti: pulsante in basso e titolo del programma con testo grande, lingue dichiarate ridotte a en/it (`localeFilters`), notifiche arrivate a servizio non agganciato (`sweepActiveNotifications`), test strumentali con il nome pacchetto vecchio |
 
 ## 4. Qualità
 
