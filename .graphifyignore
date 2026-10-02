@@ -1,0 +1,20 @@
+# Store assets: images and videos add no code structure, only LLM vision cost
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.mp4
+*.mov
+docs/store/screenshots/
+docs/store/video/
+docs/mockups/
+
+# Historical scaffolding brief, outdated (see CLAUDE.md)
+.agent/
+
+# Build output and local tooling
+build/
+.gradle/
+.idea/
+.claude/
+graphify-out/

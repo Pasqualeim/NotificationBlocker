@@ -142,3 +142,13 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 - `.agent/plan.md` is the original scaffolding brief: historical, outdated (mentions AlarmManager and components that no longer exist).
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.
 - Performance: judge smoothness on a **release** build (debug Compose is ~2x slower and starts in 1.8 s instead of 0.4 s on a Galaxy A32). Measure with `adb shell dumpsys gfxinfo com.pasquale.nook framestats` (only the last 120 frames are kept, so reset right before the gesture). The Home scroll has no edge stretch (`overscrollEffect = null`): the page is barely taller than the screen and the stretch cost 18 ms of GPU per frame on a Mali-G52; the scene pauses while the page scrolls (`ZenScene(animate = …)`).
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

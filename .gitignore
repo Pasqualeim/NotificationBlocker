@@ -32,3 +32,6 @@ local.properties
 
 # Agent skills installed with `npx skills` (not part of the app)
 /.agents/
+
+# graphify output (generated, rebuild with `graphify update .`)
+/graphify-out/
