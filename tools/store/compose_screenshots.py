@@ -2,14 +2,14 @@
 """Store screenshots: 1080 x 1920 (9:16) frames with a caption, one set per language.
 
 Google Play rejects raw phone captures whose long side is more than twice the short side
-(1080 x 2400 is 2.22), so every capture is framed here. Captions follow the copy rules of
+(1080 x 2400 is 2.22), so every capture is framed here, inside a phone bezel that bleeds off the bottom edge. Captions follow the copy rules of
 docs/DESIGN_SYSTEM.md ("Testi e tono").
 
 Usage: python3 tools/store/compose_screenshots.py RAW_DIR path/to/Manrope[wght].ttf
 RAW_DIR holds it-IT/ and en-US/ with the captures written by tools/store/capture_screenshots.sh.
 Writes docs/store/screenshots/{it,en}/.
 """
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 import os, sys
 from pathlib import Path
 ROOT=str(Path(__file__).resolve().parents[2] / 'docs/store/screenshots')
@@ -27,7 +27,7 @@ SHOTS=[
  ('02_app','3_apps',None,LIGHT,
   ("Scegli le app di lavoro","Tutte le altre notifiche arrivano come sempre."),
   ("Pick your work apps","Every other notification comes through as usual.")),
- ('03_notifica','2_shade',(0,70,1080,1060),LIGHT,
+ ('03_notifica','2_shade',None,LIGHT,
   ("Tutto nella tendina","Una notifica silenziosa ti dice fino a quando dura la pausa."),
   ("Your break at a glance","A silent notification shows when it ends.")),
  ('04_resoconto','4_report',None,LIGHT,
@@ -61,13 +61,20 @@ for lang,folder in (('it','it-IT'),('en','en-US')):
         shot=Image.open(f'{RAW}/{folder}/{src}.png').convert('RGB')
         if crop: shot=shot.crop(crop)
         sw=900; sh=int(shot.height*sw/shot.width); shot=shot.resize((sw,sh),Image.LANCZOS)
-        if crop:
-            sw2=980; shot=shot.resize((sw2,int(shot.height*sw2/shot.width)),Image.LANCZOS)
-            x=(W-sw2)//2; y0=top+(H-top-shot.height)//2-60
-            img.paste(shot,(x,y0),rounded(shot,44))
-        else:
-            vis=H-top+60  # bleed off the bottom edge
-            shot=shot.crop((0,0,sw,min(sh,vis)))
-            m=rounded(Image.new('RGB',(sw,shot.height+60)),56).crop((0,0,sw,shot.height))
-            img.paste(shot,((W-sw)//2,top),m)
+        BZ=16; OR=86   # bezel width, outer corner radius (inner = OR - BZ)
+        fx=(W-sw-2*BZ)//2; fw=sw+2*BZ
+        vis=H-top-BZ+60  # screen height shown: it bleeds off the bottom edge
+        shot=shot.crop((0,0,sw,min(sh,vis)))
+        if pal is LIGHT:  # soft shadow under the phone
+            sh_=Image.new('RGBA',(W,H),(0,0,0,0)); ImageDraw.Draw(sh_).rounded_rectangle((fx,top+14,fx+fw,H+200),OR,fill=(58,43,34,70))
+            img.paste(sh_.filter(ImageFilter.GaussianBlur(26)),(0,0),sh_.filter(ImageFilter.GaussianBlur(26)))
+        d=ImageDraw.Draw(img)
+        rim=(30,27,25) if pal is LIGHT else (92,84,78)
+        d.rounded_rectangle((fx-4,top-4,fx+fw+4,H+200),OR+4,fill=rim)               # rim
+        d.rounded_rectangle((fx,top,fx+fw,H+200),OR,fill=(14,13,12))                   # bezel
+        d.rounded_rectangle((fx+fw,top+330,fx+fw+9,top+470),4,fill=rim)                # power button
+        d.rounded_rectangle((fx+fw,top+520,fx+fw+9,top+700),4,fill=rim)                # volume
+        m=rounded(Image.new('RGB',(sw,shot.height+200)),OR-BZ).crop((0,0,sw,shot.height))
+        img.paste(shot,(fx+BZ,top+BZ),m)
+        d.ellipse((W//2-17,top+BZ+22,W//2+17,top+BZ+56),fill=(8,8,8))                  # camera
         out=f'{ROOT}/{lang}/{name}.png'; img.save(out,optimize=True); print(out, img.size, os.path.getsize(out)//1024,'KB')

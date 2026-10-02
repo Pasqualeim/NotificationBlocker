@@ -13,7 +13,7 @@ Guida passo passo per la parte manuale: [`PUBLISHING.md`](PUBLISHING.md). Testi,
 | Verifica del marchio "Nook" | Pasquale | Prima di tutto. Vedi `PUBLISHING.md`, passo 1 |
 | Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
 | Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
-| Scheda dello store | Pronta | Testi IT/EN, screenshot, icona. Manca la feature graphic 1024×500 (prompt in `LISTING.md`). Rifare gli screenshot della Home: mostrano le scene vecchie (città dal laptop, giardino giapponese) |
+| Scheda dello store | Pronta | Testi IT/EN, icona, feature graphic e 5 screenshot IT/EN con le scene nuove (rifatti il 02/10/2026, telefono con cornice). Rifarli se cambiano Home o scene: `LISTING.md`, "Grafica" |
 | Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
 
 ## 1. Fondamenta (prima di tutto il resto)

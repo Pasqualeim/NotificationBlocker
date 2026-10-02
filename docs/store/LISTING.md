@@ -120,7 +120,7 @@ Tutti i file sono già nelle dimensioni richieste da Play.
 |---|---|---|
 | Icona | `icon-512.png` | 512×512, PNG a 32 bit, meno di 1 MB (è 10 KB) |
 | Feature graphic | `feature-graphic-it.png`, `feature-graphic-en.png` | 1024×500, PNG a 24 bit senza trasparenza. Obbligatoria |
-| Screenshot telefono | `screenshots/it/*.png`, `screenshots/en/*.png` | 1080×1920 (9:16), da 2 a 8. Caricali in ordine di nome |
+| Screenshot telefono | `screenshots/it/*.png`, `screenshots/en/*.png` | 1080×1920 (9:16), da 2 a 8. Caricali in ordine di nome. Didascalia in alto e telefono con cornice che esce dal bordo basso |
 
 Gli screenshot, nell'ordine:
 
@@ -128,11 +128,11 @@ Gli screenshot, nell'ordine:
 |---|---|---|
 | `01_pausa` | Il lavoro può aspettare | Work can wait |
 | `02_app` | Scegli le app di lavoro | Pick your work apps |
-| `03_notifica` | Tutto nella tendina | All in the shade |
+| `03_notifica` | Tutto nella tendina | Your break at a glance |
 | `04_resoconto` | Sai cosa ti aspetta | Know what's waiting |
 | `05_scuro` | Anche con il tema scuro | Light or dark |
 
-Come rifarli (dopo un cambio di interfaccia):
+Come rifarli (dopo un cambio di interfaccia o delle scene):
 
 ```bash
 ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk
@@ -142,6 +142,13 @@ python3 tools/store/compose_screenshots.py /tmp/nook-raw path/to/Manrope.ttf
 python3 tools/store/feature_graphic.py path/to/Manrope.ttf
 python3 tools/icon/launcher_icon.py                     # icona 512
 ```
+
+Cose da sapere sulla cattura (`capture_screenshots.sh`, ~4 minuti):
+
+- Serve un emulatore con le app Google (Gmail, Calendar, Drive): sono le tre "app di lavoro" delle schermate. Il lancio si ferma se Nook non arriva in Home.
+- La scena e l'arte della notifica seguono l'ora vera: gira nel pomeriggio (luce piena o ora dorata). A cavallo del passaggio giorno/tramonto le due lingue potrebbero avere notifiche diverse: aspetta qualche minuto e rilancia.
+- Cambia da solo la lingua di Nook e di `com.android.systemui` (data nella tendina) e le rimette a "predefinita" alla fine. "Silent" e "Mobile data" nella tendina restano in inglese anche nel set italiano: le stringhe non sono tradotte nell'immagine dell'emulatore.
+- Scrive le preferenze solo a processo fermo e con il listener spento: un processo Nook vivo le riscrive con i valori vecchi.
 
 Manrope: `Manrope[wght].ttf` da https://github.com/google/fonts/tree/main/ofl/manrope.
 
@@ -196,6 +203,6 @@ Nook only reads the package name of each notification to decide whether to remov
 | Voce | Stato |
 |---|---|
 | Testi IT/EN | Pronti |
-| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti |
+| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti (rifatti il 02/10/2026 con le scene nuove) |
 | Risposte ai moduli | Pronte, da ricontrollare in Play Console |
 | Verifica marchio "Nook" | Da fare (Pasquale) |
