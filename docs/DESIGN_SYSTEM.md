@@ -138,20 +138,20 @@ Scena, notifica, riquadro e testi seguono la luce **reale**: un solo modello, `u
 | `TimeOfDay` | Quando | Scena | Notifica della pausa | Icona del riquadro | Testo Home (dentro la pausa) |
 |---|---|---|---|---|---|
 | `DAWN` | da 40' prima a 50' dopo l'alba | cielo rosato, nebbia | illustrazione giorno, "Prenditela comoda stamattina" | foglia | "Il lavoro può aspettare." (prima dell'alba) |
-| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, raggi | sole tra i bambù, "Goditi la luce del giorno" | sole | "Ti restano 3 h 20 min di luce. Il lavoro può aspettare." |
-| `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, lanterna che si accende | tramonto sui colli, "Goditi il tramonto" | lanterna | luce rimasta, poi "La serata è tua." |
-| `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate | lanterna e lucciole, "Il lavoro può aspettare" | lanterna | "La serata è tua." |
+| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, riflessi sull'acqua | sole tra i bambù, "Goditi la luce del giorno" | sole | "Ti restano 3 h 20 min di luce. Il lavoro può aspettare." |
+| `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, sole riflesso nel lago, lanterna del pontile che si accende | tramonto sui colli, "Goditi il tramonto" | lanterna | luce rimasta, poi "La serata è tua." |
+| `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate, piani accesi in città | lanterna e lucciole, "Il lavoro può aspettare" | lanterna | "La serata è tua." |
 
 I colori della scena non scattano al cambio di fase: la palette `Light` è interpolata minuto per minuto tra keyframe attorno ad alba e tramonto.
 
 ### Quattro stagioni
 
-| `Season` | Mesi | Paesaggio (fuori orario) | Scrivania (al lavoro) |
+| `Season` | Mesi | Lago (fuori orario) | Scrivania (al lavoro) |
 |---|---|---|---|
-| `SPRING` | mar–mag | sakura rosa, petali nel vento | alberi del parco rosa |
-| `SUMMER` | giu–ago | verde acceso, bambù mossi dalla brezza, raggi più forti, lucciole la sera | alberi verdi |
-| `AUTUMN` | set–nov | momiji rosso e ginkgo dorato, foglie che cadono | alberi rossi |
-| `WINTER` | dic–feb | rami spogli innevati, lanterna con la neve, fiocchi lenti, monte più bianco | alberi bianchi |
+| `SPRING` | mar–mag | ramo in fiore, petali, ninfee | alberi del parco rosa |
+| `SUMMER` | giu–ago | verde pieno, ninfee in fiore, lucciole la sera | alberi verdi |
+| `AUTUMN` | set–nov | foglie d'acero rosse, riva ramata, foglie che cadono e galleggiano | alberi rossi |
+| `WINTER` | dic–feb | ramo spoglio, neve su pontile, barca e tife, canne chiare; alcuni giorni nevicata | neve sui tetti, alberi spogli; nevicata dietro il vetro |
 
 I colori di scena e stagioni stanno in `ui/theme/ZenPalette.kt` (`Light` per ora del giorno, `Flora` per stagione): unica eccezione alla regola "solo `MaterialTheme.colorScheme`", perché è un'illustrazione incorniciata, uguale nei due temi.
 
@@ -210,7 +210,7 @@ Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazz
 | Caricamento / vuoto | `ShimmerSkeleton.kt`, `EmptyState.kt` | Mai spinner a tutto schermo: skeleton con la forma del contenuto |
 | Messaggio "vita" | `HeroHeader.kt` (`lifeMessage`), `LifeMessageText.kt` | Sotto il titolo della card di stato: sole o luna + frase da `LifeCopy`. Aggiornato ogni minuto con l'app in primo piano |
 | Luce nella fascia | `ScheduleCard.kt` (`sunshineMinutes`) | "3 h 42 min di luce nel tuo tempo libero" (sera + mattina dopo), oppure "Il tuo tempo libero inizia dopo il tramonto" |
-| Scena | `ZenScene.kt` | Scrivania al lavoro, paesaggio fuori orario; vedi `MOTION.md` |
+| Scena | `ZenScene.kt` | Scrivania in ufficio al lavoro, pontile sul lago fuori orario; vedi `MOTION.md` |
 | Invito alla notifica della pausa | `ZenNotificationCard.kt` | Solo Android 13+, dopo il permesso essenziale; "Non ora" non viene più riproposto |
 
 ### Superfici di sistema

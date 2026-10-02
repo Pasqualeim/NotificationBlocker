@@ -42,8 +42,8 @@ import java.time.LocalTime
 
 /**
  * Animated scene at the bottom of Home, in the real light of the day (dawn, sun, sunset, night) and
- * season. Working: the view from the desk, a window on the city. Off work: a quiet Japanese
- * landscape. The two cross-fade slowly when the state changes.
+ * season. Working: a desk in a high-rise office, code typing itself on the monitor, a glass wall on
+ * the skyline. Off work: a wooden pier on a calm lake. The two cross-fade slowly when the state changes.
  *
  * Vector layers drawn with Compose (crisp at any density). The still ones are rasterized once into
  * GPU textures; only the two moving layers redraw, capped at 30 fps. The clock is re-read every minute.

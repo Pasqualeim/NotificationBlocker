@@ -38,6 +38,10 @@ data class ZenState(
     val light: ZenPalette.Light,
     val celestial: Celestial,
     val rain: Boolean = false,
+    /** Snowfall (winter only): grey sky like rain, flakes instead of drops. */
+    val snow: Boolean = false,
+    /** Minutes from midnight, for the wall clock of the desk. */
+    val clock: Int = 12 * 60,
 ) {
     val flora: ZenPalette.Flora
         get() = when (season) {
@@ -67,13 +71,16 @@ object ZenEnvironment {
         val (sunrise, sunset) = sunTimes(date)
         val minute = time.hour * 60 + time.minute
         val rain = isRaining(date, time.hour)
+        val snow = isSnowing(date, time.hour)
         val light = light(minute, sunrise, sunset)
         return ZenState(
             season = Season.of(date),
             timeOfDay = timeOfDay(minute, sunrise, sunset),
-            light = if (rain) rainy(light) else light,
+            light = if (rain || snow) rainy(light) else light,
             celestial = celestial(minute, sunrise, sunset),
             rain = rain,
+            snow = snow,
+            clock = minute,
         )
     }
 
@@ -104,7 +111,17 @@ object ZenEnvironment {
         return (hour - start + 24) % 24 < RAIN_HOURS
     }
 
+    /** Like [isRaining], for winter: some days have six hours of snowfall. */
+    fun isSnowing(date: LocalDate, hour: Int): Boolean {
+        if (Season.of(date) != Season.WINTER) return false
+        if (hash(date.year, date.dayOfYear, SNOW_SEED) % 100 >= SNOW_CHANCE) return false
+        val start = hash(date.year, date.dayOfYear, SNOW_SEED + 1) % 24
+        return (hour - start + 24) % 24 < RAIN_HOURS
+    }
+
     private const val RAIN_SEED = 7_331
+    private const val SNOW_SEED = 9_157
+    private const val SNOW_CHANCE = 30
     private const val RAIN_HOURS = 6
 
     /** Sunrise and sunset in minutes from midnight. */

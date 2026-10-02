@@ -78,13 +78,13 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
     │   ├── SceneCard.kt             # 2:1 card framing the scene on Home (fixed height inside the scrolling column)
-    │   ├── ZenScene.kt              # animated scene: desk (work) / nature (off work)
+    │   ├── ZenScene.kt              # animated scene: office desk (work) / lake pier (off work)
     │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, shown after the listener permission
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
     │   ├── AppItemRow.kt, AppIconImage.kt
     │   └── ShimmerSkeleton.kt, EmptyState.kt   # loading / empty states
-    ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light/rain),
-    │                                # ScenePainting → DeskPainting, NaturePainting; ZenPainter (Compose + AWT in tests);
+    ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light/rain/snow),
+    │                                # ScenePainting → DeskPainting (office), NaturePainting (lake pier); ZenPainter (Compose + AWT in tests);
     │                                # LifeCopy (daylight / free-time messages on Home, unit tested)
     └── theme/                       # Color ("Chai" light, "Lo-fi night" dark), Motion (tokens), Type (Manrope),
                                      # Shape, Theme, ZenPalette (scene colors)

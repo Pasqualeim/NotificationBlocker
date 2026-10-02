@@ -1,7 +1,7 @@
 package com.pasquale.notificationblocker.ui.theme
 
 /**
- * Fixed palette of the zen forest illustration (ui/zen), as opaque ARGB ints so the scene logic stays
+ * Fixed palette of the scenes on Home (ui/zen: desk and lake pier), as opaque ARGB ints so the scene logic stays
  * pure Kotlin (JVM-testable). The illustration keeps its own colors in both themes: it is framed by a card.
  *
  * Colors are "daylight" values: the scene multiplies them by the ambient light of the time of day
@@ -27,64 +27,69 @@ object ZenPalette {
     val Rain = rgb(0xDCE6F2)
     val RainAmbient = rgb(0xC4CAD6)   // multiplies the ambient light on rainy days
 
-    // Nature: stone, wood, water birds
-    val Stone = rgb(0xA3A3AE)
-    val StoneLight = rgb(0xC4C4CE)
-    val StoneDark = rgb(0x6B6B78)
-    val LanternWindow = rgb(0x3A302C)
+    // Shared by both scenes: warm lights, wood, snow
     val LanternLight = rgb(0xFFD27F)
     val LanternFlicker = rgb(0xFFB347)
     val Firefly = rgb(0xE8FF8A)
-    val HeronWhite = rgb(0xF7F7F2)
-    val HeronShade = rgb(0xD5D9E0)
-    val HeronBeak = rgb(0xE8B040)
-    val HeronLeg = rgb(0x3A3A40)
     val Trunk = rgb(0x5B3A2E)
-    val TrunkLight = rgb(0x7A5040)
     val Snow = rgb(0xF4F7FB)
     val SnowShade = rgb(0xCBD6E6)
-    val Koi = rgb(0xF08A3C)
-    val KoiWhite = rgb(0xFFF4E8)
 
-    // Desk and city (working hours)
+    // Desk in a high-rise office (working hours): the "Chai" tones of the brand indoors
     val IndoorLight = rgb(0xFFEFD9)   // warm lamp light once it is dark outside
-    val Wall = rgb(0xE4DDD0)
-    val WallShade = rgb(0xCFC5B4)
-    val WindowFrame = rgb(0xF6F3ED)
-    val WindowFrameShade = rgb(0xD6CFC2)
-    val BuildingFar = rgb(0x9DAAC0)
-    val BuildingNear = rgb(0x6F7E98)
-    val BuildingShade = rgb(0x5A6780)
     val Plane = rgb(0xF2F4F8)
-    val PlaneLight = rgb(0xFF5A5A)
-    val Desk = rgb(0xBE8F62)
-    val DeskLight = rgb(0xD6A878)
-    val DeskEdge = rgb(0x8E6440)
-    val LaptopBody = rgb(0x3A3F4B)
-    val LaptopBase = rgb(0xC7CCD5)
-    val ScreenBg = rgb(0xF4F6FA)
-    val ScreenSide = rgb(0xDFE4EE)
-    val ScreenHeader = rgb(0x5C4E8C)  // brand primary
-    val ScreenLine = rgb(0xBAC2CE)
-    val ScreenBar = rgb(0xB8A6FF)     // brand primary (dark theme)
-    val ScreenAccent = rgb(0xFFC56B)  // brand secondary
-    // Dark mode of the same screen, faded in after dark
-    val ScreenBgNight = rgb(0x23273A)
-    val ScreenSideNight = rgb(0x2C3147)
-    val ScreenLineNight = rgb(0x4E5673)
-    val ScreenGlow = rgb(0xA9B8FF)    // cool light the screen casts on the desk at night
-    val SunPatch = rgb(0xFFE6B0)      // sunlight through the window, on the desk
-    val Mug = rgb(0xEEE8F8)
-    val MugShade = rgb(0xCFC6E3)
-    val Coffee = rgb(0x6B4430)
+    val PlaneLight = rgb(0xFF5A5A)    // blinking light of the plane and of the spire
     val Steam = rgb(0xFFFFFF)
-    val Paper = rgb(0xFBF8F1)
-    val PaperLine = rgb(0xC9D3E0)
-    val Pen = rgb(0x2B2D42)
-    val Pot = rgb(0xC56A45)
-    val PotShade = rgb(0x9E4F33)
-    val Plant = rgb(0x5AA466)
-    val PlantDark = rgb(0x3C7F4A)
+    val StudioWall = rgb(0xF1E4D3)
+    val StudioWallShade = rgb(0xE0CDB6)
+    val StudioDesk = rgb(0xB98A62)
+    val StudioDeskTop = rgb(0xA47552)
+    val StudioDeskEdge = rgb(0x8E6440)
+    val Monitor = rgb(0x3B2F2A)
+    val MonitorScreen = rgb(0x2A2320)
+    val CodeAmber = rgb(0xE9B872)
+    val CodeCream = rgb(0xF1E4D3)
+    val CodeSage = rgb(0x9DC4A0)
+    val CodeCoral = rgb(0xE08E6D)
+    val CodeCursor = rgb(0xFBF5EC)
+    val Keyboard = rgb(0x4A3C35)
+    val Key = rgb(0x6B5A50)
+    val KeyLit = rgb(0xE9B872)
+    val Terracotta = rgb(0xD97757)
+    val TerracottaShade = rgb(0xC4654A)
+    val StudioLeaf = rgb(0x93BB8F)
+    val StudioLeafDark = rgb(0x7FA77F)
+    val ClockFace = rgb(0xFBF5EC)
+    val ScreenWarmGlow = rgb(0xF3D9B0)   // light of the code screen on the desk after dark
+    val WindowMetal = rgb(0x34302E)      // thin frames of the glass wall
+    val TowerGlass = rgb(0x8FA9C4)       // glass facades, mixed with the sky they reflect
+    val TowerGlassDark = rgb(0x6D86A3)
+    val TowerStone = rgb(0xB9B2A8)       // older stepped tower
+    val TowerStoneShade = rgb(0x948C82)
+    val Spire = rgb(0xD8D4CC)
+
+    // Lake pier (off work)
+    val Fir = rgb(0x2E5444)
+    val Pier = rgb(0xB58358)
+    val PierLight = rgb(0xC99A6E)
+    val PierShade = rgb(0x7E5537)
+    val PierGap = rgb(0x6A4630)
+    val LampIron = rgb(0x3E414C)
+    val LampGlass = rgb(0xFFF1D6)
+    val BoatHull = rgb(0xEDE6DA)
+    val BoatStripe = rgb(0xD97757)
+    val BoatInside = rgb(0x9C6B48)
+    val Rope = rgb(0xC9B48A)
+    val Reed = rgb(0x7FA06A)
+    val ReedDark = rgb(0x5E7F4E)
+    val ReedAutumn = rgb(0xC9A85C)
+    val ReedWinter = rgb(0xC2BBA2)
+    val Cattail = rgb(0x6B4A33)
+    val Duck = rgb(0x8A6E52)
+    val DuckHead = rgb(0x3F6B57)
+    val Beak = rgb(0xE8B040)
+    val LilyPad = rgb(0x5E9A5A)
+    val Lily = rgb(0xF4B6C8)
 
     /** Sky, water and light for one time of day; the scene blends two of them for smooth changes. */
     data class Light(

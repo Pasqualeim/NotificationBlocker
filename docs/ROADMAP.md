@@ -13,7 +13,7 @@ Guida passo passo per la parte manuale: [`PUBLISHING.md`](PUBLISHING.md). Testi,
 | Verifica del marchio "Nook" | Pasquale | Prima di tutto. Vedi `PUBLISHING.md`, passo 1 |
 | Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
 | Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
-| Scheda dello store | Pronta | Testi IT/EN, screenshot, icona. Manca la feature graphic 1024×500 (prompt in `LISTING.md`) |
+| Scheda dello store | Pronta | Testi IT/EN, screenshot, icona. Manca la feature graphic 1024×500 (prompt in `LISTING.md`). Rifare gli screenshot della Home: mostrano le scene vecchie (città dal laptop, giardino giapponese) |
 | Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
 
 ## 1. Fondamenta (prima di tutto il resto)
@@ -67,6 +67,7 @@ Ogni nuova dipendenza va motivata qui (regola "dipendenze minime").
 | Voce | Note |
 |---|---|
 | Scena animata (`ZenScene`) | Scrivania al lavoro / paesaggio fuori orario, luce reale e 4 stagioni, 30 fps con livelli in cache GPU |
+| Scene ridisegnate | Al lavoro: scrivania in ufficio con il codice che si scrive sul monitor, orologio sull'ora vera, vetrata sullo skyline (torri di vetro, guglia, parco di stagione). Fuori orario: pontile sul lago con barca, anatre, ramo e canne, al posto del giardino giapponese. Neve d'inverno (`isSnowing`, 6 ore in alcuni giorni) accanto alla pioggia. Prestazioni da rimisurare su release (A32) |
 | Notifica della pausa (Live Notification, nel codice "zen") | Silenziosa, fissa, animata per fase del giorno, fine fascia e contatore; niente allarmi. Vedi `MOTION.md` |
 | Riquadro Impostazioni rapide "Nook" | `ZenTileService`, icona per fase, sincronizzato con app e notifica |
 | Fondamenta (fase 0 della revisione lo-fi) | Scena visibile (`SceneCard` 2:1), messaggi "vita" e ore di sole collegati alla UI, permesso notifiche chiesto con `ZenNotificationCard`, timeline/saluto/fascia aggiornati ogni minuto (`rememberCurrentMinutes`), contatore filtrate deduplicato, lista app ricaricata al resume. Via `INTERNET`, stringhe inutilizzate e componenti morti. Dipendenze AndroidX aggiornate (BOM 2026.09), `targetSdk` 36, R8 in release |

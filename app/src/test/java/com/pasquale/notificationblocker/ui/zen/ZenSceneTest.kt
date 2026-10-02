@@ -121,6 +121,22 @@ class ZenSceneTest {
     }
 
     @Test
+    fun snow_onlyInWinter_inSixHourSpells() {
+        val year = (0 until 365).map { LocalDate.of(2026, 1, 1).plusDays(it.toLong()) }
+        val snowyHours = year.associateWith { day -> (0 until 24).count { ZenEnvironment.isSnowing(day, it) } }
+        assertTrue(snowyHours.values.all { it == 0 || it == 6 })
+        val snowyDays = snowyHours.filterValues { it > 0 }.keys
+        assertTrue(snowyDays.isNotEmpty())
+        assertTrue(snowyDays.all { Season.of(it) == Season.WINTER })
+        // Snow greys the sky like rain does
+        val day = snowyDays.first()
+        val hour = (0 until 24).first { ZenEnvironment.isSnowing(day, it) }
+        val state = env(day, LocalTime.of(hour, 0))
+        assertTrue(state.snow)
+        assertEquals(0f, state.light.rays)
+    }
+
+    @Test
     fun rainyScenes_lookDifferentFromDryOnes() {
         val dry = env(springDay, LocalTime.of(12, 0)).copy(rain = false, light = ZenPalette.Daylight)
         for (offWork in listOf(false, true)) {
@@ -193,6 +209,11 @@ class ZenSceneTest {
             val e = env(autumnDay, time).wet()
             val name = "%s_rain_%02d%02d.png".format(if (offWork) "nature" else "desk", time.hour, time.minute)
             ImageIO.write(render(e, 20f, offWork, scale = 3), "png", File(dir, name))
+        }
+        for (time in listOf(LocalTime.of(11, 0), LocalTime.of(20, 0))) {
+            val e = env(winterDay, time).let { it.copy(snow = true, light = ZenEnvironment.rainy(it.light)) }
+            ImageIO.write(render(e, 20f, false, scale = 3), "png", File(dir, "desk_snow_%02d00.png".format(time.hour)))
+            ImageIO.write(render(e, 20f, true, scale = 3), "png", File(dir, "nature_snow_%02d00.png".format(time.hour)))
         }
     }
 }
