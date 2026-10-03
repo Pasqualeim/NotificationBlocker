@@ -12,7 +12,11 @@ class PreferencesManager private constructor(context: Context) {
     // Master switch: when false nothing is ever blocked, regardless of the schedule
     var isBlockingEnabled: Boolean
         get() = prefs.getBoolean(KEY_BLOCKING_ENABLED, false)
-        set(value) = prefs.edit { putBoolean(KEY_BLOCKING_ENABLED, value) }
+        set(value) = prefs.edit {
+            putBoolean(KEY_BLOCKING_ENABLED, value)
+            // Turning blocking on again is an explicit request: a pause ended early starts again
+            if (value) remove(KEY_PAUSE_ENDED_WINDOW)
+        }
 
     // Store time as minutes from midnight
     var startTimeMinutes: Int
@@ -32,6 +36,21 @@ class PreferencesManager private constructor(context: Context) {
     var zenDismissedWindow: String?
         get() = prefs.getString(KEY_ZEN_DISMISSED_WINDOW, null)
         set(value) = prefs.edit { putString(KEY_ZEN_DISMISSED_WINDOW, value) }
+
+    // Window (ISO start date) the user ended early ("End the pause" in the break notification): work
+    // notifications come through until the next window. Cleared when blocking is turned on again
+    var pauseEndedWindow: String?
+        get() = prefs.getString(KEY_PAUSE_ENDED_WINDOW, null)
+        set(value) = prefs.edit { putString(KEY_PAUSE_ENDED_WINDOW, value) }
+
+    /** True when the current window was ended early by the user. */
+    fun isPauseEndedNow(): Boolean {
+        val ended = pauseEndedWindow ?: return false
+        return isInOffHoursNow() && ended == currentWindowKey()
+    }
+
+    /** True while Nook really holds work notifications: on, inside the window, not ended early. */
+    fun isPausedNow(): Boolean = isBlockingEnabled && isInOffHoursNow() && !isPauseEndedNow()
 
     /** Key of the off-hours window containing now (ISO date of its start). */
     fun currentWindowKey(): String = OffHours.windowStartDate(
@@ -101,6 +120,7 @@ class PreferencesManager private constructor(context: Context) {
         currentMinutes = OffHours.currentMinutes(),
         start = startTimeMinutes,
         end = endTimeMinutes,
+        endedEarly = isPauseEndedNow(),
     )
 
     companion object {
@@ -115,6 +135,7 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_FILTERED_COUNT = "filtered_count"
         private const val KEY_FILTERED_KEYS = "filtered_keys"
         private const val KEY_REPORT_SEEN_WINDOW = "report_seen_window"
+        const val KEY_PAUSE_ENDED_WINDOW = "pause_ended_window"
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null

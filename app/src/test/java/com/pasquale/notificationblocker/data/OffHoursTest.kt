@@ -58,4 +58,11 @@ class OffHoursTest {
         assertEquals(today, OffHours.windowStartDate(today, t(10), t(9), t(17)))
         assertEquals(today, OffHours.windowStartDate(today, t(3), t(8), t(8)))
     }
+
+    @Test
+    fun nextStart_isTheUsualStart_orMidnightForAWholeDayWindow() {
+        assertEquals(t(22), OffHours.nextStart(t(22), t(7)))
+        assertEquals(t(18), OffHours.nextStart(t(18), t(23)))
+        assertEquals(0, OffHours.nextStart(t(12), t(12)))
+    }
 }

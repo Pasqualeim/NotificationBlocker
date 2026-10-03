@@ -63,6 +63,9 @@
         <receiver
             android:name=".notification.ZenNotificationManager$DismissReceiver"
             android:exported="false" />
+        <receiver
+            android:name=".notification.ZenNotificationManager$EndPauseReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

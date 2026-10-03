@@ -36,4 +36,12 @@ class ZenTileStateTest {
         assertEquals(TileSubtitle.From(17 * 60), resolve(12).subtitle)
         assertEquals(TileSubtitle.AllDay, resolve(12, start = 0, end = 0).subtitle)
     }
+
+    @Test
+    fun pauseEndedEarly_saysWhenTheNextOneStarts() {
+        assertEquals(TileSubtitle.From(17 * 60), ZenTileState.resolve(summer.withHour(20), true, 17 * 60, 9 * 60, endedEarly = true).subtitle)
+        // Whole-day window: a new one starts at midnight
+        assertEquals(TileSubtitle.From(0), ZenTileState.resolve(summer.withHour(20), true, 8 * 60, 8 * 60, endedEarly = true).subtitle)
+        assertTrue(ZenTileState.resolve(summer.withHour(20), true, 17 * 60, 9 * 60, endedEarly = true).active)
+    }
 }

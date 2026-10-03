@@ -50,7 +50,7 @@ COSA FA
 • Scegli quali app sono di lavoro. Le altre non vengono toccate.
 • Imposti quando stacchi, anche a cavallo della mezzanotte o per tutto il giorno.
 • Un interruttore accende e spegne la pausa. C'è anche un riquadro nelle Impostazioni rapide.
-• Una notifica silenziosa ti ricorda che la pausa è attiva e fino a che ora. È facoltativa.
+• Una notifica silenziosa ti ricorda che la pausa è attiva e fino a che ora. Se ti serve, la termini da lì con un tocco. È facoltativa.
 • Quando torni, Nook ti dice quante notifiche di lavoro sono arrivate e da quali app.
 • Una piccola scena animata segue la luce vera del giorno e le stagioni: una scrivania mentre lavori, un giardino quando stacchi.
 • Tema chiaro e scuro, in italiano e in inglese.
@@ -94,7 +94,7 @@ WHAT IT DOES
 • You choose which apps are work apps. The others are left alone.
 • You set when you switch off, even across midnight or for the whole day.
 • One switch turns the break on and off. There's also a Quick Settings tile.
-• A silent notification reminds you that the break is on and when it ends. It's optional.
+• A silent notification reminds you that the break is on and when it ends. If you need to, you can end it from there with one tap. It's optional.
 • When you're back, Nook tells you how many work notifications came in and from which apps.
 • A small animated scene follows the real daylight and the seasons: a desk while you work, a garden when you're off.
 • Light and dark theme, in English and Italian.

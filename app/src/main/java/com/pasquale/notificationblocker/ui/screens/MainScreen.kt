@@ -66,6 +66,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.HeroHeader
 import com.pasquale.notificationblocker.ui.components.HomeColumn
@@ -94,6 +95,7 @@ fun MainScreen(
     val context = LocalContext.current
     val isBlockingEnabled by viewModel.isBlockingEnabled.collectAsStateWithLifecycle()
     val isInOffHoursNow by viewModel.isInOffHoursNow.collectAsStateWithLifecycle()
+    val isPauseEnded by viewModel.isPauseEnded.collectAsStateWithLifecycle()
     val startTimeMinutes by viewModel.startTimeMinutes.collectAsStateWithLifecycle()
     val endTimeMinutes by viewModel.endTimeMinutes.collectAsStateWithLifecycle()
     val blockedAppsCount by viewModel.blockedAppsCount.collectAsStateWithLifecycle()
@@ -129,6 +131,8 @@ fun MainScreen(
         endTimeMinutes = endTimeMinutes,
         blockedAppsCount = blockedAppsCount,
         hasListenerPermission = hasListenerPermission,
+        isPauseEnded = isPauseEnded,
+        onPauseAgain = viewModel::pauseAgain,
         lifeMessage = lifeMessage,
         sunshineMinutes = sunshineMinutes,
         // Asked once, only after the listener permission, which is the one blocking needs
@@ -166,6 +170,8 @@ fun MainScreenContent(
     onRequestPermission: () -> Unit,
     onNavigateToAppSelection: () -> Unit,
     modifier: Modifier = Modifier,
+    isPauseEnded: Boolean = false,
+    onPauseAgain: () -> Unit = {},
     lifeMessage: LifeMessage? = null,
     sunshineMinutes: Int? = null,
     showZenPrompt: Boolean = false,
@@ -343,13 +349,17 @@ fun MainScreenContent(
                 isBlockingEnabled = isBlockingEnabled,
                 isInOffHoursNow = isInOffHoursNow,
                 onBlockingEnabledChanged = onBlockingEnabledChanged,
-                lifeMessage = lifeMessage,
+                // The free-time line does not fit a pause ended early: the card says when the next one starts
+                lifeMessage = if (isPauseEnded) null else lifeMessage,
+                isPauseEnded = isPauseEnded,
+                nextPauseStart = OffHours.nextStart(startTimeMinutes, endTimeMinutes),
+                onPauseAgain = onPauseAgain,
                 modifier = Modifier.homeEntrance(animatedHeroVisible),
             )
 
             // The scene pauses while the page scrolls: on slower phones both together drop frames
             SceneCard(
-                isOffWork = isBlockingEnabled && isInOffHoursNow,
+                isOffWork = isBlockingEnabled && isInOffHoursNow && !isPauseEnded,
                 modifier = Modifier.homeScene().homeEntrance(animatedSceneVisible),
                 animate = !scrollState.isScrollInProgress,
             )

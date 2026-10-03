@@ -29,7 +29,8 @@ data class ZenTileState(
     val subtitle: TileSubtitle,
 ) {
     companion object {
-        fun resolve(now: LocalDateTime, blockingEnabled: Boolean, start: Int, end: Int): ZenTileState {
+        /** @param endedEarly the user ended the current window early: the tile says when the next one starts */
+        fun resolve(now: LocalDateTime, blockingEnabled: Boolean, start: Int, end: Int, endedEarly: Boolean = false): ZenTileState {
             val minute = now.hour * 60 + now.minute
             val (sunrise, sunset) = ZenEnvironment.sunTimes(now.toLocalDate())
             val icon = when (ZenEnvironment.timeOfDay(minute, sunrise, sunset)) {
@@ -39,6 +40,7 @@ data class ZenTileState(
             }
             val subtitle = when {
                 !blockingEnabled -> TileSubtitle.Off
+                endedEarly -> TileSubtitle.From(OffHours.nextStart(start, end))
                 start == end -> TileSubtitle.AllDay
                 OffHours.isWithin(minute, start, end) -> TileSubtitle.Until(end)
                 else -> TileSubtitle.From(start)

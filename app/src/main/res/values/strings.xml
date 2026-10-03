@@ -14,6 +14,9 @@
     <string name="hero_subtitle_disabled">All notifications come through as usual.</string>
     <string name="hero_subtitle_outside">Work notifications come through until your break starts.</string>
     <string name="hero_subtitle_inside">Notifications from your work apps are paused.</string>
+    <string name="status_ended">Pause ended</string>
+    <string name="pause_ended_text">Work notifications come through again. Your next pause starts at %1$s.</string>
+    <string name="hero_pause_again">Pause again</string>
 
     <!-- Simple Greetings -->
     <string name="greeting_welcome_life">Good evening</string>
@@ -83,14 +86,26 @@
     <string name="zen_msg_daylight">Enjoy the daylight</string>
     <string name="zen_msg_sunset">Enjoy the sunset</string>
     <string name="zen_msg_night">Work can wait</string>
+    <string name="zen_title_until">Work paused until %1$s</string>
+    <string name="zen_title_all_day">Work paused all day</string>
+    <string name="zen_held_none">Nothing from work so far</string>
+    <plurals name="zen_held">
+        <item quantity="one">%d work notification paused</item>
+        <item quantity="other">%d work notifications paused</item>
+    </plurals>
+    <plurals name="zen_held_from">
+        <item quantity="one">%1$d notification from %2$s paused</item>
+        <item quantity="other">%1$d notifications from %2$s paused</item>
+    </plurals>
+    <string name="zen_apps_two">%1$s and %2$s</string>
+    <plurals name="zen_apps_more">
+        <item quantity="one">%1$s, %2$s and %3$d more</item>
+        <item quantity="other">%1$s, %2$s and %3$d more</item>
+    </plurals>
+    <string name="zen_action_end">End the pause</string>
+    <!-- Quick Settings tile subtitle -->
     <string name="zen_until">Until %1$s</string>
     <string name="zen_all_day">All day</string>
-    <string name="zen_subtitle">%1$s · %2$s</string>
-    <string name="zen_filtered_none">nothing waiting yet</string>
-    <plurals name="zen_filtered">
-        <item quantity="one">%1$d notification waiting</item>
-        <item quantity="other">%1$d notifications waiting</item>
-    </plurals>
     <string name="zen_permission_title">Break notification</string>
     <string name="zen_permission_text">Nook can show a silent notification while your work apps are paused, with the time your break ends.</string>
     <string name="zen_permission_allow">Allow</string>

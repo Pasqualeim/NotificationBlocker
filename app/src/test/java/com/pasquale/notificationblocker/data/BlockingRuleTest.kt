@@ -18,7 +18,8 @@ class BlockingRuleTest {
         now: Int = t(23),
         start: Int = t(22),
         end: Int = t(7),
-    ) = BlockingRule.shouldBlock(pkg, enabled, apps, now, start, end)
+        endedEarly: Boolean = false,
+    ) = BlockingRule.shouldBlock(pkg, enabled, apps, now, start, end, endedEarly)
 
     @Test
     fun blocksSelectedAppInsideWindow() = assertTrue(shouldBlock())
@@ -34,6 +35,9 @@ class BlockingRuleTest {
 
     @Test
     fun noSelectedApps_blocksNothing() = assertFalse(shouldBlock(apps = emptySet()))
+
+    @Test
+    fun pauseEndedEarly_letsWorkThrough() = assertFalse(shouldBlock(endedEarly = true))
 
     @Test
     fun windowBoundaries_areHalfOpen() {

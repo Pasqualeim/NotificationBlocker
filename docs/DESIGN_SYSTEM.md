@@ -138,9 +138,9 @@ Scena, notifica, riquadro e testi seguono la luce **reale**: un solo modello, `u
 | `TimeOfDay` | Quando | Scena | Notifica della pausa | Icona del riquadro | Testo Home (dentro la pausa) |
 |---|---|---|---|---|---|
 | `DAWN` | da 40' prima a 50' dopo l'alba | cielo rosato, nebbia | illustrazione giorno, "Prenditela comoda stamattina" | foglia | "Il lavoro può aspettare." (prima dell'alba) |
-| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, riflessi sull'acqua | sole tra i bambù, "Goditi la luce del giorno" | sole | "Ti restano 3 h 20 min di luce. Il lavoro può aspettare." |
-| `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, sole riflesso nel lago, lanterna del pontile che si accende | tramonto sui colli, "Goditi il tramonto" | lanterna | luce rimasta, poi "La serata è tua." |
-| `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate, piani accesi in città | lanterna e lucciole, "Il lavoro può aspettare" | lanterna | "La serata è tua." |
+| `DAYLIGHT` | fino a 70' prima del tramonto | azzurro, sole alto, riflessi sull'acqua | pontile di giorno, "Goditi la luce del giorno" | sole | "Ti restano 3 h 20 min di luce. Il lavoro può aspettare." |
+| `GOLDEN_HOUR` | da 70' prima a 30' dopo il tramonto | arancio dorato, sole riflesso nel lago, lanterna del pontile che si accende | pontile al tramonto, "Goditi il tramonto" | lanterna | luce rimasta, poi "La serata è tua." |
+| `NIGHT` | il resto | blu cobalto, luna, stelle, lanterna, lucciole d'estate, piani accesi in città | pontile di notte con luna e lampione, "Il lavoro può aspettare" | lanterna | "La serata è tua." |
 
 I colori della scena non scattano al cambio di fase: la palette `Light` è interpolata minuto per minuto tra keyframe attorno ad alba e tramonto.
 
@@ -204,10 +204,10 @@ Vale per **ogni telefono**, qualunque altezza, densità e dimensione del font di
 |---|---|---|
 | 1 | La pagina entra | Tutto a grandezza naturale, scena a tutta larghezza |
 | 2 | Manca altezza | Si riduce **il resto** (titolo, card di stato, orari, spazi) tutto insieme e nella stessa proporzione, fino a **0,8** (`HomeFit.REST_MIN_SCALE`). Il testo più piccolo (12sp) non scende sotto ~9,6sp |
-| 3 | Non basta | Si rimpicciolisce **anche la scena**, sempre intera e centrata (2:1, nessun ritaglio), fino a **0,65** (`HomeFit.SCENE_MIN_SCALE`) |
+| 3 | Non basta | Si rimpicciolisce **anche la scena**, sempre intera e centrata (2:1, nessun ritaglio), fino a **0,6** (`HomeFit.SCENE_MIN_SCALE`) |
 | 4 | Ancora non basta (font di sistema molto grande, card dei permessi visibile, schermi sotto circa 360×700dp, es. 360×640) | La pagina scorre. Ultima risorsa, mai la prima |
 
-Misurato sul codice attuale (card in scala / scena): Galaxy A32 411×891dp font 1,1 → 0,90 / intera; 360×780dp font 1,0 → 0,81 / intera; 360×720dp → 0,8 / 0,7; 411×891dp font 1,3 → 0,85 / intera.
+Misurato sul codice attuale (card in scala / scena): Galaxy A32 411×891dp font 1,1 → 0,90 / intera; 360×780dp font 1,0 → 0,81 / intera; 360×720dp → 0,8 / 0,6–0,73 (secondo quanto va a capo il testo); 411×891dp font 1,3 → 0,85 / intera.
 
 Come si rispetta:
 
@@ -216,6 +216,7 @@ Come si rispetta:
 - I blocchi sono composti **dal primo frame**: l'entrata anima solo alpha e offset (`homeEntrance`), mai `AnimatedVisibility`, perché la scala dipende dall'altezza di tutti i blocchi. Le card che compaiono dopo (permessi, rapporto del mattino) si espandono da altezza 0: lo spazio sopra cresce con la loro altezza, nessun salto.
 - **Ogni blocco o riga nuova della Home mangia altezza**: dopo averlo aggiunto rifai la verifica qui sotto. Se per far entrare tutto serve scendere sotto i pavimenti, si accorcia il contenuto (testo, riga duplicata), non si taglia la scena.
 - Il pulsante "App di lavoro" in basso non scala (bersaglio da 56dp) e il padding sotto il contenuto è 0: i 16dp sopra il pulsante sono già nella barra.
+- **Fluidità**: una nuova scala ridispone tutte le card, quindi non insegue le animazioni frame per frame. Mentre le altezze cambiano (cambio di stato, card che si apre) la scala resta ferma e il layout costa quanto una `Column`; cambia una volta sola, quando le altezze sono ferme da 200 ms. Si ingrandisce di nuovo solo se avanzano più di 56dp, così l'interruttore non ridimensiona mai la pagina (resta al più un piccolo spazio in fondo). La scena si rimpicciolisce solo quando le card sono già al minimo, mai durante un'animazione.
 
 Verifica sul telefono (ripristina **sempre** alla fine):
 
@@ -249,9 +250,9 @@ Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazz
 
 | Superficie | File | Note |
 |---|---|---|
-| Notifica della pausa (nel codice "zen") | `notification/ZenNotificationManager.kt`, `res/layout/notification_zen_*.xml` | Silenziosa, fissa, `DecoratedCustomViewStyle` (header di sistema coerente). Illustrazione 40dp chiusa / 72dp espansa, testi con gli stili `TextAppearance.Compat.Notification*` così seguono tema e OEM |
+| Notifica della pausa (nel codice "zen") | `notification/ZenNotificationManager.kt`, `res/layout/notification_zen_*.xml` | Solo quando Nook trattiene davvero (acceso, dentro la fascia, almeno un'app, accesso concesso, pausa non terminata): mai mentre lavori. Titolo "Lavoro in pausa fino alle 07:00", testo "3 notifiche da Slack e Teams messe in pausa" (senza nomi a schermo bloccato; "messe in pausa", mai "ti aspettano": non tornano), espansa anche la frase del momento. Pulsante "Termina la pausa": la notifica sparisce e basta (niente seconda notifica di conferma, confondeva); in Home "Pausa finita" con "Rimetti in pausa". Silenziosa, fissa, `DecoratedCustomViewStyle`; illustrazione 40dp chiusa / 72dp espansa (il pontile della Home in miniatura, `tools/notification/zen_art.py`); testi con gli stili `TextAppearance.Compat.Notification*` così seguono tema e OEM |
 | Riquadro "Nook" | `tile/ZenTileService.kt` | Attivo = blocco acceso. Icona monocromatica per fase (foglia, sole, lanterna), etichetta sempre "Nook", sottotitolo "Fino alle 09:00" / "Dalle 17:00" / "Spento" |
-| Icona barra di stato | `ic_notification_zen.xml` | Ensō monocromatico |
+| Icona barra di stato | `ic_notification_nook.xml` | La tazza dell'icona, bianca (generata da `tools/icon/launcher_icon.py`) |
 
 Nuovi componenti: stateless, in `ui/components/`, con `modifier` come primo parametro opzionale e una `@Preview` per stato (chiaro + scuro).
 

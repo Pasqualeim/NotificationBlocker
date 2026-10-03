@@ -40,7 +40,9 @@ class ZenTileService : TileService() {
     private fun render() {
         val tile = qsTile ?: return
         val prefs = PreferencesManager.getInstance(this)
-        val state = ZenTileState.resolve(LocalDateTime.now(), prefs.isBlockingEnabled, prefs.startTimeMinutes, prefs.endTimeMinutes)
+        val state = ZenTileState.resolve(
+            LocalDateTime.now(), prefs.isBlockingEnabled, prefs.startTimeMinutes, prefs.endTimeMinutes, prefs.isPauseEndedNow(),
+        )
         tile.state = if (state.active) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         tile.label = getString(if (state.evening) R.string.tile_label_evening else R.string.tile_label_day)
         tile.icon = Icon.createWithResource(

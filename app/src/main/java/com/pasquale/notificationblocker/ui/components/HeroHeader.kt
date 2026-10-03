@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +25,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -47,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
@@ -54,7 +58,10 @@ import com.pasquale.notificationblocker.ui.zen.LifeMessage
 enum class HeroStatus {
     DISABLED,
     ACTIVE_OUTSIDE,
-    ACTIVE_INSIDE
+    ACTIVE_INSIDE,
+
+    /** Inside the window, but the user ended the pause early: work notifications come through. */
+    PAUSE_ENDED,
 }
 
 @Composable
@@ -64,9 +71,13 @@ fun HeroHeader(
     onBlockingEnabledChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     lifeMessage: LifeMessage? = null,
+    isPauseEnded: Boolean = false,
+    nextPauseStart: Int = 0,
+    onPauseAgain: () -> Unit = {},
 ) {
     val status = when {
         !isBlockingEnabled -> HeroStatus.DISABLED
+        isInOffHoursNow && isPauseEnded -> HeroStatus.PAUSE_ENDED
         isInOffHoursNow -> HeroStatus.ACTIVE_INSIDE
         else -> HeroStatus.ACTIVE_OUTSIDE
     }
@@ -76,6 +87,8 @@ fun HeroHeader(
         isBlockingEnabled = isBlockingEnabled,
         onBlockingEnabledChanged = onBlockingEnabledChanged,
         lifeMessage = lifeMessage,
+        nextPauseStart = nextPauseStart,
+        onPauseAgain = onPauseAgain,
         modifier = modifier,
     )
 }
@@ -86,6 +99,8 @@ private fun HeroHeaderContent(
     isBlockingEnabled: Boolean,
     onBlockingEnabledChanged: (Boolean) -> Unit,
     lifeMessage: LifeMessage?,
+    nextPauseStart: Int,
+    onPauseAgain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -94,7 +109,7 @@ private fun HeroHeaderContent(
         targetValue = when (status) {
             // A step darker than the ScheduleCard below, so the two don't merge
             HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceContainerHighest
-            HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondaryContainer
+            HeroStatus.ACTIVE_OUTSIDE, HeroStatus.PAUSE_ENDED -> MaterialTheme.colorScheme.secondaryContainer
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primaryContainer
         },
         animationSpec = Motion.standard(Motion.LONG),
@@ -104,7 +119,7 @@ private fun HeroHeaderContent(
     val animatedContentColor by animateColorAsState(
         targetValue = when (status) {
             HeroStatus.DISABLED -> MaterialTheme.colorScheme.onSurface
-            HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.onSecondaryContainer
+            HeroStatus.ACTIVE_OUTSIDE, HeroStatus.PAUSE_ENDED -> MaterialTheme.colorScheme.onSecondaryContainer
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.onPrimaryContainer
         },
         animationSpec = Motion.standard(Motion.LONG),
@@ -114,7 +129,7 @@ private fun HeroHeaderContent(
     val animatedIconBackground by animateColorAsState(
         targetValue = when (status) {
             HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceContainerLowest
-            HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+            HeroStatus.ACTIVE_OUTSIDE, HeroStatus.PAUSE_ENDED -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
             // Opaque "paper" disc: the primary bell stays >= 3:1 even at the peak of the glow behind it
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.surfaceContainerLowest
         },
@@ -125,7 +140,7 @@ private fun HeroHeaderContent(
     val animatedIconTint by animateColorAsState(
         targetValue = when (status) {
             HeroStatus.DISABLED -> MaterialTheme.colorScheme.onSurfaceVariant
-            HeroStatus.ACTIVE_OUTSIDE -> MaterialTheme.colorScheme.secondary
+            HeroStatus.ACTIVE_OUTSIDE, HeroStatus.PAUSE_ENDED -> MaterialTheme.colorScheme.secondary
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primary
         },
         animationSpec = Motion.standard(Motion.LONG),
@@ -155,7 +170,7 @@ private fun HeroHeaderContent(
                             when (status) {
                                 HeroStatus.DISABLED -> animatedContainerColor
                                 // Kept faint: stronger tints drop the 0.85-alpha subtitle below 4.5:1 in dark
-                                HeroStatus.ACTIVE_OUTSIDE -> secondaryColor.copy(alpha = 0.06f)
+                                HeroStatus.ACTIVE_OUTSIDE, HeroStatus.PAUSE_ENDED -> secondaryColor.copy(alpha = 0.06f)
                                 HeroStatus.ACTIVE_INSIDE -> primaryColor.copy(alpha = 0.06f)
                             }
                         )
@@ -209,6 +224,7 @@ private fun HeroHeaderContent(
                                 when (targetStatus) {
                                     HeroStatus.DISABLED -> R.string.status_disabled
                                     HeroStatus.ACTIVE_OUTSIDE -> R.string.status_standby
+                                    HeroStatus.PAUSE_ENDED -> R.string.status_ended
                                     HeroStatus.ACTIVE_INSIDE -> R.string.status_active
                                 }
                             ),
@@ -256,16 +272,26 @@ private fun HeroHeaderContent(
                 ) { targetStatus ->
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
-                            text = stringResource(
-                                when (targetStatus) {
-                                    HeroStatus.DISABLED -> R.string.hero_subtitle_disabled
-                                    HeroStatus.ACTIVE_OUTSIDE -> R.string.hero_subtitle_outside
-                                    HeroStatus.ACTIVE_INSIDE -> R.string.hero_subtitle_inside
-                                }
-                            ),
+                            text = when (targetStatus) {
+                                HeroStatus.DISABLED -> stringResource(R.string.hero_subtitle_disabled)
+                                HeroStatus.ACTIVE_OUTSIDE -> stringResource(R.string.hero_subtitle_outside)
+                                HeroStatus.ACTIVE_INSIDE -> stringResource(R.string.hero_subtitle_inside)
+                                HeroStatus.PAUSE_ENDED -> stringResource(R.string.pause_ended_text, OffHours.format(nextPauseStart))
+                            },
                             style = MaterialTheme.typography.bodyLarge,
                             color = animatedContentColor,
                         )
+                        // Ended from the break notification: one tap brings the pause back
+                        if (targetStatus == HeroStatus.PAUSE_ENDED) {
+                            OutlinedButton(
+                                onClick = onPauseAgain,
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = animatedContentColor),
+                                border = BorderStroke(1.dp, animatedContentColor.copy(alpha = 0.5f)),
+                                modifier = Modifier.padding(top = 10.dp),
+                            ) {
+                                Text(stringResource(R.string.hero_pause_again), fontWeight = FontWeight.SemiBold)
+                            }
+                        }
                         if (targetStatus == HeroStatus.ACTIVE_INSIDE) {
                             Text(
                                 text = stringResource(greetingRes),
@@ -391,6 +417,21 @@ fun HeroHeaderPreviewActiveOutside() {
             onBlockingEnabledChanged = {},
             modifier = Modifier.padding(16.dp),
             lifeMessage = LifeMessage.SunAfterWork(start = 17 * 60, minutes = 205),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Hero - Pause ended early")
+@Composable
+fun HeroHeaderPreviewPauseEnded() {
+    NotificationBlockerTheme {
+        HeroHeader(
+            isBlockingEnabled = true,
+            isInOffHoursNow = true,
+            onBlockingEnabledChanged = {},
+            modifier = Modifier.padding(16.dp),
+            isPauseEnded = true,
+            nextPauseStart = 18 * 60,
         )
     }
 }

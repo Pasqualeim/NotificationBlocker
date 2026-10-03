@@ -36,6 +36,12 @@ object OffHours {
         return (end - currentMinutes + MINUTES_PER_DAY) % MINUTES_PER_DAY
     }
 
+    /**
+     * When the next window starts once the current one was ended early: its usual [start], or midnight
+     * for a whole-day window, where a new window (key) begins every day.
+     */
+    fun nextStart(start: Int, end: Int): Int = if (start == end) 0 else start
+
     fun currentMinutes(calendar: Calendar = Calendar.getInstance()): Int =
         calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Zen notification, collapsed (inside DecoratedCustomViewStyle: max ~48dp tall).
+<!-- Break notification, collapsed: until when and what is waiting (inside DecoratedCustomViewStyle: max ~48dp tall).
      One of the three illustrations is visible, chosen by ZenNotificationManager. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

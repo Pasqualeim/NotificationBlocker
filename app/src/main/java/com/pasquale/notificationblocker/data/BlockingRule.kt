@@ -10,6 +10,7 @@ object BlockingRule {
         currentMinutes: Int,
         start: Int,
         end: Int,
+        endedEarly: Boolean = false,
     ): Boolean =
-        blockingEnabled && OffHours.isWithin(currentMinutes, start, end) && packageName in blockedApps
+        blockingEnabled && OffHours.isWithin(currentMinutes, start, end) && !endedEarly && packageName in blockedApps
 }

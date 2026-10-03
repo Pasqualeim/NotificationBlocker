@@ -19,14 +19,40 @@ class ZenNotificationStateTest {
         end: Int = 9 * 60,
         enabled: Boolean = true,
         dismissed: String? = null,
+        ended: String? = null,
+        canHold: Boolean = true,
         count: Int = 0,
-    ) = ZenNotificationState.resolve(now, enabled, start, end, dismissed) { count }
+        apps: List<String> = emptyList(),
+    ) = ZenNotificationState.resolve(now, enabled, start, end, dismissed, ended, canHold) { count to apps }
 
     @Test
     fun hiddenWhenBlockingIsOff_orOutsideTheWindow() {
         assertNull(resolve(summer.withHour(18), enabled = false))
         assertNull(resolve(summer.withHour(12)))
         assertNotNull(resolve(summer.withHour(18)))
+    }
+
+    @Test
+    fun hiddenWhenNookHoldsNothing_noWorkAppsOrNoAccess() {
+        assertNull(resolve(summer.withHour(18), canHold = false))
+    }
+
+    @Test
+    fun pauseEndedEarly_hiddenForThatWindowOnly() {
+        val window = resolve(summer.withHour(18))!!.window
+        assertNull(resolve(summer.withHour(23), ended = window))
+        assertNotNull(resolve(summer.plusDays(1).withHour(18), ended = window))
+    }
+
+    @Test
+    fun carriesTheHeldApps_andTheyChangeTheContentKey() {
+        val one = resolve(summer.withHour(18), count = 3, apps = listOf("slack"))!!
+        assertEquals(listOf("slack"), one.heldApps)
+        val two = resolve(summer.withHour(18), count = 3, apps = listOf("slack", "teams"))!!
+        assertNotEquals(one.contentKey, two.contentKey)
+        // A fourth app only changes the "and N more" part
+        val three = resolve(summer.withHour(18), count = 3, apps = listOf("slack", "teams", "mail"))!!
+        assertNotEquals(two.contentKey, three.contentKey)
     }
 
     @Test

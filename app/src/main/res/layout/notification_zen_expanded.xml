@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Zen notification, expanded: larger illustration and the full message. -->
+<!-- Break notification, expanded: larger illustration, until when, what is waiting and a calm line
+     for the moment of the day. The "End the pause" action is added below by the system. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -56,7 +57,7 @@
             style="@style/TextAppearance.Compat.Notification.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="3" />
+            android:maxLines="2" />
 
         <TextView
             android:id="@+id/zen_text"
@@ -64,6 +65,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:maxLines="3" />
+
+        <TextView
+            android:id="@+id/zen_message"
+            style="@style/TextAppearance.Compat.Notification.Info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:maxLines="2" />
     </LinearLayout>
 </LinearLayout>

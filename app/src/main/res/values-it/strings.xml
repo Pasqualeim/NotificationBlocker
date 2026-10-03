@@ -11,6 +11,9 @@
     <string name="hero_subtitle_disabled">Le notifiche arrivano tutte, come sempre.</string>
     <string name="hero_subtitle_outside">Le notifiche di lavoro arrivano fino all\'inizio della pausa.</string>
     <string name="hero_subtitle_inside">Le notifiche delle app di lavoro sono in pausa.</string>
+    <string name="status_ended">Pausa finita</string>
+    <string name="pause_ended_text">Le notifiche di lavoro arrivano di nuovo. La prossima pausa inizia alle %1$s.</string>
+    <string name="hero_pause_again">Rimetti in pausa</string>
 
     <!-- Simple Greetings -->
     <string name="greeting_welcome_life">Buonasera</string>
@@ -81,15 +84,29 @@
     <string name="zen_msg_daylight">Goditi la luce del giorno</string>
     <string name="zen_msg_sunset">Goditi il tramonto</string>
     <string name="zen_msg_night">Il lavoro può aspettare</string>
+    <string name="zen_title_until">Lavoro in pausa fino alle %1$s</string>
+    <string name="zen_title_all_day">Lavoro in pausa tutto il giorno</string>
+    <string name="zen_held_none">Niente dal lavoro, finora</string>
+    <plurals name="zen_held">
+        <item quantity="one">%d notifica di lavoro messa in pausa</item>
+        <item quantity="many">%d notifiche di lavoro messe in pausa</item>
+        <item quantity="other">%d notifiche di lavoro messe in pausa</item>
+    </plurals>
+    <plurals name="zen_held_from">
+        <item quantity="one">%1$d notifica da %2$s messa in pausa</item>
+        <item quantity="many">%1$d notifiche da %2$s messe in pausa</item>
+        <item quantity="other">%1$d notifiche da %2$s messe in pausa</item>
+    </plurals>
+    <string name="zen_apps_two">%1$s e %2$s</string>
+    <plurals name="zen_apps_more">
+        <item quantity="one">%1$s, %2$s e %3$d altra app</item>
+        <item quantity="many">%1$s, %2$s e altre %3$d app</item>
+        <item quantity="other">%1$s, %2$s e altre %3$d app</item>
+    </plurals>
+    <string name="zen_action_end">Termina la pausa</string>
+    <!-- Quick Settings tile subtitle -->
     <string name="zen_until">Fino alle %1$s</string>
     <string name="zen_all_day">Tutto il giorno</string>
-    <string name="zen_subtitle">%1$s · %2$s</string>
-    <string name="zen_filtered_none">ancora niente in attesa</string>
-    <plurals name="zen_filtered">
-        <item quantity="one">%1$d notifica in attesa</item>
-        <item quantity="many">%1$d notifiche in attesa</item>
-        <item quantity="other">%1$d notifiche in attesa</item>
-    </plurals>
     <string name="zen_permission_title">Notifica della pausa</string>
     <string name="zen_permission_text">Nook può mostrare una notifica silenziosa mentre le app di lavoro sono in pausa, con l\'ora in cui finisce la pausa.</string>
     <string name="zen_permission_allow">Consenti</string>

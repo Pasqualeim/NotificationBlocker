@@ -45,6 +45,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isInOffHoursNow = MutableStateFlow(preferencesManager.isInOffHoursNow())
     val isInOffHoursNow: StateFlow<Boolean> = _isInOffHoursNow.asStateFlow()
 
+    // Inside the window, but ended early from the break notification
+    private val _isPauseEnded = MutableStateFlow(preferencesManager.isPauseEndedNow())
+    val isPauseEnded: StateFlow<Boolean> = _isPauseEnded.asStateFlow()
+
     private val _blockedAppsCount = MutableStateFlow(preferencesManager.getBlockedApps().size)
     val blockedAppsCount: StateFlow<Int> = _blockedAppsCount.asStateFlow()
 
@@ -63,10 +67,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Window and total of the report on screen, so the minute tick doesn't re-read app labels
     private var shownReport: Pair<String, Int>? = null
 
-    // The Quick Settings tile writes the same preference: follow it live (kept as a field, the
-    // SharedPreferences registry only holds listeners weakly)
+    // The Quick Settings tile and the break notification write these preferences: follow them live
+    // (kept as a field, the SharedPreferences registry only holds listeners weakly)
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == PreferencesManager.KEY_BLOCKING_ENABLED) {
+        if (key == PreferencesManager.KEY_BLOCKING_ENABLED || key == PreferencesManager.KEY_PAUSE_ENDED_WINDOW) {
             _isBlockingEnabled.value = preferencesManager.isBlockingEnabled
             refreshOffHoursStatus()
         }
@@ -92,6 +96,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setBlockingEnabled(enabled: Boolean) {
         preferencesManager.isBlockingEnabled = enabled
         _isBlockingEnabled.value = enabled
+        _isPauseEnded.value = preferencesManager.isPauseEndedNow()
         // Turning blocking back on is an explicit request: show the zen notification again
         if (enabled) preferencesManager.zenDismissedWindow = null
         refreshZenNotification()
@@ -113,9 +118,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         ZenTileService.requestUpdate(getApplication())
     }
 
+    /** Brings back a pause ended early from the break notification. */
+    fun pauseAgain() {
+        ZenNotificationManager.resumePause(getApplication())
+        refreshOffHoursStatus()
+    }
+
     /** Called on resume: the clock may have crossed the window boundary while the app was away. */
     fun refreshOffHoursStatus() {
         _isInOffHoursNow.value = preferencesManager.isInOffHoursNow()
+        _isPauseEnded.value = preferencesManager.isPauseEndedNow()
         refreshZenNotification()
         refreshLife()
         refreshMorningReport()
@@ -124,7 +136,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Shows what waited outside during the last window, once it is over and until dismissed. */
     private fun refreshMorningReport() {
         val report = preferencesManager.lastReport()
-        val currentWindow = if (preferencesManager.isInOffHoursNow()) preferencesManager.currentWindowKey() else null
+        // A pause ended early counts as over: what was held so far is shown right away
+        val currentWindow = if (preferencesManager.isPausedNow()) preferencesManager.currentWindowKey() else null
         if (report == null || !MorningReport.shouldShow(report, LocalDate.now(), currentWindow, preferencesManager.reportSeenWindow)) {
             shownReport = null
             _morningReport.value = null
@@ -181,6 +194,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun toggleAppBlocked(packageName: String, blocked: Boolean) {
         preferencesManager.setAppBlocked(packageName, blocked)
         _blockedAppsCount.value = preferencesManager.getBlockedApps().size
+        // The first work app makes the break notification meaningful, removing the last one hides it
+        refreshZenNotification()
 
         // Update local state without full reload
         _installedApps.value = _installedApps.value.map { appInfo ->

@@ -16,7 +16,7 @@ Scegli le app di lavoro (Gmail, Teams, Slack…), imposta quando stacchi (predef
 - **Stato a colpo d'occhio**: tre stati (Spento, Programmato, In pausa ora) con colori e testi diversi.
 - **Permesso spiegato**: se manca l'accesso alle notifiche, una card dice cosa vede l'app e porta alle impostazioni di sistema. Viene ricontrollato ogni volta che torni nell'app.
 - **Scena animata**: una scrivania in ufficio con lo skyline dietro mentre lavori, un pontile sul lago quando stacchi, con la luce reale del giorno, quattro stagioni, pioggia e neve.
-- **Notifica della pausa** (facoltativa, Android 13+): notifica silenziosa e fissa mentre la pausa è attiva, con l'ora in cui finisce e quante notifiche di lavoro sono in attesa.
+- **Notifica della pausa** (facoltativa, Android 13+): notifica silenziosa e fissa mentre la pausa è attiva, con l'ora in cui finisce e quante notifiche di lavoro sono state messe in pausa. Il pulsante **Termina la pausa** fa arrivare di nuovo le notifiche di lavoro fino alla prossima fascia.
 - **Riquadro "Nook"** nelle Impostazioni rapide: accende e spegne la pausa dalla tendina.
 - **Durante la pausa**: quando la fascia finisce, la Home mostra quante notifiche di lavoro sono arrivate e da quali app.
 - **Tema**: palette calda e desaturata, chiara ("Chai") e scura ("Lo-fi night"), font Manrope, edge-to-edge.

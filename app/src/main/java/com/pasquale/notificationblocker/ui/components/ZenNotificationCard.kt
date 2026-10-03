@@ -62,7 +62,7 @@ fun ZenNotificationCard(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_notification_zen),
+                        painter = painterResource(R.drawable.ic_mug),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(28.dp),
