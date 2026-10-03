@@ -196,6 +196,38 @@ Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 - Dimensioni: 22–24dp inline, 28–30dp in contenitori circolari da 56dp, 32dp accanto ai titoli.
 - Icone decorative con `contentDescription = null`; quelle interattive con una stringa `cd_*` tradotta.
 
+## Home in una schermata (regola)
+
+Vale per **ogni telefono**, qualunque altezza, densità e dimensione del font di sistema: all'apertura la Home si vede **intera, senza scorrere**, e **la scena animata non si taglia mai**. Se manca spazio si ridimensiona il resto, non l'animazione. Ordine fisso delle priorità:
+
+| Passo | Quando | Cosa succede |
+|---|---|---|
+| 1 | La pagina entra | Tutto a grandezza naturale, scena a tutta larghezza |
+| 2 | Manca altezza | Si riduce **il resto** (titolo, card di stato, orari, spazi) tutto insieme e nella stessa proporzione, fino a **0,8** (`HomeFit.REST_MIN_SCALE`). Il testo più piccolo (12sp) non scende sotto ~9,6sp |
+| 3 | Non basta | Si rimpicciolisce **anche la scena**, sempre intera e centrata (2:1, nessun ritaglio), fino a **0,65** (`HomeFit.SCENE_MIN_SCALE`) |
+| 4 | Ancora non basta (font di sistema molto grande, card dei permessi visibile, schermi sotto circa 360×700dp, es. 360×640) | La pagina scorre. Ultima risorsa, mai la prima |
+
+Misurato sul codice attuale (card in scala / scena): Galaxy A32 411×891dp font 1,1 → 0,90 / intera; 360×780dp font 1,0 → 0,81 / intera; 360×720dp → 0,8 / 0,7; 411×891dp font 1,3 → 0,85 / intera.
+
+Come si rispetta:
+
+- **Non ritagliare la scena** per farla stare: niente `ContentScale.Crop`, niente altezza ridotta con il disegno tagliato. `SceneCard` riempie lo spazio che riceve e `HomeColumn` glielo dà sempre a 2:1 (o più piccolo, mai tagliato).
+- Home = `HomeColumn` in `MainScreen`; la politica è `HomeFit` (pura, testata in `HomeFitTest`). Non reintrodurre `Column` + `verticalArrangement`, `weight`, altezze fisse per le card grandi o `aspectRatio` sulla scena dentro la Home.
+- I blocchi sono composti **dal primo frame**: l'entrata anima solo alpha e offset (`homeEntrance`), mai `AnimatedVisibility`, perché la scala dipende dall'altezza di tutti i blocchi. Le card che compaiono dopo (permessi, rapporto del mattino) si espandono da altezza 0: lo spazio sopra cresce con la loro altezza, nessun salto.
+- **Ogni blocco o riga nuova della Home mangia altezza**: dopo averlo aggiunto rifai la verifica qui sotto. Se per far entrare tutto serve scendere sotto i pavimenti, si accorcia il contenuto (testo, riga duplicata), non si taglia la scena.
+- Il pulsante "App di lavoro" in basso non scala (bersaglio da 56dp) e il padding sotto il contenuto è 0: i 16dp sopra il pulsante sono già nella barra.
+
+Verifica sul telefono (ripristina **sempre** alla fine):
+
+```bash
+adb shell wm size 1080x2340 && adb shell wm density 480       # 360×780dp
+adb shell settings put system font_scale 1.0
+# apri l'app, screenshot, controlla: scena intera, tutto visibile, nessuno scorrimento (swipe verso l'alto: non si muove)
+adb shell wm size reset && adb shell wm density reset && adb shell settings put system font_scale 1.1   # ripristina i tuoi valori
+```
+
+Da provare almeno: 1080×2400 @420 font 1,1 (A32), 1080×2340 @480 font 1,0 e 1,1 (360×780dp), 720×1440 @320 (360×720dp), 1080×2400 font 1,3, sia con la scena "al lavoro" (scrivania) sia "fuori orario" (lago).
+
 ## Componenti
 
 Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App di lavoro".

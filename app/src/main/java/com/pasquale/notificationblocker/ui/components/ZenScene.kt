@@ -117,7 +117,7 @@ private fun BoxScope.ZenLayer(cached: Boolean, draw: ZenPainter.() -> Unit) {
     )
 }
 
-private const val CROP_TOP_SHARE = 0.1f
+private const val CROP_TOP_SHARE = 0.2f
 private const val FRAME_NANOS = 1_000_000_000L / 30
 
 /** [ZenPainter] on a Compose [DrawScope], scaled from scene units to the layer size. */
@@ -133,8 +133,7 @@ private class ComposeZenPainter : ZenPainter {
         scope = drawScope
         val scale = maxOf(drawScope.size.width / ScenePainting.W, drawScope.size.height / ScenePainting.H)
         val dx = (drawScope.size.width - ScenePainting.W * scale) / 2f
-        // Wider frames than 2:1 (Home squeezes the scene on short screens) crop the scene almost only from the
-        // bottom, so the sky, sun and moon stay in view
+        // Wider frames than 2:1 crop the scene mostly from the bottom, so the sky, sun and moon stay in view
         val dy = (drawScope.size.height - ScenePainting.H * scale) * CROP_TOP_SHARE
         drawScope.translate(dx, dy) {
             drawScope.scale(scale, pivot = Offset.Zero) { draw() }

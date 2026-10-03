@@ -38,7 +38,7 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 
 | Dove | Cosa | Implementazione |
 |---|---|---|
-| `MainScreen` | Entrata a cascata di header, permesso, hero, orari, scena | `AnimatedVisibility` fade + slide, `MEDIUM` per ogni elemento; la cascata viene da `Motion.Stagger` (80 ms) tra un elemento e il successivo |
+| `MainScreen` | Entrata a cascata di header, permesso, hero, scena, orari | `Modifier.homeEntrance` (`animateFloatAsState`, `MEDIUM`): alpha 0→1 e salita di metà altezza, `graphicsLayer`; la cascata viene da `Motion.Stagger` (80 ms). I blocchi sono già composti e misurati dal primo frame (non `AnimatedVisibility`): `HomeColumn` ne calcola la scala sull'altezza di tutti, vedi "Home in una schermata" in `DESIGN_SYSTEM.md` |
 | `MainScreen` | CTA che si "schiaccia" alla pressione | `animateFloatAsState` a `PRESS_SCALE` con `Motion.press()`, `graphicsLayer` scale |
 | `ScheduleCard` | Pillole degli orari che si "schiacciano" alla pressione | Come la CTA: `PRESS_SCALE` con `Motion.press()` |
 | `HeroHeader` | Colori della card per stato | `animateColorAsState` `LONG` |

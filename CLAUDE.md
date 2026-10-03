@@ -77,8 +77,9 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
     │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
-    │   ├── HomeColumn.kt            # Home layout: every child natural height, the one marked homeFlexible() (the scene) gets the viewport height left over
-    │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn: 120dp up to 2:1)
+    │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene
+    │   ├── HomeFit.kt               # pure: the scale policy of HomeColumn (unit tested)
+    │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
     │   ├── ZenScene.kt              # animated scene: office desk (work) / lake pier (off work)
     │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, shown after the listener permission
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
@@ -142,7 +143,7 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 - No weekday selection (the window applies every day).
 - `.agent/plan.md` is the original scaffolding brief: historical, outdated (mentions AlarmManager and components that no longer exist).
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.
-- Home must fit one screen without scrolling at the system font of a normal phone (checked on a Galaxy A32, 20:9, font 1.1). `HomeColumn` shrinks the scene (min 120dp, max 2:1) to what the other cards leave; it scrolls only when even the shortest scene does not fit (font 1.3+, permission card showing). The scene must enter last in the stagger in `MainScreen`, so it is not seen resizing while the other cards come in. Any new card on Home eats scene height: re-check on a real phone.
+- **Home fits one screen on every phone and the scene is never cropped** (rule and verification: `docs/DESIGN_SYSTEM.md`, "Home in una schermata"). If space is short the *rest* is resized, never the animation: cards scale down to 0.8 together (`HomeColumn`/`HomeFit`), only then the scene shrinks, whole, to 0.65, and only then the page scrolls. Home blocks are composed from the first frame and enter with `homeEntrance` (alpha + offset), never `AnimatedVisibility`. Every new block on Home eats height: re-check on the phone (`wm size`/`wm density`/`font_scale`, always reset after) before committing.
 - Performance: judge smoothness on a **release** build (debug Compose is ~2x slower and starts in 1.8 s instead of 0.4 s on a Galaxy A32). Measure with `adb shell dumpsys gfxinfo com.pasquale.nook framestats` (only the last 120 frames are kept, so reset right before the gesture). The Home scroll has no edge stretch (`overscrollEffect = null`): the page is barely taller than the screen and the stretch cost 18 ms of GPU per frame on a Mali-G52; the scene pauses while the page scrolls (`ZenScene(animate = …)`).
 
 ## graphify

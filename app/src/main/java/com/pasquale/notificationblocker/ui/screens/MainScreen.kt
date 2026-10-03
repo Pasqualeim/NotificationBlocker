@@ -9,10 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -78,7 +75,7 @@ import com.pasquale.notificationblocker.ui.components.PermissionCard
 import com.pasquale.notificationblocker.ui.components.SceneCard
 import com.pasquale.notificationblocker.ui.components.ScheduleCard
 import com.pasquale.notificationblocker.ui.components.ZenNotificationCard
-import com.pasquale.notificationblocker.ui.components.homeFlexible
+import com.pasquale.notificationblocker.ui.components.homeScene
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
@@ -193,11 +190,9 @@ fun MainScreenContent(
         delay(Motion.Stagger)
         animatedHeroVisible = true
         delay(Motion.Stagger)
-        animatedScheduleVisible = true
-        delay(Motion.Stagger)
-        // Last on purpose: the scene takes the height the others leave, so it must not appear
-        // (and be seen resizing) while they are still coming in
         animatedSceneVisible = true
+        delay(Motion.Stagger)
+        animatedScheduleVisible = true
     }
 
     val buttonInteractionSource = remember { MutableInteractionSource() }
@@ -287,9 +282,10 @@ fun MainScreenContent(
             }
         },
     ) { innerPadding ->
-        // Home fits one screen: the scene shrinks to whatever the other cards leave (HomeColumn reads the
-        // viewport from the min height that fillMaxSize passes through verticalScroll). It scrolls only
-        // when even the shortest scene does not fit, e.g. with the largest system font
+        // Home fits one screen on every phone, with the scene whole: HomeColumn scales the cards down
+        // before the scene (rule: docs/DESIGN_SYSTEM.md, "Home in una schermata") and reads the viewport
+        // from the min height that fillMaxSize passes through verticalScroll. It scrolls only as a last
+        // resort, e.g. with the largest system font
         HomeColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -301,54 +297,41 @@ fun MainScreenContent(
                 // No bottom padding: the CTA bar already has 16dp above its button
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp),
         ) {
-            AnimatedVisibility(
-                visible = animatedHeaderVisible,
-                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
-                    animationSpec = Motion.standard(Motion.MEDIUM),
-                ) { it / 2 },
+            Row(
+                modifier = Modifier.homeEntrance(animatedHeaderVisible),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(44.dp),
                 ) {
-                    Surface(
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(44.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_mug),
-                            contentDescription = null,
-                            modifier = Modifier.padding(6.dp),
-                        )
-                    }
-                    Text(
-                        text = stringResource(R.string.main_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                    Icon(
+                        painter = painterResource(R.drawable.ic_mug),
+                        contentDescription = null,
+                        modifier = Modifier.padding(6.dp),
                     )
                 }
+                Text(
+                    text = stringResource(R.string.main_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
 
-            AnimatedVisibility(
-                visible = animatedPermissionVisible,
-                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
-                    animationSpec = Motion.standard(Motion.MEDIUM),
-                ) { it / 2 },
-            ) {
-                Column {
-                    PermissionCard(
-                        visible = !hasListenerPermission,
-                        onRequestPermission = onRequestPermission,
-                    )
-                    ZenNotificationCard(
-                        visible = showZenPrompt,
-                        onAllow = onAllowZenNotification,
-                        onDismiss = onDismissZenPrompt,
-                    )
-                }
+            Column(modifier = Modifier.homeEntrance(animatedPermissionVisible)) {
+                PermissionCard(
+                    visible = !hasListenerPermission,
+                    onRequestPermission = onRequestPermission,
+                )
+                ZenNotificationCard(
+                    visible = showZenPrompt,
+                    onAllow = onAllowZenNotification,
+                    onDismiss = onDismissZenPrompt,
+                )
             }
 
             MorningReportCard(
@@ -356,49 +339,30 @@ fun MainScreenContent(
                 onDismiss = onDismissMorningReport,
             )
 
-            AnimatedVisibility(
-                visible = animatedHeroVisible,
-                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
-                    animationSpec = Motion.standard(Motion.MEDIUM),
-                ) { it / 2 },
-            ) {
-                HeroHeader(
-                    isBlockingEnabled = isBlockingEnabled,
-                    isInOffHoursNow = isInOffHoursNow,
-                    onBlockingEnabledChanged = onBlockingEnabledChanged,
-                    lifeMessage = lifeMessage,
-                )
-            }
+            HeroHeader(
+                isBlockingEnabled = isBlockingEnabled,
+                isInOffHoursNow = isInOffHoursNow,
+                onBlockingEnabledChanged = onBlockingEnabledChanged,
+                lifeMessage = lifeMessage,
+                modifier = Modifier.homeEntrance(animatedHeroVisible),
+            )
 
-            AnimatedVisibility(
-                visible = animatedSceneVisible,
-                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
-                    animationSpec = Motion.standard(Motion.MEDIUM),
-                ) { it / 2 },
-                modifier = Modifier.homeFlexible(),
-            ) {
-                // The scene pauses while the page scrolls: on slower phones both together drop frames
-                SceneCard(
-                    isOffWork = isBlockingEnabled && isInOffHoursNow,
-                    animate = !scrollState.isScrollInProgress,
-                )
-            }
+            // The scene pauses while the page scrolls: on slower phones both together drop frames
+            SceneCard(
+                isOffWork = isBlockingEnabled && isInOffHoursNow,
+                modifier = Modifier.homeScene().homeEntrance(animatedSceneVisible),
+                animate = !scrollState.isScrollInProgress,
+            )
 
-            AnimatedVisibility(
-                visible = animatedScheduleVisible,
-                enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
-                    animationSpec = Motion.standard(Motion.MEDIUM),
-                ) { it / 2 },
-            ) {
-                ScheduleCard(
-                    startTimeMinutes = startTimeMinutes,
-                    endTimeMinutes = endTimeMinutes,
-                    isBlockingEnabled = isBlockingEnabled,
-                    onStartTimeClick = { showStartTimePicker = true },
-                    onEndTimeClick = { showEndTimePicker = true },
-                    sunshineMinutes = sunshineMinutes,
-                )
-            }
+            ScheduleCard(
+                startTimeMinutes = startTimeMinutes,
+                endTimeMinutes = endTimeMinutes,
+                isBlockingEnabled = isBlockingEnabled,
+                onStartTimeClick = { showStartTimePicker = true },
+                onEndTimeClick = { showEndTimePicker = true },
+                sunshineMinutes = sunshineMinutes,
+                modifier = Modifier.homeEntrance(animatedScheduleVisible),
+            )
         }
     }
 
@@ -422,6 +386,24 @@ fun MainScreenContent(
             },
             onDismiss = { showEndTimePicker = false },
         )
+    }
+}
+
+/**
+ * Entrance of one Home block: it fades in and rises into place once [visible]. The block is composed
+ * and measured from the first frame, so [HomeColumn] fits the final page and nothing is resized
+ * while the blocks come in one after the other.
+ */
+@Composable
+private fun Modifier.homeEntrance(visible: Boolean): Modifier {
+    val progress by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = Motion.standard(Motion.MEDIUM),
+        label = "HomeEntrance",
+    )
+    return graphicsLayer {
+        alpha = progress
+        translationY = (1f - progress) * size.height / 2f
     }
 }
 
