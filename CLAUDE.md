@@ -77,7 +77,8 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
     │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
-    │   ├── SceneCard.kt             # 2:1 card framing the scene on Home (fixed height inside the scrolling column)
+    │   ├── HomeColumn.kt            # Home layout: every child natural height, the one marked homeFlexible() (the scene) gets the viewport height left over
+    │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn: 120dp up to 2:1)
     │   ├── ZenScene.kt              # animated scene: office desk (work) / lake pier (off work)
     │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, shown after the listener permission
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
@@ -141,6 +142,7 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 - No weekday selection (the window applies every day).
 - `.agent/plan.md` is the original scaffolding brief: historical, outdated (mentions AlarmManager and components that no longer exist).
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.
+- Home must fit one screen without scrolling at the system font of a normal phone (checked on a Galaxy A32, 20:9, font 1.1). `HomeColumn` shrinks the scene (min 120dp, max 2:1) to what the other cards leave; it scrolls only when even the shortest scene does not fit (font 1.3+, permission card showing). The scene must enter last in the stagger in `MainScreen`, so it is not seen resizing while the other cards come in. Any new card on Home eats scene height: re-check on a real phone.
 - Performance: judge smoothness on a **release** build (debug Compose is ~2x slower and starts in 1.8 s instead of 0.4 s on a Galaxy A32). Measure with `adb shell dumpsys gfxinfo com.pasquale.nook framestats` (only the last 120 frames are kept, so reset right before the gesture). The Home scroll has no edge stretch (`overscrollEffect = null`): the page is barely taller than the screen and the stretch cost 18 ms of GPU per frame on a Mali-G52; the scene pauses while the page scrolls (`ZenScene(animate = …)`).
 
 ## graphify

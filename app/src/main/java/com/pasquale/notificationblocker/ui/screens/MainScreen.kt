@@ -71,12 +71,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.HeroHeader
+import com.pasquale.notificationblocker.ui.components.HomeColumn
 import com.pasquale.notificationblocker.ui.components.MorningReportCard
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
 import com.pasquale.notificationblocker.ui.components.PermissionCard
 import com.pasquale.notificationblocker.ui.components.SceneCard
 import com.pasquale.notificationblocker.ui.components.ScheduleCard
 import com.pasquale.notificationblocker.ui.components.ZenNotificationCard
+import com.pasquale.notificationblocker.ui.components.homeFlexible
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
@@ -191,9 +193,11 @@ fun MainScreenContent(
         delay(Motion.Stagger)
         animatedHeroVisible = true
         delay(Motion.Stagger)
-        animatedSceneVisible = true
-        delay(Motion.Stagger)
         animatedScheduleVisible = true
+        delay(Motion.Stagger)
+        // Last on purpose: the scene takes the height the others leave, so it must not appear
+        // (and be seen resizing) while they are still coming in
+        animatedSceneVisible = true
     }
 
     val buttonInteractionSource = remember { MutableInteractionSource() }
@@ -283,7 +287,10 @@ fun MainScreenContent(
             }
         },
     ) { innerPadding ->
-        Column(
+        // Home fits one screen: the scene shrinks to whatever the other cards leave (HomeColumn reads the
+        // viewport from the min height that fillMaxSize passes through verticalScroll). It scrolls only
+        // when even the shortest scene does not fit, e.g. with the largest system font
+        HomeColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -291,9 +298,8 @@ fun MainScreenContent(
                 // reaches an edge, and the stretch redraws the whole page offscreen (18 ms of GPU per frame
                 // on a Galaxy A32 against 5 ms without it)
                 .verticalScroll(scrollState, overscrollEffect = null)
-                .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
-            // Tight on purpose: the scene keeps its size and Home still fits a 20:9 screen without scrolling
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                // No bottom padding: the CTA bar already has 16dp above its button
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp),
         ) {
             AnimatedVisibility(
                 visible = animatedHeaderVisible,
@@ -369,6 +375,7 @@ fun MainScreenContent(
                 enter = fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) + slideInVertically(
                     animationSpec = Motion.standard(Motion.MEDIUM),
                 ) { it / 2 },
+                modifier = Modifier.homeFlexible(),
             ) {
                 // The scene pauses while the page scrolls: on slower phones both together drop frames
                 SceneCard(

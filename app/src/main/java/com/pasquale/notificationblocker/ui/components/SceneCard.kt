@@ -1,7 +1,7 @@
 package com.pasquale.notificationblocker.ui.components
 
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,8 +13,9 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.ZenState
 
 /**
- * The room scene on Home, framed as a card with a fixed 2:1 ratio so it keeps its size inside
- * the scrolling column: at work the desk, off work the calm scene.
+ * The room scene on Home, framed as a card that fills the size it is given: at work the desk, off
+ * work the calm scene. On Home that size is whatever the page leaves free (see [HomeColumn]); the
+ * scene is drawn to cover it and crops from the bottom, so any proportion works.
  */
 @Composable
 fun SceneCard(
@@ -24,9 +25,7 @@ fun SceneCard(
     environment: ZenState? = null,
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(SCENE_ASPECT_RATIO),
+        modifier = modifier.fillMaxSize(),
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
@@ -34,13 +33,11 @@ fun SceneCard(
     }
 }
 
-private const val SCENE_ASPECT_RATIO = 2f
-
 @Preview(showBackground = true, name = "Scene card - off work")
 @Composable
 fun SceneCardOffWorkPreview() {
     NotificationBlockerTheme {
-        SceneCard(isOffWork = true, modifier = Modifier.padding(16.dp))
+        SceneCard(isOffWork = true, modifier = Modifier.padding(16.dp).aspectRatio(2f))
     }
 }
 
@@ -48,6 +45,14 @@ fun SceneCardOffWorkPreview() {
 @Composable
 fun SceneCardAtWorkPreview() {
     NotificationBlockerTheme {
-        SceneCard(isOffWork = false, modifier = Modifier.padding(16.dp))
+        SceneCard(isOffWork = false, modifier = Modifier.padding(16.dp).aspectRatio(2f))
+    }
+}
+
+@Preview(showBackground = true, name = "Scene card - short (3:1)")
+@Composable
+fun SceneCardShortPreview() {
+    NotificationBlockerTheme {
+        SceneCard(isOffWork = true, modifier = Modifier.padding(16.dp).aspectRatio(3f))
     }
 }
