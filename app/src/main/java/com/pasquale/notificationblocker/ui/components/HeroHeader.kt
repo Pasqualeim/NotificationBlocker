@@ -176,14 +176,14 @@ private fun HeroHeaderContent(
                         )
                     )
                 )
-                .padding(20.dp)
+                .padding(16.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 // Bell, short status and the master switch on one line, as in the mockup
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Tactile icon container with breathing sunlight glow in active state
                     Box(contentAlignment = Alignment.Center) {
@@ -197,14 +197,14 @@ private fun HeroHeaderContent(
                         }
                         Box(
                             modifier = Modifier
-                                .size(56.dp)
+                                .size(48.dp)
                                 .background(color = animatedIconBackground, shape = CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             MutedBellIcon(
                                 muted = isBlockingEnabled,
                                 tint = animatedIconTint,
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(26.dp)
                             )
                         }
                     }
@@ -228,7 +228,7 @@ private fun HeroHeaderContent(
                                     HeroStatus.ACTIVE_INSIDE -> R.string.status_active
                                 }
                             ),
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.ExtraBold,
                             color = animatedContentColor,
                             maxLines = 1,
@@ -259,7 +259,7 @@ private fun HeroHeaderContent(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // What happens now, and a warm line while holding notifications
                 AnimatedContent(
@@ -278,7 +278,7 @@ private fun HeroHeaderContent(
                                 HeroStatus.ACTIVE_INSIDE -> stringResource(R.string.hero_subtitle_inside)
                                 HeroStatus.PAUSE_ENDED -> stringResource(R.string.pause_ended_text, OffHours.format(nextPauseStart))
                             },
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = animatedContentColor,
                         )
                         // Ended from the break notification: one tap brings the pause back
@@ -287,7 +287,7 @@ private fun HeroHeaderContent(
                                 onClick = onPauseAgain,
                                 colors = ButtonDefaults.outlinedButtonColors(contentColor = animatedContentColor),
                                 border = BorderStroke(1.dp, animatedContentColor.copy(alpha = 0.5f)),
-                                modifier = Modifier.padding(top = 10.dp),
+                                modifier = Modifier.padding(top = 8.dp),
                             ) {
                                 Text(stringResource(R.string.hero_pause_again), fontWeight = FontWeight.SemiBold)
                             }
@@ -295,7 +295,7 @@ private fun HeroHeaderContent(
                         if (targetStatus == HeroStatus.ACTIVE_INSIDE) {
                             Text(
                                 text = stringResource(greetingRes),
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = animatedContentColor,
                             )
@@ -305,7 +305,7 @@ private fun HeroHeaderContent(
 
                 // Daylight & free time left message
                 if (lifeMessage != null) {
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     AnimatedContent(
                         targetState = lifeMessage,
                         transitionSpec = {
@@ -322,7 +322,7 @@ private fun HeroHeaderContent(
                                 painter = painterResource(if (message.isSunny()) R.drawable.ic_sun_dim else R.drawable.ic_moon),
                                 contentDescription = null,
                                 tint = animatedIconTint,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(18.dp),
                             )
                             Text(
                                 text = lifeMessageText(message),

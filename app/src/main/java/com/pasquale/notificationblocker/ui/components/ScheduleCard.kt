@@ -81,8 +81,8 @@ fun ScheduleCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Title and the "time for you" badge on one line; the badge drops below at large font sizes
             FlowRow(
@@ -104,9 +104,9 @@ fun ScheduleCard(
                 ) {
                     Text(
                         text = dedicatedText,
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     )
                 }
             }
@@ -128,12 +128,12 @@ fun ScheduleCard(
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier.size(28.dp),
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
-                        modifier = Modifier.padding(7.dp),
+                        modifier = Modifier.padding(6.dp),
                     )
                 }
                 TimePill(
@@ -219,7 +219,7 @@ private fun TimePill(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 14.dp, vertical = 10.dp),
         ) {
             Text(
                 text = label.uppercase(),
@@ -230,7 +230,7 @@ private fun TimePill(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = time,
-                style = TimeDisplayTextStyle.copy(fontSize = 24.sp, lineHeight = 30.sp),
+                style = TimeDisplayTextStyle.copy(fontSize = 22.sp, lineHeight = 28.sp),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.ExtraBold
             )

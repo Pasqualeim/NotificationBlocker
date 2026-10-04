@@ -9,7 +9,11 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -184,17 +188,14 @@ fun MainScreenContent(
     var showEndTimePicker by remember { mutableStateOf(value = false) }
 
     var animatedHeaderVisible by remember { mutableStateOf(value = false) }
-    var animatedPermissionVisible by remember { mutableStateOf(value = false) }
-    var animatedHeroVisible by remember { mutableStateOf(value = false) }
+    var animatedTopCardVisible by remember { mutableStateOf(value = false) }
     var animatedScheduleVisible by remember { mutableStateOf(value = false) }
     var animatedSceneVisible by remember { mutableStateOf(value = false) }
 
     LaunchedEffect(Unit) {
         animatedHeaderVisible = true
         delay(Motion.Stagger)
-        animatedPermissionVisible = true
-        delay(Motion.Stagger)
-        animatedHeroVisible = true
+        animatedTopCardVisible = true
         delay(Motion.Stagger)
         animatedSceneVisible = true
         delay(Motion.Stagger)
@@ -312,7 +313,7 @@ fun MainScreenContent(
                     shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(44.dp),
+                    modifier = Modifier.size(40.dp),
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_mug),
@@ -322,40 +323,50 @@ fun MainScreenContent(
                 }
                 Text(
                     text = stringResource(R.string.main_title),
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
 
-            Column(modifier = Modifier.homeEntrance(animatedPermissionVisible)) {
-                PermissionCard(
-                    visible = !hasListenerPermission,
-                    onRequestPermission = onRequestPermission,
-                )
-                ZenNotificationCard(
-                    visible = showZenPrompt,
-                    onAllow = onAllowZenNotification,
-                    onDismiss = onDismissZenPrompt,
-                )
+            // One card at the top, the most urgent thing first: an extra card would push the page past the
+            // screen and HomeColumn would shrink every text, then grow it back once the card is gone
+            val topCard = when {
+                !hasListenerPermission -> TopCard.Permission
+                showZenPrompt -> TopCard.ZenPrompt
+                morningReport != null -> TopCard.Report(morningReport)
+                else -> TopCard.Status
             }
-
-            MorningReportCard(
-                report = if (animatedHeroVisible) morningReport else null,
-                onDismiss = onDismissMorningReport,
-            )
-
-            HeroHeader(
-                isBlockingEnabled = isBlockingEnabled,
-                isInOffHoursNow = isInOffHoursNow,
-                onBlockingEnabledChanged = onBlockingEnabledChanged,
-                // The free-time line does not fit a pause ended early: the card says when the next one starts
-                lifeMessage = if (isPauseEnded) null else lifeMessage,
-                isPauseEnded = isPauseEnded,
-                nextPauseStart = OffHours.nextStart(startTimeMinutes, endTimeMinutes),
-                onPauseAgain = onPauseAgain,
-                modifier = Modifier.homeEntrance(animatedHeroVisible),
-            )
+            AnimatedContent(
+                targetState = topCard,
+                // A report that changes while shown is updated in place, not cross-faded
+                contentKey = { it::class },
+                transitionSpec = {
+                    fadeIn(animationSpec = Motion.standard(Motion.MEDIUM)) togetherWith
+                        fadeOut(animationSpec = Motion.standard(Motion.SHORT))
+                },
+                modifier = Modifier.homeEntrance(animatedTopCardVisible),
+                label = "HomeTopCard",
+            ) { card ->
+                when (card) {
+                    TopCard.Permission -> PermissionCard(onRequestPermission = onRequestPermission)
+                    TopCard.ZenPrompt -> ZenNotificationCard(
+                        onAllow = onAllowZenNotification,
+                        onDismiss = onDismissZenPrompt,
+                    )
+                    is TopCard.Report -> MorningReportCard(report = card.report, onDismiss = onDismissMorningReport)
+                    TopCard.Status -> HeroHeader(
+                        isBlockingEnabled = isBlockingEnabled,
+                        isInOffHoursNow = isInOffHoursNow,
+                        onBlockingEnabledChanged = onBlockingEnabledChanged,
+                        // The free-time line does not fit a pause ended early: the card says when the next one starts
+                        lifeMessage = if (isPauseEnded) null else lifeMessage,
+                        isPauseEnded = isPauseEnded,
+                        nextPauseStart = OffHours.nextStart(startTimeMinutes, endTimeMinutes),
+                        onPauseAgain = onPauseAgain,
+                    )
+                }
+            }
 
             // The scene pauses while the page scrolls: on slower phones both together drop frames
             SceneCard(
@@ -397,6 +408,18 @@ fun MainScreenContent(
             onDismiss = { showEndTimePicker = false },
         )
     }
+}
+
+/**
+ * What the card at the top of Home shows, one at a time: the listener permission (nothing works
+ * without it), then the optional notification prompt, then the morning report, then the status card
+ * with the master switch.
+ */
+private sealed interface TopCard {
+    data object Permission : TopCard
+    data object ZenPrompt : TopCard
+    data class Report(val report: MorningReportUi) : TopCard
+    data object Status : TopCard
 }
 
 /**

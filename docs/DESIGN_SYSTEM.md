@@ -161,8 +161,10 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 
 | Stile | Uso tipico |
 |---|---|
-| `headlineMedium` ExtraBold | Titolo della schermata principale |
+| `headlineSmall` ExtraBold | Titolo della Home ("Nook") |
+| `titleLarge` ExtraBold | Stato breve nella card di stato ("In pausa ora") |
 | `titleMedium` Bold | Titoli card, testo CTA |
+| `bodyMedium` | Testi delle card della Home (sottotitolo di stato, disclosure, resoconto, messaggio "vita") |
 | `bodyLarge` SemiBold | Etichetta del toggle |
 | `bodySmall` | Sottotitoli e descrizioni (alpha 0.85 sul colore del contenuto) |
 | `labelMedium` Bold | Badge e contatori |
@@ -179,21 +181,21 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 |---|---|---|
 | `extraSmall` | 8dp | Righe dello skeleton (`ShimmerSkeleton`) |
 | `small` | 12dp | Bottoni dentro le card (`PermissionCard`, `ZenNotificationCard`) |
-| `medium` | 20dp | Card secondarie (`PermissionCard`, `ZenNotificationCard`), riga app, pillole degli orari |
-| `large` | 28dp | Card principali (card di stato, `ScheduleCard`), dialog del `TimePicker` |
+| `medium` | 20dp | Riga app, pillole degli orari |
+| `large` | 28dp | Card della Home: la card in cima (stato, permesso, invito alla notifica, resoconto), `ScheduleCard`; dialog del `TimePicker` |
 | `extraLarge` | 32dp | `SceneCard` |
 | `CircleShape` | pill | Bottone CTA, barra di ricerca, filtri, badge, contenitori icone |
 
 Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 
-- Margine orizzontale delle schermate: **16dp**. Spazio tra le card: **16dp**. Padding interno delle card: **20dp**. Niente card annidate: lo switch sta nella riga del titolo della card di stato.
+- Margine orizzontale delle schermate: **16dp**. Spazio tra le card: **12dp** in Home (cresce fino a 24dp se avanza schermo, vedi sotto). Padding interno delle card della Home: **16dp**. Niente card annidate: lo switch sta nella riga del titolo della card di stato.
 - Target di tocco ≥ **48dp**. CTA principale alta **56dp**.
 - Rispetta sempre gli insets (`WindowInsets.safeDrawing`, `navigationBarsPadding()`): l'app è edge-to-edge.
 
 ## Iconografia
 
 - Solo `material-icons-core` (Filled). Se serve un'icona che non c'è, copiala come vector drawable in `res/drawable/` (es. `ic_moon.xml`, `ic_sun_dim.xml`) invece di aggiungere `material-icons-extended`.
-- Dimensioni: 22–24dp inline, 28–30dp in contenitori circolari da 56dp, 32dp accanto ai titoli.
+- Dimensioni: 18–24dp inline e accanto ai titoli delle card, 26dp nel cerchio da 48dp della card di stato.
 - Icone decorative con `contentDescription = null`; quelle interattive con una stringa `cd_*` tradotta.
 
 ## Home in una schermata (regola)
@@ -205,15 +207,31 @@ Vale per **ogni telefono**, qualunque altezza, densità e dimensione del font di
 | 1 | La pagina entra | Tutto a grandezza naturale, scena a tutta larghezza |
 | 2 | Manca altezza | Si riduce **il resto** (titolo, card di stato, orari, spazi) tutto insieme e nella stessa proporzione, fino a **0,8** (`HomeFit.REST_MIN_SCALE`). Il testo più piccolo (12sp) non scende sotto ~9,6sp |
 | 3 | Non basta | Si rimpicciolisce **anche la scena**, sempre intera e centrata (2:1, nessun ritaglio), fino a **0,6** (`HomeFit.SCENE_MIN_SCALE`) |
-| 4 | Ancora non basta (font di sistema molto grande, card dei permessi visibile, schermi sotto circa 360×700dp, es. 360×640) | La pagina scorre. Ultima risorsa, mai la prima |
+| 4 | Ancora non basta (font di sistema molto grande, schermi sotto circa 360×700dp, es. 360×640) | La pagina scorre. Ultima risorsa, mai la prima |
 
-Misurato sul codice attuale (card in scala / scena): Galaxy A32 411×891dp font 1,1 → 0,90 / intera; 360×780dp font 1,0 → 0,81 / intera; 360×720dp → 0,8 / 0,6–0,73 (secondo quanto va a capo il testo); 411×891dp font 1,3 → 0,85 / intera.
+**Il testo non cambia grandezza da solo.** Le misure della Home sono compatte apposta (vedi tabella sotto), così sui telefoni comuni tutto entra a grandezza naturale e la scala resta 1. E in cima c'è **un solo posto**: permesso → invito alla notifica della pausa → resoconto del mattino → card di stato con l'interruttore, una alla volta (`TopCard` in `MainScreen`). Una card in più sopra le altre spingeva la pagina oltre lo schermo: tutte le scritte si rimpicciolivano e tornavano grandi appena la card spariva (dopo aver dato l'accesso: +25% di colpo).
+
+Misurato sul codice attuale (card in scala / scena, prima con la card del permesso poi con la card di stato):
+
+| Schermo | Font | Permesso | Stato |
+|---|---|---|---|
+| 411×914dp (1080×2400 @420, come il Galaxy A32) | 1,0 | 1 / intera | 1 / intera |
+| 411×914dp | 1,1 | 1 / intera | 1 / intera |
+| 411×914dp | 1,3 | 0,91 / intera | 1 / intera |
+| 360×780dp | 1,0 | 0,87 / intera | 0,99 / intera |
+| 360×780dp | 1,1 | 0,84 / intera | 0,96 / intera |
+| 360×720dp | 1,0 | 0,8 / 0,88 | 0,87 / intera |
+| 360×640dp | 1,0 | 0,8 / 0,6 + scorre | 0,8 / 0,71 |
+
+Misure compatte della Home (non riaumentarle senza rifare la tabella): titolo "Nook" `headlineSmall` con tazza da 40dp; card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
 
 Come si rispetta:
 
 - **Non ritagliare la scena** per farla stare: niente `ContentScale.Crop`, niente altezza ridotta con il disegno tagliato. `SceneCard` riempie lo spazio che riceve e `HomeColumn` glielo dà sempre a 2:1 (o più piccolo, mai tagliato).
 - Home = `HomeColumn` in `MainScreen`; la politica è `HomeFit` (pura, testata in `HomeFitTest`). Non reintrodurre `Column` + `verticalArrangement`, `weight`, altezze fisse per le card grandi o `aspectRatio` sulla scena dentro la Home.
-- I blocchi sono composti **dal primo frame**: l'entrata anima solo alpha e offset (`homeEntrance`), mai `AnimatedVisibility`, perché la scala dipende dall'altezza di tutti i blocchi. Le card che compaiono dopo (permessi, rapporto del mattino) si espandono da altezza 0: lo spazio sopra cresce con la loro altezza, nessun salto.
+- I blocchi sono composti **dal primo frame**: l'entrata anima solo alpha e offset (`homeEntrance`), mai `AnimatedVisibility`, perché la scala dipende dall'altezza di tutti i blocchi.
+- **Niente card in più impilate sopra le altre**: un avviso o un invito nuovo prende il posto in cima (`TopCard`, dissolvenza con `AnimatedContent`), con la sua priorità. Se proprio deve stare altrove, verifica che con e senza di lui la scala resti la stessa sui 411dp con font 1,1.
+- La pagina resta **ancorata in alto**: se avanza schermo gli spazi tra i blocchi crescono fino a 24dp e il resto resta in fondo. Una pagina più corta del viewport non viene centrata (si sposterebbe su e giù a ogni cambio di altezza della card in cima).
 - **Ogni blocco o riga nuova della Home mangia altezza**: dopo averlo aggiunto rifai la verifica qui sotto. Se per far entrare tutto serve scendere sotto i pavimenti, si accorcia il contenuto (testo, riga duplicata), non si taglia la scena.
 - Il pulsante "App di lavoro" in basso non scala (bersaglio da 56dp) e il padding sotto il contenuto è 0: i 16dp sopra il pulsante sono già nella barra.
 - **Fluidità**: una nuova scala ridispone tutte le card, quindi non insegue le animazioni frame per frame. Mentre le altezze cambiano (cambio di stato, card che si apre) la scala resta ferma e il layout costa quanto una `Column`; cambia una volta sola, quando le altezze sono ferme da 200 ms. Si ingrandisce di nuovo solo se avanzano più di 56dp, così l'interruttore non ridimensiona mai la pagina (resta al più un piccolo spazio in fondo). La scena si rimpicciolisce solo quando le card sono già al minimo, mai durante un'animazione.
@@ -231,20 +249,21 @@ Da provare almeno: 1080×2400 @420 font 1,1 (A32), 1080×2340 @480 font 1,0 e 1,
 
 ## Componenti
 
-Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card dei permessi (se servono) → card di stato → `SceneCard` → `ScheduleCard`; in fondo la CTA "App di lavoro".
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `ScheduleCard`; in fondo la CTA "App di lavoro".
 
 | Componente | File | Note |
 |---|---|---|
-| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `headlineSmall` ExtraBold) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
+| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `titleLarge` ExtraBold) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
 | Campanella animata | `MutedBellIcon.kt` | Stato "silenziato" = barra diagonale; vedi `MOTION.md` |
-| Orari | `ScheduleCard.kt`, `Timeline24h.kt` | Titolo "Quando staccare" + badge "N ore libere", pillole INIZIO → FINE (`surfaceContainerLowest`, orario 24sp ExtraBold, freccia in un cerchio `primary`), timeline con l'etichetta "Ora 16:30" sopra l'indicatore. Tocca un orario per aprire il `TimePicker` 24h in `AlertDialog` |
-| Permesso | `PermissionCard.kt` | Visibile solo senza accesso; porta alle impostazioni di sistema |
+| Orari | `ScheduleCard.kt`, `Timeline24h.kt` | Titolo "Quando staccare" + badge "N ore libere", pillole INIZIO → FINE (`surfaceContainerLowest`, orario 22sp ExtraBold, freccia in un cerchio `primary`), timeline con l'etichetta "Ora 16:30" sopra l'indicatore. Tocca un orario per aprire il `TimePicker` 24h in `AlertDialog` |
+| Permesso | `PermissionCard.kt` | Al posto della card di stato finché manca l'accesso (senza, l'interruttore non servirebbe a niente); porta alle impostazioni di sistema |
+| Resoconto del mattino | `MorningReportCard.kt` | Al posto della card di stato finché non tocchi "OK" |
 | Riga app | `AppItemRow.kt` | Bordo e container animati (`Motion.SHORT`) quando l'app è selezionata |
 | Caricamento / vuoto | `ShimmerSkeleton.kt`, `EmptyState.kt` | Mai spinner a tutto schermo: skeleton con la forma del contenuto |
 | Messaggio "vita" | `HeroHeader.kt` (`lifeMessage`), `LifeMessageText.kt` | Sotto il titolo della card di stato: sole o luna + frase da `LifeCopy`. Aggiornato ogni minuto con l'app in primo piano |
 | Luce nella fascia | `ScheduleCard.kt` (`sunshineMinutes`) | "3 h 42 min di luce nel tuo tempo libero" (sera + mattina dopo), oppure "Il tuo tempo libero inizia dopo il tramonto" |
 | Scena | `ZenScene.kt` | Scrivania in ufficio al lavoro, pontile sul lago fuori orario; vedi `MOTION.md` |
-| Invito alla notifica della pausa | `ZenNotificationCard.kt` | Solo Android 13+, dopo il permesso essenziale; "Non ora" non viene più riproposto |
+| Invito alla notifica della pausa | `ZenNotificationCard.kt` | Solo Android 13+, al posto della card di stato subito dopo il permesso essenziale; "Non ora" non viene più riproposto |
 
 ### Superfici di sistema
 

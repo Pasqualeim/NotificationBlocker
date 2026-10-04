@@ -68,20 +68,20 @@ app/src/main/java/com/pasquale/notificationblocker/
 └── ui/
     ├── MainViewModel.kt             # AndroidViewModel shared by both screens (StateFlows)
     ├── screens/
-    │   ├── MainScreen.kt            # staggered entrance: hero, scene, schedule; time pickers, bottom CTA
+    │   ├── MainScreen.kt            # staggered entrance: top card, scene, schedule; one top card at a time (TopCard); time pickers, bottom CTA
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter, sections
     ├── components/
     │   ├── HeroHeader.kt            # status card (3 HeroStatus states) + master Switch
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on
     │   ├── ScheduleCard.kt          # start/end TimeCards + quiet duration
     │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
-    │   ├── PermissionCard.kt        # listener-permission prompt (animated visibility)
-    │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, until dismissed
-    │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene
+    │   ├── PermissionCard.kt        # listener-permission prompt (in the top card's place until access is granted)
+    │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, in the top card's place until dismissed
+    │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room
     │   ├── HomeFit.kt               # pure: the scale policy of HomeColumn (unit tested)
     │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
     │   ├── ZenScene.kt              # animated scene: office desk (work) / lake pier (off work)
-    │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, shown after the listener permission
+    │   ├── ZenNotificationCard.kt   # one-time POST_NOTIFICATIONS prompt, in the top card's place right after the listener permission
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
     │   ├── AppItemRow.kt, AppIconImage.kt
     │   └── ShimmerSkeleton.kt, EmptyState.kt   # loading / empty states
@@ -112,7 +112,7 @@ Apps come from `queryIntentActivities(ACTION_MAIN + CATEGORY_LAUNCHER)`, matched
 
 ### Permissions
 
-Only notification listener access is required, granted by the user in system settings (`Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`). `MainScreen` re-checks it on `ON_RESUME` and shows `PermissionCard` when missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ `ZenNotificationCard` asks for it once, after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
+Only notification listener access is required, granted by the user in system settings (`Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`). `MainScreen` re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ `ZenNotificationCard` asks for it once, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
 
 ### Zen status notification
 
@@ -143,7 +143,7 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 - No weekday selection (the window applies every day).
 - `.agent/plan.md` is the original scaffolding brief: historical, outdated (mentions AlarmManager and components that no longer exist).
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.
-- **Home fits one screen on every phone and the scene is never cropped** (rule and verification: `docs/DESIGN_SYSTEM.md`, "Home in una schermata"). If space is short the *rest* is resized, never the animation: cards scale down to 0.8 together (`HomeColumn`/`HomeFit`), only then the scene shrinks, whole, to 0.6, and only then the page scrolls. Home blocks are composed from the first frame and enter with `homeEntrance` (alpha + offset), never `AnimatedVisibility`. Every new block on Home eats height: re-check on the phone (`wm size`/`wm density`/`font_scale`, always reset after) before committing. Cost: `HomeColumn` measures the cards once per layout, like a `Column`; the scale never follows an animation frame by frame (that relaid out every card each frame and made the switch stutter), it changes once the heights are still (`SETTLE_MILLIS`) and grows back only for more than 56dp of room.
+- **Home fits one screen on every phone and the scene is never cropped** (rule and verification: `docs/DESIGN_SYSTEM.md`, "Home in una schermata"). If space is short the *rest* is resized, never the animation: cards scale down to 0.8 together (`HomeColumn`/`HomeFit`), only then the scene shrinks, whole, to 0.6, and only then the page scrolls. Home blocks are composed from the first frame and enter with `homeEntrance` (alpha + offset), never `AnimatedVisibility`. Text must not change size by itself: Home sizes are compact (16dp card padding, `titleLarge` status, `bodyMedium` texts, 22sp times) so common phones fit at scale 1, and the top of Home holds **one card at a time** (`TopCard`: permission → notification prompt → morning report → status card with the switch); a card stacked on top pushed the page past the screen, every text shrank, then grew back by 25% once it was gone. Every new block on Home eats height: re-check on the phone (`wm size`/`wm density`/`font_scale`, always reset after) before committing. Cost: `HomeColumn` measures the cards once per layout, like a `Column`; the scale never follows an animation frame by frame (that relaid out every card each frame and made the switch stutter), it changes once the heights are still (`SETTLE_MILLIS`) and grows back only for more than 56dp of room.
 - Performance: judge smoothness on a **release** build (debug Compose is ~2x slower and starts in 1.8 s instead of 0.4 s on a Galaxy A32). Measure with `adb shell dumpsys gfxinfo com.pasquale.nook framestats` (only the last 120 frames are kept, so reset right before the gesture). The Home scroll has no edge stretch (`overscrollEffect = null`): the page is barely taller than the screen and the stretch cost 18 ms of GPU per frame on a Mali-G52; the scene pauses while the page scrolls (`ZenScene(animate = …)`).
 
 ## graphify

@@ -39,7 +39,8 @@ fun Modifier.homeScene(): Modifier = layoutId(SCENE_ID)
  *
  * The viewport is the minimum height the parent passes in (`fillMaxSize()` before `verticalScroll`).
  * Zero-height children add no [spacing], and it grows with their height, so cards that expand in
- * do not make the page jump.
+ * do not make the page jump. On a screen taller than the page the gaps grow, up to [maxSpacing], and
+ * the page stays anchored at the top.
  *
  * Cost: a layout runs on every frame of a height animation (a status change in the hero card), so it
  * measures the cards once, at the current scale, exactly like a Column. A new scale relays out every
@@ -52,6 +53,7 @@ fun Modifier.homeScene(): Modifier = layoutId(SCENE_ID)
 fun HomeColumn(
     modifier: Modifier = Modifier,
     spacing: Dp = 12.dp,
+    maxSpacing: Dp = 24.dp,
     sceneAspectRatio: Float = 2f,
     content: @Composable () -> Unit,
 ) {
@@ -129,16 +131,32 @@ fun HomeColumn(
         val sceneHeight = (sceneNatural * sceneScale).roundToInt()
         val scene = measurables.getOrNull(sceneIndex)?.measure(Constraints.fixed(sceneWidth, sceneHeight))
 
+        // Room left on a tall screen goes into the gaps, up to maxSpacing each; the rest stays at the bottom
+        val gaps = (0 until lastIndex).count { gapAfter(rest[it]?.height) > 0 }
+        val spare = viewport - restHeight - sceneHeight
+        val extraGap = if (viewport > 0 && spare > 0 && gaps > 0) {
+            min(spare / gaps, (maxSpacing - spacing).roundToPx().coerceAtLeast(0)).toFloat()
+        } else {
+            0f
+        }
+
         var y = 0f
         val ys = measurables.indices.map { index ->
             val top = y.roundToInt()
             val height = if (index == sceneIndex) sceneHeight.toFloat() else rest[index]!!.height * current
-            val gapBelow = if (index < lastIndex) gapAfter(rest[index]?.height) * current else 0f
+            val gapBelow = if (index < lastIndex) {
+                val base = gapAfter(rest[index]?.height)
+                base * current + if (base > 0) extraGap else 0f
+            } else {
+                0f
+            }
             y += height + gapBelow
             top
         }
 
-        layout(width, y.roundToInt()) {
+        // At least the viewport: a shorter page reported as is would be centered in it by the parent, and
+        // would move up and down whenever the card at the top changes height; it stays at the top instead
+        layout(width, maxOf(y.roundToInt(), constraints.minHeight)) {
             measurables.indices.forEach { index ->
                 if (index == sceneIndex) {
                     scene!!.placeRelative((width - sceneWidth) / 2, ys[index])
