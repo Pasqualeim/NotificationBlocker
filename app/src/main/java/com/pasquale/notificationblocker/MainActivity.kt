@@ -63,6 +63,8 @@ fun NotificationBlockerApp(
                 MainScreen(
                     viewModel = viewModel,
                     onNavigateToAppSelection = { backStack.add(Route.AppSelection) },
+                    // Frozen while the list slides over it: the slide is smoother without the scene
+                    sceneActive = backStack.lastOrNull() == Route.Home,
                 )
             }
             Route.AppSelection -> NavEntry(key) {

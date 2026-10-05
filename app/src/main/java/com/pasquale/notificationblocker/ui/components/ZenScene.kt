@@ -7,14 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -46,11 +41,13 @@ import java.time.LocalTime
  * the skyline. Off work: a wooden pier on a calm lake. The two cross-fade slowly when the state changes.
  *
  * Vector layers drawn with Compose (crisp at any density). The still ones are rasterized once into
- * GPU textures; only the two moving layers redraw, capped at 30 fps. The clock is re-read every minute.
+ * GPU textures; only the two moving layers redraw, on the [AmbientClock] (30 fps). Light and season are re-read every minute.
  * With "Remove animations" the scene is a still frame and the swap is instant.
  *
  * @param animate false freezes the scene on its current frame (e.g. while the page scrolls, so the
- *   scroll gets the whole frame budget); it resumes from the same instant, without a jump
+ *   scroll gets the whole frame budget); it resumes from the same instant, without a jump. Only used
+ *   by the default [clock]
+ * @param clock the time of the moving layers; Home passes its own so the glow behind the bell shares it
  * @param environment fixed light/season for previews; null follows the clock
  */
 @Composable
@@ -59,29 +56,12 @@ fun ZenScene(
     modifier: Modifier = Modifier,
     animate: Boolean = true,
     environment: ZenState? = null,
+    clock: AmbientClock = rememberAmbientClock(animate),
 ) {
-    var time by remember { mutableFloatStateOf(0f) }
-    // Light and season follow the minute tick, independent of the frame loop, so they stay
-    // right also with "Remove animations" (when the loop never runs)
+    // Light and season follow the minute tick, independent of the frame clock, so they stay
+    // right also with "Remove animations" (when the clock never runs)
     val minutes by rememberCurrentMinutes()
     val clockEnvironment = remember(minutes) { ZenEnvironment.now() }
-
-    LaunchedEffect(animate) {
-        if (!animate || coroutineContext[MotionDurationScale]?.scaleFactor == 0f) return@LaunchedEffect
-        // Continue from the frozen instant: the clock of the scene only runs while it animates
-        val start = withFrameNanos { it } - (time * 1e9f).toLong()
-        var lastFrame = start
-        while (true) {
-            withFrameNanos { now ->
-                // Vsync timestamps jitter: without the slack the frame due on the 3rd vsync at 90 Hz (2nd at
-                // 60 Hz) often slipped to the next one, 22.5 fps in uneven steps instead of a steady 30
-                if (now - lastFrame >= FRAME_NANOS - FRAME_SLACK_NANOS) {
-                    lastFrame = now
-                    time = (now - start) / 1e9f
-                }
-            }
-        }
-    }
 
     val env = environment ?: clockEnvironment
 
@@ -94,9 +74,9 @@ fun ZenScene(
         val painting = remember(env, offWork) { if (offWork) NaturePainting(env) else DeskPainting(env) }
         Box(modifier = Modifier.fillMaxSize()) {
             ZenLayer(cached = true) { painting.sky(this) }
-            ZenLayer(cached = false) { painting.skyMotion(this, time) }
+            ZenLayer(cached = false) { painting.skyMotion(this, clock.seconds) }
             ZenLayer(cached = true) { painting.landscape(this) }
-            ZenLayer(cached = false) { painting.foreground(this, time) }
+            ZenLayer(cached = false) { painting.foreground(this, clock.seconds) }
         }
     }
 }
@@ -120,8 +100,6 @@ private fun BoxScope.ZenLayer(cached: Boolean, draw: ZenPainter.() -> Unit) {
 }
 
 private const val CROP_TOP_SHARE = 0.2f
-private const val FRAME_NANOS = 1_000_000_000L / 30
-private const val FRAME_SLACK_NANOS = 2_000_000L
 
 /** [ZenPainter] on a Compose [DrawScope], scaled from scene units to the layer size. */
 private class ComposeZenPainter : ZenPainter {

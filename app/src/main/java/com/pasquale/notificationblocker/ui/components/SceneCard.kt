@@ -23,13 +23,14 @@ fun SceneCard(
     modifier: Modifier = Modifier,
     animate: Boolean = true,
     environment: ZenState? = null,
+    clock: AmbientClock = rememberAmbientClock(animate),
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
-        ZenScene(isOffWork = isOffWork, animate = animate, environment = environment)
+        ZenScene(isOffWork = isOffWork, animate = animate, environment = environment, clock = clock)
     }
 }
 

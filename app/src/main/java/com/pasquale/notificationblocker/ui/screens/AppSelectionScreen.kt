@@ -1,7 +1,6 @@
 package com.pasquale.notificationblocker.ui.screens
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,32 +10,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -47,11 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -60,12 +47,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.AppInfo
 import com.pasquale.notificationblocker.ui.MainViewModel
-import com.pasquale.notificationblocker.ui.components.AppIconImage
 import com.pasquale.notificationblocker.ui.components.AppItemRow
 import com.pasquale.notificationblocker.ui.components.EmptyState
+import com.pasquale.notificationblocker.ui.components.SearchField
 import com.pasquale.notificationblocker.ui.components.ShimmerSkeleton
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
+import kotlinx.coroutines.delay
+
+// The slide into the screen lasts Motion.MEDIUM; a moment more so the rows do not land on its last frames
+private const val ROWS_DELAY_MILLIS = Motion.MEDIUM + 50L
 
 enum class AppFilter {
     ALL,
@@ -95,7 +86,7 @@ fun AppSelectionScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSelectionScreenContent(
     apps: List<AppInfo>,
@@ -103,32 +94,46 @@ fun AppSelectionScreenContent(
     onToggleBlocked: (String, Boolean) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    rowsReadyAtStart: Boolean = false,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filterState by rememberSaveable { mutableStateOf(AppFilter.ALL) }
 
+    // The rows cost about 4 ms each to compose on a Galaxy A32: composed with the screen they froze the
+    // first frame of the slide for ~130 ms. They come once the slide is over, with the screen already there
+    var rowsReady by rememberSaveable { mutableStateOf(rowsReadyAtStart) }
+    LaunchedEffect(Unit) {
+        if (!rowsReady) {
+            delay(ROWS_DELAY_MILLIS)
+            rowsReady = true
+        }
+    }
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    val matchingApps = remember(apps, query) {
+    // The apps picked when the list opened go first; after that rows never move while you pick: a switch
+    // turned on or off leaves its app where it is, so a slip is undone on the spot
+    val pickedAtStart = rememberSaveable(isLoading) {
+        if (isLoading) emptySet() else apps.filter { it.isBlocked }.mapTo(HashSet()) { it.packageName }
+    }
+    val orderedApps = remember(apps, pickedAtStart) {
+        apps.sortedBy { it.packageName !in pickedAtStart }
+    }
+    val matchingApps = remember(orderedApps, query) {
         if (query.isBlank()) {
-            apps
+            orderedApps
         } else {
-            apps.filter {
+            orderedApps.filter {
                 it.name.contains(query, ignoreCase = true) ||
                         it.packageName.contains(query, ignoreCase = true)
             }
         }
     }
 
-    // Rows never jump while you pick: a switch turned on or off leaves its app where it is, so a slip is
-    // undone on the spot. What you picked shows at the top instead, in the tray, newest first.
-    // Apps picked in this visit, newest first
-    var recentPicks by rememberSaveable { mutableStateOf(listOf<String>()) }
     // Apps turned off while looking at "Selected": still listed, switch off, until the filter changes
     var keptInSelected by rememberSaveable { mutableStateOf(listOf<String>()) }
 
     val toggle: (String, Boolean) -> Unit = { packageName, isChecked ->
-        recentPicks = if (isChecked) listOf(packageName) + (recentPicks - packageName) else recentPicks - packageName
         if (!isChecked && filterState == AppFilter.SELECTED) keptInSelected = keptInSelected + packageName
         onToggleBlocked(packageName, isChecked)
     }
@@ -137,15 +142,18 @@ fun AppSelectionScreenContent(
         keptInSelected = emptyList()
     }
 
-    // All the picked apps (whatever the search), the ones picked in this visit first
-    val pickedApps = remember(apps, recentPicks) {
-        apps.filter { it.isBlocked }.sortedBy { app ->
-            recentPicks.indexOf(app.packageName).let { if (it < 0) Int.MAX_VALUE else it }
-        }
-    }
+    val selectedCount = remember(apps) { apps.count { it.isBlocked } }
 
-    val selectedApps = remember(matchingApps) {
-        matchingApps.filter { it.isBlocked }
+    // A new search or filter starts at the top; the list would otherwise stay on the row it was showing.
+    // Done once the new rows are composed, and not again after a rotation (the scroll position is restored)
+    val listState = rememberLazyListState()
+    var scrolledFor by rememberSaveable { mutableStateOf("$query|$filterState") }
+    LaunchedEffect(query, filterState) {
+        val shown = "$query|$filterState"
+        if (shown != scrolledFor) {
+            scrolledFor = shown
+            listState.scrollToItem(0)
+        }
     }
 
     val selectedRows = remember(matchingApps, keptInSelected) {
@@ -182,47 +190,10 @@ fun AppSelectionScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            // Pill-shaped filled search field (NOT OutlinedTextField)
-            TextField(
-                value = query,
-                onValueChange = { query = it },
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search_apps),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.cd_search_icon),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-                trailingIcon = if (query.isNotEmpty()) {
-                    {
-                        IconButton(onClick = { query = "" }) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(R.string.cd_clear_search),
-                            )
-                        }
-                    }
-                } else null,
-                singleLine = true,
-                shape = CircleShape,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            SearchField(
+                query = query,
+                onQueryChange = { query = it },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
 
             // Filter chips row
@@ -247,13 +218,22 @@ fun AppSelectionScreenContent(
                 FilterChip(
                     selected = filterState == AppFilter.SELECTED,
                     onClick = { showFilter(AppFilter.SELECTED) },
-                    label = { Text(stringResource(R.string.filter_selected)) },
+                    label = {
+                        Text(
+                            if (selectedCount > 0) {
+                                stringResource(R.string.filter_selected_count, selectedCount)
+                            } else {
+                                stringResource(R.string.filter_selected)
+                            },
+                        )
+                    },
                     shape = CircleShape,
                     colors = filterChipColors,
                 )
             }
 
             when {
+                !rowsReady -> Unit
                 isLoading -> ShimmerSkeleton()
                 matchingApps.isEmpty() -> EmptyState()
                 // Nothing picked yet (not a search miss): point to the "All" filter
@@ -265,38 +245,20 @@ fun AppSelectionScreenContent(
                 (filterState == AppFilter.SELECTED) && selectedRows.isEmpty() -> EmptyState()
 
                 else -> LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 24.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    if (filterState == AppFilter.ALL) {
-                        // Pinned while the list scrolls: what you picked is always in sight
-                        if (pickedApps.isNotEmpty()) {
-                            stickyHeader(key = "tray") {
-                                PickedTray(apps = pickedApps, onUnpick = { toggle(it, false) })
-                            }
-                        }
-                        item(key = "header_all") {
-                            SectionHeader(title = stringResource(R.string.section_all_apps, matchingApps.size))
-                        }
-                        items(matchingApps, key = { it.packageName }) { app ->
-                            AppItemRow(
-                                app = app,
-                                onToggleBlocked = { isChecked -> toggle(app.packageName, isChecked) },
-                                modifier = Modifier.rowMotion(this).padding(horizontal = 16.dp),
-                            )
-                        }
-                    } else {
-                        stickyHeader(key = "header_selected") {
-                            SectionHeader(title = stringResource(R.string.section_selected, selectedApps.size))
-                        }
-                        items(selectedRows, key = { it.packageName }) { app ->
-                            AppItemRow(
-                                app = app,
-                                onToggleBlocked = { isChecked -> toggle(app.packageName, isChecked) },
-                                modifier = Modifier.rowMotion(this).padding(horizontal = 16.dp),
-                            )
-                        }
+                    items(
+                        items = if (filterState == AppFilter.ALL) matchingApps else selectedRows,
+                        key = { it.packageName },
+                    ) { app ->
+                        AppItemRow(
+                            app = app,
+                            onToggleBlocked = { isChecked -> toggle(app.packageName, isChecked) },
+                            modifier = Modifier.rowMotion(this).padding(horizontal = 16.dp),
+                        )
                     }
                 }
             }
@@ -304,93 +266,13 @@ fun AppSelectionScreenContent(
     }
 }
 
-/** Rows and chips that come, go or move do it smoothly (Motion tokens). */
+/** Rows that come, go or move do it smoothly (Motion tokens). */
 private fun Modifier.rowMotion(item: LazyItemScope): Modifier = with(item) {
     this@rowMotion.animateItem(
         fadeInSpec = Motion.standard(Motion.MEDIUM),
         placementSpec = Motion.standard(Motion.MEDIUM),
         fadeOutSpec = Motion.standard(Motion.SHORT),
     )
-}
-
-/**
- * The apps picked so far, newest first, pinned above the list: a new pick shows up here at once,
- * and each chip turns its app back off.
- */
-@Composable
-private fun PickedTray(
-    apps: List<AppInfo>,
-    onUnpick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val rowState = rememberLazyListState()
-    // A new pick goes first: bring it into view
-    val newest = apps.first().packageName
-    LaunchedEffect(newest) { rowState.animateScrollToItem(0) }
-
-    val chipColors = InputChipDefaults.inputChipColors(
-        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        selectedTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    )
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-    ) {
-        Column {
-            SectionHeader(title = stringResource(R.string.section_selected, apps.size))
-            LazyRow(
-                state = rowState,
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(apps, key = { it.packageName }) { app ->
-                    InputChip(
-                        selected = true,
-                        onClick = { onUnpick(app.packageName) },
-                        label = { Text(app.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                        avatar = {
-                            AppIconImage(
-                                packageName = app.packageName,
-                                contentDescription = null,
-                                size = InputChipDefaults.AvatarSize,
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.cd_unpick_app, app.name),
-                                modifier = Modifier.size(InputChipDefaults.IconSize),
-                            )
-                        },
-                        shape = CircleShape,
-                        colors = chipColors,
-                        border = null,
-                        modifier = Modifier.rowMotion(this),
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SectionHeader(
-    title: String,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        )
-    }
 }
 
 @Preview(showBackground = true, name = "App Selection - Light Theme")
@@ -407,6 +289,7 @@ fun AppSelectionScreenPreviewLight() {
             isLoading = false,
             onToggleBlocked = { _, _ -> },
             onNavigateBack = {},
+            rowsReadyAtStart = true,
         )
     }
 }
@@ -425,6 +308,7 @@ fun AppSelectionScreenPreviewDark() {
             isLoading = false,
             onToggleBlocked = { _, _ -> },
             onNavigateBack = {},
+            rowsReadyAtStart = true,
         )
     }
 }

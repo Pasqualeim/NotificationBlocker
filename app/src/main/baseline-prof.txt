@@ -1,0 +1,4 @@
+# Nook's own code. The app is small and every screen is used within the first minute, so all of it is
+# compiled ahead of time (the libraries bring their own profiles). Without this, the first visit to each
+# screen ran interpreted: ~35% longer to compose on a Galaxy A32.
+HSPLcom/pasquale/notificationblocker/**;->**(**)**

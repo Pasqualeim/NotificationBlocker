@@ -79,6 +79,7 @@ import com.pasquale.notificationblocker.ui.components.MorningReportCard
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
 import com.pasquale.notificationblocker.ui.components.PermissionCard
 import com.pasquale.notificationblocker.ui.components.SceneCard
+import com.pasquale.notificationblocker.ui.components.rememberAmbientClock
 import com.pasquale.notificationblocker.ui.components.ScheduleCard
 import com.pasquale.notificationblocker.ui.components.ZenNotificationCard
 import com.pasquale.notificationblocker.ui.components.homeScene
@@ -96,6 +97,7 @@ fun MainScreen(
     viewModel: MainViewModel,
     onNavigateToAppSelection: () -> Unit,
     modifier: Modifier = Modifier,
+    sceneActive: Boolean = true,
 ) {
     val context = LocalContext.current
     val isBlockingEnabled by viewModel.isBlockingEnabled.collectAsStateWithLifecycle()
@@ -156,6 +158,7 @@ fun MainScreen(
         },
         onNavigateToAppSelection = onNavigateToAppSelection,
         modifier = modifier,
+        sceneActive = sceneActive,
         morningReport = morningReport,
         onDismissMorningReport = viewModel::onMorningReportDismissed,
     )
@@ -175,6 +178,7 @@ fun MainScreenContent(
     onRequestPermission: () -> Unit,
     onNavigateToAppSelection: () -> Unit,
     modifier: Modifier = Modifier,
+    sceneActive: Boolean = true,
     isPauseEnded: Boolean = false,
     onPauseAgain: () -> Unit = {},
     lifeMessage: LifeMessage? = null,
@@ -213,6 +217,9 @@ fun MainScreenContent(
     )
 
     val scrollState = rememberScrollState()
+    // One clock for the scene and the glow behind the bell. It stops while the page scrolls or another
+    // screen slides over Home: on slower phones the scroll gets the whole frame budget
+    val ambientClock = rememberAmbientClock(active = sceneActive && !scrollState.isScrollInProgress)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -358,6 +365,7 @@ fun MainScreenContent(
                     )
                     is TopCard.Report -> MorningReportCard(report = card.report, onDismiss = onDismissMorningReport)
                     TopCard.Status -> HeroHeader(
+                        ambientClock = ambientClock,
                         isBlockingEnabled = isBlockingEnabled,
                         isInOffHoursNow = isInOffHoursNow,
                         onBlockingEnabledChanged = onBlockingEnabledChanged,
@@ -370,11 +378,10 @@ fun MainScreenContent(
                 }
             }
 
-            // The scene pauses while the page scrolls: on slower phones both together drop frames
             SceneCard(
                 isOffWork = isBlockingEnabled && isInOffHoursNow && !isPauseEnded,
                 modifier = Modifier.homeScene().homeEntrance(animatedSceneVisible),
-                animate = !scrollState.isScrollInProgress,
+                clock = ambientClock,
             )
 
             ScheduleCard(

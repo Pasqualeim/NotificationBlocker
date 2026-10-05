@@ -60,8 +60,7 @@
     <string name="selected_empty_subtitle">Scegli le app che ti mandano notifiche di lavoro.</string>
     <string name="filter_all">Tutte</string>
     <string name="filter_selected">Selezionate</string>
-    <string name="section_selected">Selezionate (%1$d)</string>
-    <string name="section_all_apps">Tutte le app (%1$d)</string>
+    <string name="filter_selected_count">Selezionate (%1$d)</string>
 
     <!-- Time Picker & Actions -->
     <string name="time_picker_title">Seleziona orario</string>
@@ -76,7 +75,6 @@
     <string name="cd_end_time_picker">Seleziona ora di fine</string>
     <string name="cd_master_switch">Metti in pausa le notifiche di lavoro</string>
     <string name="cd_toggle_app_blocking">Metti in pausa le notifiche di %1$s</string>
-    <string name="cd_unpick_app">Non mettere più in pausa %1$s</string>
 
     <!-- Notifica di stato (tendina e schermata di blocco) -->
     <string name="zen_channel_name">Stato della pausa</string>

@@ -62,8 +62,7 @@
     <string name="selected_empty_subtitle">Pick the apps that send you work notifications.</string>
     <string name="filter_all">All</string>
     <string name="filter_selected">Selected</string>
-    <string name="section_selected">Selected (%1$d)</string>
-    <string name="section_all_apps">All apps (%1$d)</string>
+    <string name="filter_selected_count">Selected (%1$d)</string>
 
     <!-- Time Picker & Actions -->
     <string name="time_picker_title">Select time</string>
@@ -78,7 +77,6 @@
     <string name="cd_end_time_picker">Select end time</string>
     <string name="cd_master_switch">Pause work notifications</string>
     <string name="cd_toggle_app_blocking">Pause notifications from %1$s</string>
-    <string name="cd_unpick_app">Stop pausing %1$s</string>
 
     <!-- Status notification (shade and lock screen) -->
     <string name="zen_channel_name">Break status</string>

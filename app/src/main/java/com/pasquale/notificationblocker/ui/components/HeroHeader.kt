@@ -2,10 +2,6 @@ package com.pasquale.notificationblocker.ui.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -54,6 +50,8 @@ import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
+import kotlin.math.PI
+import kotlin.math.cos
 
 enum class HeroStatus {
     DISABLED,
@@ -74,6 +72,7 @@ fun HeroHeader(
     isPauseEnded: Boolean = false,
     nextPauseStart: Int = 0,
     onPauseAgain: () -> Unit = {},
+    ambientClock: AmbientClock? = null,
 ) {
     val status = when {
         !isBlockingEnabled -> HeroStatus.DISABLED
@@ -89,6 +88,7 @@ fun HeroHeader(
         lifeMessage = lifeMessage,
         nextPauseStart = nextPauseStart,
         onPauseAgain = onPauseAgain,
+        ambientClock = ambientClock,
         modifier = modifier,
     )
 }
@@ -101,6 +101,7 @@ private fun HeroHeaderContent(
     lifeMessage: LifeMessage?,
     nextPauseStart: Int,
     onPauseAgain: () -> Unit,
+    ambientClock: AmbientClock?,
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -192,6 +193,7 @@ private fun HeroHeaderContent(
                         if (status == HeroStatus.ACTIVE_INSIDE) {
                             BreathingGlow(
                                 color = primaryColor,
+                                clock = ambientClock,
                                 modifier = Modifier.matchParentSize(),
                             )
                         }
@@ -338,33 +340,20 @@ private fun HeroHeaderContent(
     }
 }
 
-// Warm breathing light / gentle sunlight behind the bell, drawn past its bounds (no clipping)
+// Warm breathing light / gentle sunlight behind the bell, drawn past its bounds (no clipping).
+// It breathes on the shared [AmbientClock], not on an animation of its own: that one redrew the whole
+// window on every vsync (see AmbientClock). Read in the draw phase: no recomposition per frame
 @Composable
 private fun BreathingGlow(
     color: Color,
+    clock: AmbientClock?,
     modifier: Modifier = Modifier,
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "HeroGlowTransition")
-    val glowScale by infiniteTransition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.35f,
-        animationSpec = infiniteRepeatable(
-            animation = Motion.standard(Motion.AMBIENT),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "HeroGlowScale",
-    )
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.2f,
-        targetValue = 0.55f,
-        animationSpec = infiniteRepeatable(
-            animation = Motion.standard(Motion.AMBIENT),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "HeroGlowAlpha",
-    )
-
     Canvas(modifier = modifier) {
+        // 0 -> 1 -> 0 over two ambient durations; still (at 0) without a clock
+        val breath = 0.5f - 0.5f * cos(2f * PI.toFloat() * (clock?.seconds ?: 0f) / BREATH_SECONDS)
+        val glowScale = 0.9f + 0.45f * breath
+        val glowAlpha = 0.2f + 0.35f * breath
         val radius = (size.minDimension / 2f) * glowScale
         drawCircle(
             brush = Brush.radialGradient(
@@ -381,6 +370,8 @@ private fun BreathingGlow(
         )
     }
 }
+
+private const val BREATH_SECONDS = Motion.AMBIENT * 2 / 1000f
 
 @Composable
 private fun rememberWarmGreetingRes(): Int {
