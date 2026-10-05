@@ -76,6 +76,7 @@
     <string name="cd_end_time_picker">Seleziona ora di fine</string>
     <string name="cd_master_switch">Metti in pausa le notifiche di lavoro</string>
     <string name="cd_toggle_app_blocking">Metti in pausa le notifiche di %1$s</string>
+    <string name="cd_unpick_app">Non mettere più in pausa %1$s</string>
 
     <!-- Notifica di stato (tendina e schermata di blocco) -->
     <string name="zen_channel_name">Stato della pausa</string>

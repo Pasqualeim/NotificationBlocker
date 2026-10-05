@@ -69,7 +69,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     ├── MainViewModel.kt             # AndroidViewModel shared by both screens (StateFlows)
     ├── screens/
     │   ├── MainScreen.kt            # staggered entrance: top card, scene, schedule; one top card at a time (TopCard); time pickers, bottom CTA
-    │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter, sections
+    │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter; rows never move while you pick, picks go to a tray pinned at the top
     ├── components/
     │   ├── HeroHeader.kt            # status card (3 HeroStatus states) + master Switch
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on

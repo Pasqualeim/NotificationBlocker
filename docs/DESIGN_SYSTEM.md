@@ -259,6 +259,7 @@ Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazz
 | Permesso | `PermissionCard.kt` | Al posto della card di stato finché manca l'accesso (senza, l'interruttore non servirebbe a niente); porta alle impostazioni di sistema |
 | Resoconto del mattino | `MorningReportCard.kt` | Al posto della card di stato finché non tocchi "OK" |
 | Riga app | `AppItemRow.kt` | Bordo e container animati (`Motion.SHORT`) quando l'app è selezionata |
+| Lista "App di lavoro" | `AppSelectionScreen.kt` | **Le righe non si spostano mentre scegli**: l'app attivata resta al suo posto con l'interruttore acceso, così uno sbaglio si corregge subito. Quello che hai scelto compare in cima, in una fila fissa anche scorrendo (`PickedTray`: chip con icona, nome e ×, l'ultima scelta per prima). In "Selezionate" un'app spenta resta in lista, spenta, finché non cambi filtro. Prima l'app attivata spariva dalla lista e finiva nella sezione in cima, fuori dallo schermo |
 | Caricamento / vuoto | `ShimmerSkeleton.kt`, `EmptyState.kt` | Mai spinner a tutto schermo: skeleton con la forma del contenuto |
 | Messaggio "vita" | `HeroHeader.kt` (`lifeMessage`), `LifeMessageText.kt` | Sotto il titolo della card di stato: sole o luna + frase da `LifeCopy`. Aggiornato ogni minuto con l'app in primo piano |
 | Luce nella fascia | `ScheduleCard.kt` (`sunshineMinutes`) | "3 h 42 min di luce nel tuo tempo libero" (sera + mattina dopo), oppure "Il tuo tempo libero inizia dopo il tramonto" |

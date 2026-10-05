@@ -49,6 +49,7 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 | `MutedBellIcon` | Campanella che suona e viene barrata | `Animatable` rotazione ±24°→0 in 7 passi da `SHAKE_STEP_MILLIS` = 70 ms (costante privata: più rapida di ogni token, così si legge come uno squillo; perno in alto), poi barra `MEDIUM` ritardata della durata dello scuotimento (7 × 70 ms); ritaglio con `BlendMode.Clear` in un layer offscreen |
 | `MainScreen` | Card in cima che cambia (permesso → invito alla notifica → resoconto del mattino → card di stato) | `AnimatedContent` (`HomeTopCard`): fade-in `MEDIUM` / fade-out `SHORT`, l'altezza segue con il `SizeTransform` di default. `PermissionCard`, `ZenNotificationCard` e `MorningReportCard` non hanno più un'animazione propria; `contentKey` per tipo, così un resoconto che si aggiorna non si dissolve |
 | `AppItemRow` | Selezione | `animateColorAsState` `SHORT` su container e bordo |
+| `AppSelectionScreen` | Righe e chip delle app scelte che entrano, escono o si spostano (ricerca, filtro, fila in cima) | `Modifier.animateItem` (`rowMotion()`): fade-in e spostamento `MEDIUM`, fade-out `SHORT`. La fila in cima scorre da sola alla nuova scelta (`animateScrollToItem(0)`) |
 | `ShimmerSkeleton` | Caricamento lista app | Gradiente che scorre in loop infinito, una passata ogni `SLOW` (1200 ms) |
 | `ZenScene` | Scena animata nella Home, con la luce reale del giorno (alba, sole, tramonto, notte), la stagione e il meteo. Al lavoro: scrivania in un ufficio in alto, il codice che si scrive da solo sul monitor, vetrata sullo skyline. Fuori orario: un pontile di legno su un lago calmo, con barca a remi, anatre, ramo e canne | Livelli vettoriali in `ui/zen` (2:1, 30 fps); livelli fermi in texture GPU. Cambio di stato = `Crossfade` `SLOW` (1200 ms), niente altro; con "Rimuovi animazioni" frame fermo e cambio istantaneo |
 | Notifica della pausa (tendina / blocco schermo) | Il pontile sul lago della Home in miniatura, per fase del giorno: riflessi che scorrono, barca che dondola, canne al vento; di giorno l'alone del sole e una nuvola, al tramonto il sole grande sui colli, di notte stelle che brillano e il lampione acceso | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
@@ -73,8 +74,7 @@ In ordine di rapporto valore/costo (dettagli in [`ROADMAP.md`](ROADMAP.md)):
 1. **Haptic** sul toggle e sulla selezione delle app (`LocalHapticFeedback`, `HapticFeedbackType.ToggleOn/Off` con BOM recente).
 2. **Sole → luna** nella `ScheduleCard`, a seconda che l'ora corrente sia dentro la fascia (`AnimatedContent` tra `ic_sun_dim` e `ic_moon`).
 3. **Indicatore "ora" della `Timeline24h`** che scorre al minuto e pulsa leggermente.
-4. **`Modifier.animateItem()`** nella lista app quando un elemento passa da "Tutte" a "Selezionate".
-5. **Material 3 Expressive** (`MotionScheme.expressive()`) dopo l'aggiornamento della BOM Compose.
+4. **Material 3 Expressive** (`MotionScheme.expressive()`) dopo l'aggiornamento della BOM Compose.
 
 ## Scena zen
 
