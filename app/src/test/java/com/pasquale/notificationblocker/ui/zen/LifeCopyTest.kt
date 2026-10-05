@@ -9,7 +9,7 @@ import java.time.LocalTime
 
 class LifeCopyTest {
 
-    // Summer day: sun ~05:34-20:24; winter day: ~07:37-16:55 (see ZenEnvironment.sunTimes)
+    // Summer day: sun ~05:40-20:51; winter day: ~07:39-16:59 (see ZenEnvironment.sunTimes)
     private val summer = LocalDate.of(2026, 7, 10)
     private val winter = LocalDate.of(2026, 1, 15)
     private val summerRise = ZenEnvironment.sunTimes(summer).first

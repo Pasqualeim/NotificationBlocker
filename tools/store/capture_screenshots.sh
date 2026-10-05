@@ -65,7 +65,16 @@ for L in it-IT en-US; do
   demo false; adb -s $E shell cmd uimode night no
   prefs $START "$(held $TODAY com.google.android.gm:3 com.google.android.calendar:2 com.google.android.apps.docs:1)"; open_app; snap "$RAW/$L/1_break.png"
   adb -s $E shell input keyevent HOME; sleep 1
-  adb -s $E shell cmd statusbar expand-notifications; sleep 3; snap "$RAW/$L/2_shade.png" exit; adb -s $E shell cmd statusbar collapse
+  # on a headless emulator the shade sometimes comes out black: open it again until it shows
+  for i in 1 2 3 4 5; do
+    adb -s $E shell cmd statusbar expand-notifications; sleep 4; snap "$RAW/$L/2_shade.png" exit
+    python3 -c "
+from PIL import Image
+r,g,b=Image.open('$RAW/$L/2_shade.png').convert('RGB').getpixel((540,600))
+raise SystemExit(0 if r+g+b>60 else 1)" && break
+    adb -s $E shell cmd statusbar collapse; sleep 2
+  done
+  adb -s $E shell cmd statusbar collapse
   adb -s $E shell cmd uimode night yes; sleep 2; open_app; snap "$RAW/$L/5_dark.png"; adb -s $E shell cmd uimode night no; sleep 2
   prefs 1080 "$(held $YESTERDAY com.google.android.gm:7 com.google.android.calendar:4 com.google.android.apps.docs:3)"; open_app; snap "$RAW/$L/4_report.png"
   for i in 1 2 3; do adb -s $E shell input tap 540 2280; sleep 4; is_home || break; done   # the "Work apps" button

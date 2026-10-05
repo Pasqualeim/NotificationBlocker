@@ -85,6 +85,34 @@ class ZenSceneTest {
     }
 
     @Test
+    fun sunTimes_matchItalyThroughTheYear_daylightSavingIncluded() {
+        val rome = java.time.ZoneId.of("Europe/Rome")
+        // Real times in Rome, within 10 minutes: early October is still summer time (sunset ~18:47),
+        // late October is back to standard time (~17:13). The old cosine model said 18:09 on Oct 5
+        val cases = listOf(
+            LocalDate.of(2026, 10, 5) to (7 * 60 + 11 to 18 * 60 + 47),
+            LocalDate.of(2026, 10, 26) to (6 * 60 + 38 to 17 * 60 + 13),
+            LocalDate.of(2026, 3, 30) to (6 * 60 + 58 to 19 * 60 + 32),
+            LocalDate.of(2026, 7, 10) to (5 * 60 + 41 to 20 * 60 + 47),
+            LocalDate.of(2026, 12, 21) to (7 * 60 + 35 to 16 * 60 + 42),
+        )
+        for ((date, expected) in cases) {
+            val (rise, set) = ZenEnvironment.sunTimes(date, rome)
+            assertTrue("sunrise $rise on $date", kotlin.math.abs(rise - expected.first) <= 10)
+            assertTrue("sunset $set on $date", kotlin.math.abs(set - expected.second) <= 10)
+        }
+    }
+
+    @Test
+    fun sunTimes_followThePhonesTimeZone() {
+        val date = LocalDate.of(2026, 7, 10)
+        val (_, romeSet) = ZenEnvironment.sunTimes(date, java.time.ZoneId.of("Europe/Rome"))
+        val (_, londonSet) = ZenEnvironment.sunTimes(date, java.time.ZoneId.of("Europe/London"))
+        // Same latitude, one hour behind on the clock but 15° further west: the clock time barely moves
+        assertTrue(kotlin.math.abs(romeSet - londonSet) <= 5)
+    }
+
+    @Test
     fun light_blendsSmoothlyAroundSunset() {
         // Minute by minute, no color channel jumps by more than a few steps
         var previous = env(summerDay, LocalTime.of(18, 0)).light.skyMid

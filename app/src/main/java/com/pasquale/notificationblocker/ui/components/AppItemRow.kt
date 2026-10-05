@@ -101,7 +101,7 @@ fun AppItemRow(
             AppIconImage(
                 packageName = packageName,
                 contentDescription = null,
-                modifier = Modifier.size(44.dp),
+                size = 44.dp,
             )
 
             Spacer(modifier = Modifier.width(16.dp))

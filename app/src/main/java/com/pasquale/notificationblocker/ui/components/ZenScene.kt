@@ -73,7 +73,9 @@ fun ZenScene(
         var lastFrame = start
         while (true) {
             withFrameNanos { now ->
-                if (now - lastFrame >= FRAME_NANOS) {
+                // Vsync timestamps jitter: without the slack the frame due on the 3rd vsync at 90 Hz (2nd at
+                // 60 Hz) often slipped to the next one, 22.5 fps in uneven steps instead of a steady 30
+                if (now - lastFrame >= FRAME_NANOS - FRAME_SLACK_NANOS) {
                     lastFrame = now
                     time = (now - start) / 1e9f
                 }
@@ -119,6 +121,7 @@ private fun BoxScope.ZenLayer(cached: Boolean, draw: ZenPainter.() -> Unit) {
 
 private const val CROP_TOP_SHARE = 0.2f
 private const val FRAME_NANOS = 1_000_000_000L / 30
+private const val FRAME_SLACK_NANOS = 2_000_000L
 
 /** [ZenPainter] on a Compose [DrawScope], scaled from scene units to the layer size. */
 private class ComposeZenPainter : ZenPainter {

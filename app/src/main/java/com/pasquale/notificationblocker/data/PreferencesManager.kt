@@ -66,15 +66,16 @@ class PreferencesManager private constructor(context: Context) {
 
     /**
      * Counts a held notification once per [notificationKey] in [window]: apps that re-post the same
-     * notification (updates, progress) do not inflate the counter. The app is kept with the key for
-     * the morning report.
+     * notification (updates, progress) do not inflate the counter. The app is kept with a fingerprint
+     * of the key for the morning report (see [MorningReport.entry]).
      */
     @Synchronized
     fun recordFiltered(window: String, packageName: String, notificationKey: String) {
         val sameWindow = prefs.getString(KEY_FILTERED_WINDOW, null) == window
         val seen = if (sameWindow) prefs.getStringSet(KEY_FILTERED_KEYS, emptySet()).orEmpty() else emptySet()
         val entry = MorningReport.entry(packageName, notificationKey)
-        if (entry in seen || notificationKey in seen) return
+        // Entries written by older versions in this same window: the raw key, alone or after the package
+        if (entry in seen || notificationKey in seen || "$packageName\n$notificationKey" in seen) return
         prefs.edit {
             putString(KEY_FILTERED_WINDOW, window)
             putInt(KEY_FILTERED_COUNT, filteredCount(window) + 1)

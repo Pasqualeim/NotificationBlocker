@@ -61,6 +61,12 @@ android {
         // The app ships English and Italian only: keep library translations out of the APK and the store's language list
         localeFilters += listOf("en", "it")
     }
+    testOptions {
+        unitTests.all {
+            // Sun times follow the phone's time zone: unit tests run on Italian time wherever they run
+            it.systemProperty("user.timezone", "Europe/Rome")
+        }
+    }
 }
 
 dependencies {

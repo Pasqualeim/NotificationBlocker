@@ -203,6 +203,6 @@ Nook only reads the package name of each notification to decide whether to remov
 | Voce | Stato |
 |---|---|
 | Testi IT/EN | Pronti |
-| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti (rifatti il 02/10/2026 con le scene nuove) |
+| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti (rifatti il 05/10/2026: Home compatta, notifica della pausa nuova) |
 | Risposte ai moduli | Pronte, da ricontrollare in Play Console |
 | Verifica marchio "Nook" | Da fare (Pasquale) |

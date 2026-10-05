@@ -1,0 +1,4 @@
+<resources>
+    <!-- DarkBackground in ui/theme/Color.kt -->
+    <color name="window_background">#1B1714</color>
+</resources>

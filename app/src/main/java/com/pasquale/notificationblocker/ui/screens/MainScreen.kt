@@ -52,6 +52,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -184,8 +185,9 @@ fun MainScreenContent(
     morningReport: MorningReportUi? = null,
     onDismissMorningReport: () -> Unit = {},
 ) {
-    var showStartTimePicker by remember { mutableStateOf(value = false) }
-    var showEndTimePicker by remember { mutableStateOf(value = false) }
+    // Saveable: an open picker survives a rotation (the picker keeps its own hour and minute)
+    var showStartTimePicker by rememberSaveable { mutableStateOf(value = false) }
+    var showEndTimePicker by rememberSaveable { mutableStateOf(value = false) }
 
     var animatedHeaderVisible by remember { mutableStateOf(value = false) }
     var animatedTopCardVisible by remember { mutableStateOf(value = false) }

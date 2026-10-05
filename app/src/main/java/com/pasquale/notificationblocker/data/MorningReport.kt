@@ -1,5 +1,6 @@
 package com.pasquale.notificationblocker.data
 
+import java.security.MessageDigest
 import java.time.LocalDate
 
 /** How many held notifications one app had in a window. */
@@ -16,8 +17,8 @@ data class MorningReport(val window: String, val total: Int, val apps: List<AppC
 
     companion object {
         /**
-         * Package of a stored held-notification entry. Entries are "package\nkey"; older ones
-         * are the bare notification key ("user|package|id|tag|uid").
+         * Package of a stored held-notification entry. Entries are "package\nfingerprint"; older
+         * ones are "package\nkey" or the bare notification key ("user|package|id|tag|uid").
          */
         fun packageOf(entry: String): String? {
             val newline = entry.indexOf('\n')
@@ -25,7 +26,18 @@ data class MorningReport(val window: String, val total: Int, val apps: List<AppC
             return entry.split('|').getOrNull(1)?.takeIf { it.isNotEmpty() }
         }
 
-        fun entry(packageName: String, notificationKey: String) = "$packageName\n$notificationKey"
+        /**
+         * Stored entry of a held notification: its app and a [fingerprint] of its key, enough to count
+         * it once. The key itself is never stored: its tag can be a chat or contact id (a phone number
+         * in some messaging apps), and the prefs file goes into the Android backup.
+         */
+        fun entry(packageName: String, notificationKey: String) = "$packageName\n${fingerprint(notificationKey)}"
+
+        /** First 8 bytes of the SHA-256 of [notificationKey], in hex. */
+        fun fingerprint(notificationKey: String): String =
+            MessageDigest.getInstance("SHA-256").digest(notificationKey.toByteArray())
+                .take(8)
+                .joinToString("") { "%02x".format(it) }
 
         /** The report of [window] from the stored counter and entries; null if nothing was held. */
         fun build(window: String?, total: Int, entries: Set<String>): MorningReport? {

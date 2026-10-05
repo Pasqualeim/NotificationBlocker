@@ -2,6 +2,7 @@ package com.pasquale.notificationblocker.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -16,6 +17,17 @@ class MorningReportTest {
         assertEquals("com.slack", MorningReport.packageOf(MorningReport.entry("com.slack", "0|com.slack|4|null|10123")))
         assertEquals("com.microsoft.teams", MorningReport.packageOf("0|com.microsoft.teams|7|tag|10200"))
         assertNull(MorningReport.packageOf("garbage"))
+        assertEquals("com.slack", MorningReport.packageOf("com.slack\n0|com.slack|4|null|10123"))
+    }
+
+    @Test
+    fun entry_neverStoresTheNotificationKey() {
+        // A messaging app's tag can be the chat id, with the phone number in it
+        val key = "0|com.whatsapp|1|393331234567@s.whatsapp.net|10123"
+        val entry = MorningReport.entry("com.whatsapp", key)
+        assertFalse(entry.contains("3933312"))
+        assertEquals(entry, MorningReport.entry("com.whatsapp", key)) // same notification, same entry
+        assertNotEquals(entry, MorningReport.entry("com.whatsapp", key.replace("|1|", "|2|")))
     }
 
     @Test

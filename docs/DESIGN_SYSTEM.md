@@ -131,7 +131,7 @@ Bianco su `primary`: 5.93 in Chai (è `onPrimary`); in Lo-fi night il testo su `
 
 ## Luce del giorno e stagioni
 
-Scena, notifica, riquadro e testi seguono la luce **reale**: un solo modello, `ui/zen/ZenEnvironment.kt`, calcola alba e tramonto dal giorno dell'anno (latitudini italiane, ora legale inclusa: ~05:30–20:30 al solstizio d'estate, ~07:45–16:45 a quello d'inverno).
+Scena, notifica, riquadro e testi seguono la luce **reale**: un solo modello, `ui/zen/ZenEnvironment.kt`, calcola alba e tramonto con le formule solari standard (NOAA) per un punto fisso (43° N, la longitudine dal fuso del telefono: Roma per l'ora italiana; l'app non chiede la posizione) e con l'ora legale del fuso: ~05:30–20:50 al solstizio d'estate, ~07:40–16:40 a quello d'inverno, entro pochi minuti dagli orari veri in Italia. Il vecchio modello a coseno ignorava l'ora legale fuori dall'estate e sbagliava di 40 minuti a marzo e ottobre.
 
 ### Ciclo 24h
 

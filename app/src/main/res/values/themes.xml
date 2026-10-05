@@ -1,4 +1,11 @@
 <resources>
 
-    <style name="Theme.NotificationBlocker" parent="android:Theme.Material.Light.NoActionBar" />
+    <!--
+    Window and splash screen (the splash uses the window background) in the color of the page under
+    them: a plain Material theme opened on white even in dark mode, a flash before Home.
+    Keep in sync with LightBackground / DarkBackground in ui/theme/Color.kt.
+    -->
+    <style name="Theme.NotificationBlocker" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 </resources>
