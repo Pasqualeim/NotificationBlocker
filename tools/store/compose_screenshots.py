@@ -18,24 +18,24 @@ FONT=sys.argv[2]
 W,H=1080,1920
 def font(size, weight):
     f=ImageFont.truetype(FONT,size); f.set_variation_by_name(weight); return f
-LIGHT=dict(bg=(235,205,188), title=(58,43,34), sub=(101,80,63))
-DARK=dict(bg=(27,23,20), title=(242,231,221), sub=(214,197,184))
+LIGHT=dict(bg=(235,205,188), bg2=(246,226,212), title=(58,43,34), sub=(101,80,63))
+DARK=dict(bg=(27,23,20), bg2=(46,38,33), title=(242,231,221), sub=(214,197,184))
 SHOTS=[
  ('01_pausa','1_break',None,LIGHT,
-  ("Il lavoro può aspettare","Le notifiche delle app di lavoro vanno in pausa quando stacchi."),
-  ("Work can wait","Notifications from your work apps pause when you switch off.")),
+  ("Il lavoro può aspettare","Finito l'orario, le notifiche di lavoro tacciono. Il resto del telefono resta com'è."),
+  ("Work can wait","When you're off, work notifications go quiet. The rest of your phone stays as it is.")),
  ('02_app','3_apps',None,LIGHT,
-  ("Scegli le app di lavoro","Tutte le altre notifiche arrivano come sempre."),
-  ("Pick your work apps","Every other notification comes through as usual.")),
+  ("Scegli le app di lavoro","La mail dell'ufficio, la chat, il calendario. Le altre non vengono toccate."),
+  ("Pick your work apps","Office email, chat, calendar. Nothing else gets touched.")),
  ('03_notifica','2_shade',None,LIGHT,
-  ("Tutto nella tendina","Una notifica silenziosa ti dice fino a quando dura la pausa."),
-  ("Your break at a glance","A silent notification shows when it ends.")),
+  ("Sai che la pausa è attiva","Una notifica discreta ti dice fino a che ora dura."),
+  ("Always know it's on","One quiet notification shows when your break ends.")),
  ('04_resoconto','4_report',None,LIGHT,
-  ("Sai cosa ti aspetta","Quando torni vedi quante notifiche sono arrivate e da quali app."),
-  ("Know what's waiting","When you're back, see how many came in and from which apps.")),
+  ("Poi vedi cosa è arrivato","Quando torni, vedi quante notifiche ci sono state e da quali app."),
+  ("See what you missed","When you're back, see how many came in and from which apps.")),
  ('05_scuro','5_dark',None,DARK,
-  ("Anche con il tema scuro","La scena segue la luce vera del giorno e le stagioni."),
-  ("Light or dark","The scene follows the real daylight and the seasons.")),
+  ("Chiaro e scuro","La scena segue l'ora e le stagioni."),
+  ("Light or dark, your call","The scene changes with the time of day and the seasons.")),
 ]
 def wrap(d, text, f, maxw):
     words=text.split(); lines=[]; cur=''
@@ -50,6 +50,8 @@ for lang,folder in (('it','it-IT'),('en','en-US')):
     for name,src,crop,pal,it,en in SHOTS:
         title,sub = it if lang=='it' else en
         img=Image.new('RGB',(W,H),pal['bg']); d=ImageDraw.Draw(img)
+        for yy in range(H):  # vertical gradient, lighter towards the bottom
+            t=yy/H; d.line((0,yy,W,yy),fill=tuple(int(pal['bg'][i]+(pal['bg2'][i]-pal['bg'][i])*t) for i in range(3)))
         ft=font(78,'ExtraBold'); fs=font(40,'Medium')
         y=120
         for line in wrap(d,title,ft,W-160):
@@ -57,10 +59,10 @@ for lang,folder in (('it','it-IT'),('en','en-US')):
         y+=18
         for line in wrap(d,sub,fs,W-200):
             d.text((W//2,y),line,font=fs,fill=pal['sub'],anchor='ma'); y+=54
-        top=y+50
+        top=420  # fixed: the phone sits at the same height in every shot
         shot=Image.open(f'{RAW}/{folder}/{src}.png').convert('RGB')
         if crop: shot=shot.crop(crop)
-        sw=900; sh=int(shot.height*sw/shot.width); shot=shot.resize((sw,sh),Image.LANCZOS)
+        sw=940; sh=int(shot.height*sw/shot.width); shot=shot.resize((sw,sh),Image.LANCZOS)
         BZ=16; OR=86   # bezel width, outer corner radius (inner = OR - BZ)
         fx=(W-sw-2*BZ)//2; fw=sw+2*BZ
         vis=H-top-BZ+60  # screen height shown: it bleeds off the bottom edge

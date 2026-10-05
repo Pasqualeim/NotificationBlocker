@@ -128,9 +128,9 @@ Gli screenshot, nell'ordine:
 |---|---|---|
 | `01_pausa` | Il lavoro può aspettare | Work can wait |
 | `02_app` | Scegli le app di lavoro | Pick your work apps |
-| `03_notifica` | Tutto nella tendina | Your break at a glance |
-| `04_resoconto` | Sai cosa ti aspetta | Know what's waiting |
-| `05_scuro` | Anche con il tema scuro | Light or dark |
+| `03_notifica` | Sai che la pausa è attiva | Always know it's on |
+| `04_resoconto` | Poi vedi cosa è arrivato | See what you missed |
+| `05_scuro` | Chiaro e scuro | Light or dark, your call |
 
 Come rifarli (dopo un cambio di interfaccia o delle scene):
 
