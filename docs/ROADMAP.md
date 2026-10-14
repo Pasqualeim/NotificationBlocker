@@ -13,6 +13,7 @@ Guida passo passo per la parte manuale: [`PUBLISHING.md`](PUBLISHING.md). Testi,
 | Verifica del marchio "Nook" | Pasquale | Prima di tutto. Vedi `PUBLISHING.md`, passo 1 |
 | Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
 | Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
+| Sito per raccogliere i tester | Claude / Pasquale | Pronto in locale (`~/Documents/Developer/nook-site`, IT/EN, provato su iPhone). Mancano: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio. Con il dominio: spostare lì l'informativa (`privacy_policy_url`, `LISTING.md`) |
 | Scheda dello store | Pronta | Testi IT/EN, icona, feature graphic e 5 screenshot IT/EN con le scene nuove (rifatti il 02/10/2026, telefono con cornice). Rifarli se cambiano Home o scene: `LISTING.md`, "Grafica" |
 | Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
 

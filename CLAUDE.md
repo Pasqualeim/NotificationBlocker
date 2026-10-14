@@ -21,6 +21,8 @@ Related docs (read before UI work):
 - `docs/PUBLISHING.md`: the owner's step-by-step Google Play checklist (manual steps: accounts, testing, forms)
 - `docs/store/LISTING.md`: store texts IT/EN, screenshots in `docs/store/screenshots/`, Play Console form answers. Keep it in sync with the app (a new permission, data flow or feature changes the Data safety answers)
 
+Website: a separate repo at `~/Documents/Developer/nook-site` (static site for Cloudflare Pages: home, tester sign-up into D1, privacy policy, IT/EN; its own `CLAUDE.md`). It reuses the app's palette, scene renders and screenshots, so a change to `Color.kt`, the scenes or Home may need new site assets. The app's `privacy_policy_url` still points to the GitHub Pages copy (`docs/index.html`) until the site has its domain; then update the string, `docs/store/LISTING.md` and turn `docs/index.html` into a redirect.
+
 ## Build & test
 
 No system JDK on this machine: use the one bundled with Android Studio.
