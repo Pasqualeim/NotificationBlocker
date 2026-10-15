@@ -8,8 +8,26 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.togetherWith
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
@@ -19,16 +37,20 @@ import androidx.navigation3.ui.NavDisplay
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.screens.AppSelectionScreen
 import com.pasquale.notificationblocker.ui.screens.MainScreen
+import com.pasquale.notificationblocker.ui.screens.PausesScreen
+import com.pasquale.notificationblocker.ui.screens.StatsScreen
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.QuietHoursTheme
 import kotlinx.serialization.Serializable
 
 sealed interface Route : NavKey {
+    /** The three tabs (Today, Breaks, Your time) under the bottom bar. */
     @Serializable
-    data object Home : Route
+    data object Tabs : Route
 
+    /** The work apps, or with [pauseId] the apps of one pause. */
     @Serializable
-    data object AppSelection : Route
+    data class AppSelection(val pauseId: String? = null) : Route
 }
 
 class MainActivity : ComponentActivity() {
@@ -44,12 +66,19 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/** The tabs of the bottom bar, in order. */
+enum class Tab(@StringRes val label: Int, @DrawableRes val icon: Int) {
+    TODAY(R.string.nav_today, R.drawable.ic_mug),
+    PAUSES(R.string.nav_pauses, R.drawable.ic_nav_pauses),
+    TIME(R.string.nav_time, R.drawable.ic_nav_time),
+}
+
 @Composable
 fun NotificationBlockerApp(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
 ) {
-    val backStack = rememberNavBackStack(Route.Home)
+    val backStack = rememberNavBackStack(Route.Tabs)
 
     NavDisplay(
         backStack = backStack,
@@ -59,21 +88,66 @@ fun NotificationBlockerApp(
         predictivePopTransitionSpec = { pop() },
     ) { key ->
         when (key) {
-            Route.Home -> NavEntry(key) {
-                MainScreen(
+            Route.Tabs -> NavEntry(key) {
+                TabsScreen(
                     viewModel = viewModel,
-                    onNavigateToAppSelection = { backStack.add(Route.AppSelection) },
+                    onEditApps = { pauseId -> backStack.add(Route.AppSelection(pauseId)) },
                     // Frozen while the list slides over it: the slide is smoother without the scene
-                    sceneActive = backStack.lastOrNull() == Route.Home,
+                    sceneActive = backStack.lastOrNull() == Route.Tabs,
                 )
             }
-            Route.AppSelection -> NavEntry(key) {
+            is Route.AppSelection -> NavEntry(key) {
                 AppSelectionScreen(
                     viewModel = viewModel,
+                    pauseId = key.pauseId,
                     onNavigateBack = { backStack.removeLastOrNull() },
                 )
             }
             else -> error("Unknown route: $key")
+        }
+    }
+}
+
+/**
+ * The bottom bar and the tab it shows. Switching tabs swaps the content at once, opaque: a cross-fade
+ * would draw two screens see-through (see the note on [push]).
+ */
+@Composable
+private fun TabsScreen(
+    viewModel: MainViewModel,
+    onEditApps: (pauseId: String?) -> Unit,
+    sceneActive: Boolean,
+) {
+    var tab by rememberSaveable { mutableStateOf(Tab.TODAY) }
+    // Each tab keeps its saved state (chart range, scroll) while another one is shown
+    val tabStates = rememberSaveableStateHolder()
+    Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
+        bottomBar = {
+            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+                for (t in Tab.entries) {
+                    NavigationBarItem(
+                        selected = tab == t,
+                        onClick = { tab = t },
+                        icon = { Icon(painterResource(t.icon), contentDescription = null) },
+                        label = { Text(stringResource(t.label)) },
+                    )
+                }
+            }
+        },
+    ) { padding ->
+        val content = Modifier.padding(padding)
+        tabStates.SaveableStateProvider(tab.name) {
+        when (tab) {
+            Tab.TODAY -> MainScreen(viewModel = viewModel, modifier = content, sceneActive = sceneActive)
+            Tab.PAUSES -> PausesScreen(
+                viewModel = viewModel,
+                onEditWorkApps = { onEditApps(null) },
+                onEditPauseApps = { onEditApps(it) },
+                modifier = content,
+            )
+            Tab.TIME -> StatsScreen(viewModel = viewModel, modifier = content)
+        }
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.pasquale.notificationblocker.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
 // Light "Chai": warm cream paper, soft terracotta accent, sage for "time for you", dusty blue for info.
 // Low saturation on purpose: arousal grows with saturation (Valdez & Mehrabian 1994), see docs/DESIGN_SYSTEM.md.
@@ -69,3 +71,12 @@ val DarkTertiary = Color(0xFFB1C5DC)
 val DarkOnTertiary = Color(0xFF1C3048)
 val DarkTertiaryContainer = Color(0xFF384C64)
 val DarkOnTertiaryContainer = Color(0xFFD9E5F3)
+
+// The daylight part of the charts ("Your time"): warm, between the sun of the scenes and the terracotta.
+// Only for bars and dots (not text), next to the sage of the break time
+val LightSunlight = Color(0xFFD9A55B)
+val DarkSunlight = Color(0xFFE2B26E)
+
+/** Daylight color for the current scheme (it has no Material role). */
+val ColorScheme.sunlight: Color
+    get() = if (background.luminance() < 0.5f) DarkSunlight else LightSunlight

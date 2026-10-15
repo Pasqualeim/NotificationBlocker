@@ -108,7 +108,7 @@ private fun HeroHeaderContent(
 
     val animatedContainerColor by animateColorAsState(
         targetValue = when (status) {
-            // A step darker than the ScheduleCard below, so the two don't merge
+            // A step darker than the card below, so the two do not merge
             HeroStatus.DISABLED -> MaterialTheme.colorScheme.surfaceContainerHighest
             HeroStatus.ACTIVE_OUTSIDE, HeroStatus.PAUSE_ENDED -> MaterialTheme.colorScheme.secondaryContainer
             HeroStatus.ACTIVE_INSIDE -> MaterialTheme.colorScheme.primaryContainer

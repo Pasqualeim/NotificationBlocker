@@ -32,26 +32,12 @@
     <string name="privacy_policy_url" translatable="false">https://pasqualeim.github.io/NotificationBlocker/</string>
 
     <!-- Schedule Section -->
-    <string name="schedule_title">When to switch off</string>
-    <string name="schedule_start_time">Start</string>
-    <string name="schedule_end_time">End</string>
-    <plurals name="schedule_hours_dedicated">
-        <item quantity="one">%1$d hour off</item>
-        <item quantity="other">%1$d hours off</item>
-    </plurals>
-    <string name="schedule_time_dedicated">%1$s off</string>
-    <string name="timeline_now">Now %1$s</string>
     <string name="duration_format">%1$d h %2$d min</string>
-    <string name="duration_hours_only">%1$d h off</string>
 
     <!-- App Selection & Main Action -->
     <string name="select_apps">Work apps</string>
 
     <!-- Plurals -->
-    <plurals name="blocked_apps_count">
-        <item quantity="one">%1$d app selected</item>
-        <item quantity="other">%1$d apps selected</item>
-    </plurals>
 
     <!-- App Selection Screen -->
     <string name="app_selection_title">Work apps</string>
@@ -73,8 +59,6 @@
     <string name="navigate_back">Navigate back</string>
     <string name="cd_search_icon">Search icon</string>
     <string name="cd_clear_search">Clear search text</string>
-    <string name="cd_start_time_picker">Select start time</string>
-    <string name="cd_end_time_picker">Select end time</string>
     <string name="cd_master_switch">Pause work notifications</string>
     <string name="cd_toggle_app_blocking">Pause notifications from %1$s</string>
 
@@ -124,8 +108,6 @@
     <string name="life_day_beginning">Work can wait until later.</string>
     <string name="life_sun_after_work">You stop at %1$s, with %2$s of daylight still left.</string>
     <string name="life_evening_after_work">You stop at %1$s.</string>
-    <string name="schedule_sunshine">%1$s of daylight in your time off</string>
-    <string name="schedule_no_sunshine">Your time off starts after sunset</string>
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>
 
@@ -143,4 +125,63 @@
     </plurals>
     <string name="report_nothing_lost">You can find them in their apps.</string>
     <string name="report_dismiss">OK</string>
+    <!-- Nook 2: tabs, breaks, your time (drafts, the copywriter reviews them) -->
+    <string name="nav_today">Today</string>
+    <string name="nav_pauses">Breaks</string>
+    <string name="nav_time">Your time</string>
+    <string name="today_card_title">Today</string>
+    <string name="today_lived">%1$s of your own</string>
+    <string name="today_no_pauses">No breaks today</string>
+    <string name="pause_default_name">Break</string>
+    <string name="pause_state_lived">lived</string>
+    <string name="pause_state_now">on now</string>
+    <string name="pause_state_at">at %1$s</string>
+    <string name="pause_state_ended">ended early</string>
+    <string name="pauses_title">Breaks</string>
+    <string name="pauses_subtitle">During these times your work apps stay quiet.</string>
+    <string name="pauses_empty">No breaks yet. Add one: lunch, the evening, the weekend.</string>
+    <string name="pause_all_day">All day</string>
+    <string name="pause_times">%1$s - %2$s</string>
+    <string name="pause_add">Add a break</string>
+    <plurals name="pauses_work_apps">
+        <item quantity="one">%1$d app, for every break</item>
+        <item quantity="other">%1$d apps, for every break</item>
+    </plurals>
+    <string name="pause_edit_title">Edit break</string>
+    <string name="pause_new_title">New break</string>
+    <string name="pause_name_label">Name</string>
+    <string name="pause_name_hint">Lunch, Evening, Weekend</string>
+    <string name="pause_start">START</string>
+    <string name="pause_end">END</string>
+    <string name="pause_days">Days</string>
+    <string name="pause_whole_day_hint">Same start and end: the whole day.</string>
+    <string name="pause_apps_label">Apps to silence</string>
+    <string name="pause_apps_all">All work apps</string>
+    <plurals name="pause_apps_custom">
+        <item quantity="one">%1$d app chosen for this break</item>
+        <item quantity="other">%1$d apps chosen for this break</item>
+    </plurals>
+    <string name="pause_apps_reset">Use all work apps</string>
+    <string name="pause_delete">Delete break</string>
+    <string name="pause_save">Save</string>
+    <string name="pause_toggle">%1$s on or off</string>
+    <string name="app_selection_pause_title">Apps for %1$s</string>
+    <string name="stats_title">Your time</string>
+    <string name="stats_day">Day</string>
+    <string name="stats_week">Week</string>
+    <string name="stats_month">Month</string>
+    <string name="stats_total">%1$s of your own</string>
+    <string name="stats_daylight">of which %1$s in daylight</string>
+    <string name="stats_tile_yours">yours</string>
+    <string name="stats_tile_daylight">of daylight</string>
+    <string name="stats_tile_held">notifications kept out</string>
+    <string name="stats_legend_break">Break</string>
+    <string name="stats_legend_daylight">In daylight</string>
+    <string name="stats_empty_days">A day with no break is just a dot.</string>
+    <string name="stats_month_hint">The fuller the circle, the more time of your own that day.</string>
+    <string name="stats_prev">Previous</string>
+    <string name="stats_next">Next</string>
+    <string name="stats_sunrise">sunrise %1$s</string>
+    <string name="stats_sunset">sunset %1$s</string>
+    <string name="stats_range">%1$s - %2$s</string>
 </resources>

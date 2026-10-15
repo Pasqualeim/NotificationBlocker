@@ -5,8 +5,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.pasquale.notificationblocker.data.DayStats
 import com.pasquale.notificationblocker.data.MorningReport
-import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.data.PreferencesManager
 import com.pasquale.notificationblocker.notification.ZenNotificationManager
 import com.pasquale.notificationblocker.tile.ZenTileService
@@ -36,11 +38,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isBlockingEnabled = MutableStateFlow(preferencesManager.isBlockingEnabled)
     val isBlockingEnabled: StateFlow<Boolean> = _isBlockingEnabled.asStateFlow()
 
-    private val _startTimeMinutes = MutableStateFlow(preferencesManager.startTimeMinutes)
-    val startTimeMinutes: StateFlow<Int> = _startTimeMinutes.asStateFlow()
-
-    private val _endTimeMinutes = MutableStateFlow(preferencesManager.endTimeMinutes)
-    val endTimeMinutes: StateFlow<Int> = _endTimeMinutes.asStateFlow()
 
     private val _isInOffHoursNow = MutableStateFlow(preferencesManager.isInOffHoursNow())
     val isInOffHoursNow: StateFlow<Boolean> = _isInOffHoursNow.asStateFlow()
@@ -48,6 +45,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Inside the window, but ended early from the break notification
     private val _isPauseEnded = MutableStateFlow(preferencesManager.isPauseEndedNow())
     val isPauseEnded: StateFlow<Boolean> = _isPauseEnded.asStateFlow()
+
+    private val _pauses = MutableStateFlow(preferencesManager.pauses)
+    val pauses: StateFlow<List<Pause>> = _pauses.asStateFlow()
+
+    // Pauses ended early ("End the pause"), for the state shown next to each pause
+    private val _pauseEndedKeys = MutableStateFlow(preferencesManager.pauseEndedKeys)
+    val pauseEndedKeys: StateFlow<Set<String>> = _pauseEndedKeys.asStateFlow()
+
+    private val _history = MutableStateFlow(preferencesManager.history)
+    val history: StateFlow<Map<LocalDate, DayStats>> = _history.asStateFlow()
+
+    /** Minute of the day the next pause starts (for "Pause again" and the status card), null if none is set. */
+    private val _nextPauseStart = MutableStateFlow(computeNextPauseStart())
+    val nextPauseStart: StateFlow<Int?> = _nextPauseStart.asStateFlow()
 
     private val _blockedAppsCount = MutableStateFlow(preferencesManager.getBlockedApps().size)
     val blockedAppsCount: StateFlow<Int> = _blockedAppsCount.asStateFlow()
@@ -105,19 +116,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         ZenTileService.requestUpdate(getApplication())
     }
 
-    fun setStartTime(minutes: Int) {
-        preferencesManager.startTimeMinutes = minutes
-        _startTimeMinutes.value = minutes
-        refreshOffHoursStatus()
-        ZenTileService.requestUpdate(getApplication())
-    }
-
-    fun setEndTime(minutes: Int) {
-        preferencesManager.endTimeMinutes = minutes
-        _endTimeMinutes.value = minutes
-        refreshOffHoursStatus()
-        ZenTileService.requestUpdate(getApplication())
-    }
 
     /** Brings back a pause ended early from the break notification. */
     fun pauseAgain() {
@@ -128,6 +126,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Called on resume: the clock may have crossed the window boundary while the app was away. */
     fun refreshOffHoursStatus() {
         preferencesManager.settleHistory()
+        _pauses.value = preferencesManager.pauses
+        _pauseEndedKeys.value = preferencesManager.pauseEndedKeys
+        _history.value = preferencesManager.history
+        _nextPauseStart.value = computeNextPauseStart()
+
         _isInOffHoursNow.value = preferencesManager.isInOffHoursNow()
         _isPauseEnded.value = preferencesManager.isPauseEndedNow()
         refreshZenNotification()
@@ -171,15 +174,68 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _sunshineMinutes.value = computeSunshine()
     }
 
-    private fun computeLifeMessage() = LifeCopy.message(
-        now = LocalDateTime.now(),
-        blockingEnabled = preferencesManager.isBlockingEnabled,
-        start = preferencesManager.startTimeMinutes,
-        end = preferencesManager.endTimeMinutes,
-    )
+    private fun computeLifeMessage(): LifeMessage {
+        val pause = focusPause()
+        return LifeCopy.message(
+            now = LocalDateTime.now(),
+            blockingEnabled = preferencesManager.isBlockingEnabled && pause != null,
+            start = pause?.start ?: 0,
+            end = pause?.end ?: 0,
+        )
+    }
 
-    private fun computeSunshine() =
-        LifeCopy.sunshineInWindow(LocalDate.now(), preferencesManager.startTimeMinutes, preferencesManager.endTimeMinutes)
+    private fun computeSunshine() = focusPause()?.let { LifeCopy.sunshineInWindow(LocalDate.now(), it.start, it.end) } ?: 0
+
+    /** The pause the free-time line talks about: the one in progress, or else the next one to start. */
+    private fun focusPause(): Pause? {
+        val now = LocalDateTime.now()
+        val pauses = preferencesManager.pauses
+        val ended = preferencesManager.pauseEndedKeys
+        PauseSchedule.activeAt(pauses, now, ended).firstOrNull()?.let { return it.pause }
+        return PauseSchedule.nextOccurrence(pauses, now, ended)?.pause
+    }
+
+    private fun computeNextPauseStart(): Int? =
+        PauseSchedule.nextStart(preferencesManager.pauses, LocalDateTime.now(), preferencesManager.pauseEndedKeys)
+            ?.let { it.hour * 60 + it.minute }
+
+    /** Adds [pause], or replaces the one with the same id. */
+    fun savePause(pause: Pause) {
+        val all = preferencesManager.pauses
+        preferencesManager.pauses = if (all.any { it.id == pause.id }) all.map { if (it.id == pause.id) pause else it } else all + pause
+        onPausesChanged()
+    }
+
+    fun deletePause(id: String) {
+        preferencesManager.pauses = preferencesManager.pauses.filterNot { it.id == id }
+        onPausesChanged()
+    }
+
+    fun setPauseEnabled(id: String, enabled: Boolean) {
+        val pause = preferencesManager.pauses.firstOrNull { it.id == id } ?: return
+        savePause(pause.copy(enabled = enabled))
+    }
+
+    /** Turns [packageName] on or off for one pause; the first change copies the work apps as a start. */
+    fun setPauseApp(id: String, packageName: String, blocked: Boolean) {
+        val pause = preferencesManager.pauses.firstOrNull { it.id == id } ?: return
+        val apps = pause.apps ?: preferencesManager.getBlockedApps()
+        savePause(pause.copy(apps = if (blocked) apps + packageName else apps - packageName))
+    }
+
+    /** Back to "all the work apps" for one pause. */
+    fun resetPauseApps(id: String) {
+        val pause = preferencesManager.pauses.firstOrNull { it.id == id } ?: return
+        savePause(pause.copy(apps = null))
+    }
+
+    /** A fresh id for a new pause: short, stable, never reused. */
+    fun newPauseId(): String = "p" + System.currentTimeMillis().toString(36)
+
+    private fun onPausesChanged() {
+        refreshOffHoursStatus()
+        ZenTileService.requestUpdate(getApplication())
+    }
 
     /** Posts, updates or removes the zen status notification to match the current state. */
     fun refreshZenNotification() = ZenNotificationManager.refresh(getApplication())

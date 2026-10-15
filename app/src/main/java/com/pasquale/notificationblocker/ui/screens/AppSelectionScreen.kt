@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.AppInfo
 import com.pasquale.notificationblocker.ui.MainViewModel
+import com.pasquale.notificationblocker.ui.components.pauseName
 import com.pasquale.notificationblocker.ui.components.AppItemRow
 import com.pasquale.notificationblocker.ui.components.EmptyState
 import com.pasquale.notificationblocker.ui.components.SearchField
@@ -68,9 +69,17 @@ fun AppSelectionScreen(
     viewModel: MainViewModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    pauseId: String? = null,
 ) {
-    val apps by viewModel.installedApps.collectAsStateWithLifecycle()
+    val allApps by viewModel.installedApps.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoadingApps.collectAsStateWithLifecycle()
+    val pauses by viewModel.pauses.collectAsStateWithLifecycle()
+    // With a pause: its own apps (until the first change, the work apps)
+    val pause = pauseId?.let { id -> pauses.firstOrNull { it.id == id } }
+    val apps = remember(allApps, pause) {
+        val chosen = pause?.apps
+        if (pause == null || chosen == null) allApps else allApps.map { it.copy(isBlocked = it.packageName in chosen) }
+    }
 
     // On every resume: apps installed or removed while away show up without restarting the app
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -80,9 +89,12 @@ fun AppSelectionScreen(
     AppSelectionScreenContent(
         apps = apps,
         isLoading = isLoading,
-        onToggleBlocked = viewModel::toggleAppBlocked,
+        onToggleBlocked = { pkg, on ->
+            if (pause != null) viewModel.setPauseApp(pause.id, pkg, on) else viewModel.toggleAppBlocked(pkg, on)
+        },
         onNavigateBack = onNavigateBack,
         modifier = modifier,
+        title = if (pause != null) stringResource(R.string.app_selection_pause_title, pauseName(pause)) else null,
     )
 }
 
@@ -95,6 +107,7 @@ fun AppSelectionScreenContent(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     rowsReadyAtStart: Boolean = false,
+    title: String? = null,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filterState by rememberSaveable { mutableStateOf(AppFilter.ALL) }
@@ -169,7 +182,7 @@ fun AppSelectionScreenContent(
             MediumTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.app_selection_title),
+                        text = title ?: stringResource(R.string.app_selection_title),
                         fontWeight = FontWeight.Bold,
                     )
                 },

@@ -29,7 +29,7 @@ Tutti i token stanno in `ui/theme/Motion.kt` (`object Motion`). **Niente numeri 
 |---|---|
 | `Motion.StandardEasing` = `FastOutSlowInEasing` | Easing di ogni tween, salvo eccezioni documentate dal componente |
 | `Motion.standard(durationMillis = MEDIUM, delayMillis = 0)` | `TweenSpec` con `StandardEasing`: la spec da usare per ogni `tween` (es. `Motion.standard(Motion.SHORT)`) |
-| `Motion.press()` = `spring(DampingRatioMediumBouncy, StiffnessLow)` | Pressione della CTA e delle pillole degli orari (scala `PRESS_SCALE`) |
+| `Motion.press()` = `spring(DampingRatioMediumBouncy, StiffnessLow)` | Pressione di bottoni e pillole (scala `PRESS_SCALE`) |
 | `spring()` default | Valori interrotti di frequente (drag, toggle ripetuti) |
 
 Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argomenti) non si usano: passa sempre una spec di `Motion` (fade-in `MEDIUM`, fade-out `SHORT`, expand/shrink `MEDIUM`).
@@ -38,11 +38,9 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 
 | Dove | Cosa | Implementazione |
 |---|---|---|
-| `MainScreen` | Entrata a cascata di header, card in cima, scena, orari | `Modifier.homeEntrance` (`animateFloatAsState`, `MEDIUM`): alpha 0→1 e salita di metà altezza, `graphicsLayer`; la cascata viene da `Motion.Stagger` (80 ms). I blocchi sono già composti e misurati dal primo frame (non `AnimatedVisibility`): `HomeColumn` ne calcola la scala sull'altezza di tutti, vedi "Home in una schermata" in `DESIGN_SYSTEM.md` |
+| `MainScreen` | Entrata a cascata di header, card in cima, scena, card "Oggi" (scheda Oggi) | `Modifier.homeEntrance` (`animateFloatAsState`, `MEDIUM`): alpha 0→1 e salita di metà altezza, `graphicsLayer`; la cascata viene da `Motion.Stagger` (80 ms). I blocchi sono già composti e misurati dal primo frame (non `AnimatedVisibility`): `HomeColumn` ne calcola la scala sull'altezza di tutti, vedi "Home in una schermata" in `DESIGN_SYSTEM.md` |
 | `HomeColumn` | Scala della Home che cambia ("Home in una schermata" in `DESIGN_SYSTEM.md`) | Nessuna animazione: cambia in un colpo quando le altezze sono ferme da `SETTLE_MILLIS` (200 ms); durante un'animazione di altezza la pagina resta alla scala di prima |
-| `MainActivity` (`NavDisplay`) | Navigazione Home ↔ App di lavoro, anche col gesto "indietro" predittivo | Scorrimento laterale `MEDIUM`, schermate opache: la nuova copre la vecchia, che si sposta di un quarto (`COVERED_SHIFT`) nello stesso verso; tornando indietro la schermata che esce resta sopra (`targetContentZIndex = -1`). Niente dissolvenza: quella predefinita (700 ms) disegnava due schermate trasparenti in buffer offscreen, ~25 fps su Galaxy A32 |
-| `MainScreen` | CTA che si "schiaccia" alla pressione | `animateFloatAsState` a `PRESS_SCALE` con `Motion.press()`, `graphicsLayer` scale |
-| `ScheduleCard` | Pillole degli orari che si "schiacciano" alla pressione | Come la CTA: `PRESS_SCALE` con `Motion.press()` |
+| `MainActivity` (`NavDisplay`) | Navigazione schede (Oggi / Pause / Il tuo tempo: nessuna animazione propria, ogni scheda tiene il suo stato con `SaveableStateHolder`) e Oggi ↔ App di lavoro, anche col gesto "indietro" predittivo | Scorrimento laterale `MEDIUM`, schermate opache: la nuova copre la vecchia, che si sposta di un quarto (`COVERED_SHIFT`) nello stesso verso; tornando indietro la schermata che esce resta sopra (`targetContentZIndex = -1`). Niente dissolvenza: quella predefinita (700 ms) disegnava due schermate trasparenti in buffer offscreen, ~25 fps su Galaxy A32 |
 | `HeroHeader` | Colori della card per stato | `animateColorAsState` `LONG` |
 | `HeroHeader` | Titolo e sottotitolo che cambiano | `AnimatedContent` fade + slide `MEDIUM` / fade-out `SHORT` |
 | `HeroHeader` | Alone che respira quando blocca ora | `BreathingGlow` (composable privato composto **solo** in `ACTIVE_INSIDE`) legge `AmbientClock` nella fase di disegno: ciclo di `2 × AMBIENT` (4 s), scala 0.9→1.35, alpha 0.2→0.55, coseno. **Non** usa `rememberInfiniteTransition`: un loop proprio ridisegnava la finestra a ogni vsync (90 volte al secondo su un 90 Hz) e col telefono in pausa, lo stato principale, la GPU non reggeva più nulla. Sta fuori da `AnimatedContent`, e la campanella accanto mantiene il suo stato |
@@ -72,9 +70,8 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 In ordine di rapporto valore/costo (dettagli in [`ROADMAP.md`](ROADMAP.md)):
 
 1. **Haptic** sul toggle e sulla selezione delle app (`LocalHapticFeedback`, `HapticFeedbackType.ToggleOn/Off` con BOM recente).
-2. **Sole → luna** nella `ScheduleCard`, a seconda che l'ora corrente sia dentro la fascia (`AnimatedContent` tra `ic_sun_dim` e `ic_moon`).
-3. **Indicatore "ora" della `Timeline24h`** che scorre al minuto e pulsa leggermente.
-4. **Material 3 Expressive** (`MotionScheme.expressive()`) dopo l'aggiornamento della BOM Compose.
+2. **Indicatore "ora"** nel grafico del giorno (`DayChart`) che scorre al minuto.
+3. **Material 3 Expressive** (`MotionScheme.expressive()`) dopo l'aggiornamento della BOM Compose.
 
 ## Scena zen
 

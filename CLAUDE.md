@@ -55,10 +55,11 @@ adb logcat -s NotificationBlocker                      # expect "Canceling notif
 
 ```
 app/src/main/java/com/pasquale/notificationblocker/
-├── MainActivity.kt                  # Activity, Route (NavKey) and NavDisplay graph
+├── MainActivity.kt                  # Activity, Route (Tabs, AppSelection(pauseId)), NavDisplay graph, TabsScreen: bottom NavigationBar with Tab enum (Today / Breaks / Your time), one SaveableStateHolder per tab
 ├── data/
 │   ├── Pause.kt                     # Pause (name, start, end, days, enabled, apps), Occurrence (one time it happens, key "date#id"), PauseCodec (prefs text)
 │   ├── PauseSchedule.kt             # pure: which pauses are on, the blocking rule, blockedUntil, nextStart (unit tested)
+│   ├── Stats.kt                     # pure: StatsRange, PeriodStats, DaySpans for Your time (unit tested)
 │   ├── FreeTimeLedger.kt            # pure: per-day history (lived, daylight, held, minutes per pause), HistoryCodec (unit tested)
 │   ├── SunTimes.kt                  # pure: sunrise/sunset for a fixed latitude in the phone's zone (scenes and daylight in the history)
 │   ├── OffHours.kt                  # minutes helpers (format, currentMinutes) and the old single-window logic still used by Home's timeline and LifeCopy
@@ -73,15 +74,19 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   ├── ZenTileState.kt              # pure: tile icon/label/subtitle (unit tested)
 │   └── ZenTileService.kt            # Quick Settings tile "Nook": toggles blocking
 └── ui/
-    ├── MainViewModel.kt             # AndroidViewModel shared by both screens (StateFlows)
+    ├── MainViewModel.kt             # AndroidViewModel shared by all screens (StateFlows)
     ├── screens/
-    │   ├── MainScreen.kt            # staggered entrance: top card, scene, schedule; one top card at a time (TopCard); time pickers, bottom CTA
+    │   ├── MainScreen.kt            # Today tab: staggered entrance of top card, scene, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
+    │   ├── PausesScreen.kt          # Breaks tab: list of PauseCards, add/edit via PauseEditorSheet
+    │   ├── StatsScreen.kt           # Your time tab: week / month / day ranges, charts of StatsCharts, fed by data/Stats.kt
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter; one plain list: the apps picked when it opens come first, rows never move while you pick; rows are composed once the slide is over
     ├── components/
     │   ├── HeroHeader.kt            # status card (3 HeroStatus states) + master Switch
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on
-    │   ├── ScheduleCard.kt          # start/end TimeCards + quiet duration
-    │   ├── Timeline24h.kt           # 24h bar showing the off-hours window
+    │   ├── TodayCard.kt             # "Today" card on Home: the pauses of today (TodayPauses, unit tested), hours lived
+    │   ├── PauseCard.kt             # PauseCard, DayPills, pauseColor/pauseName/pauseTimes: one pause in the Breaks list
+    │   ├── PauseEditorSheet.kt      # ModalBottomSheet: name, start/end (TimePickerDialog), days, apps row (opens AppSelection for that pause), "Use all work apps"
+    │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, TotalsRow (Your time)
     │   ├── PermissionCard.kt        # listener-permission prompt (in the top card's place until access is granted)
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, in the top card's place until dismissed
     │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room
@@ -97,7 +102,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light/rain/snow),
     │                                # ScenePainting → DeskPainting (office), NaturePainting (lake pier); ZenPainter (Compose + AWT in tests);
     │                                # LifeCopy (daylight / free-time messages on Home, unit tested)
-    └── theme/                       # Color ("Chai" light, "Lo-fi night" dark), Motion (tokens), Type (Manrope),
+    └── theme/                       # Color ("Chai" light, "Lo-fi night" dark; `ColorScheme.sunlight` = daylight bars of the charts, never text), Motion (tokens), Type (Manrope),
                                      # Shape, Theme, ZenPalette (scene colors)
 ```
 
@@ -112,7 +117,7 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 - Each pause runs half-open `[start, end)`, wraps past midnight when `start > end` (Friday's 18:30-08:30 belongs to Friday) and `start == end` covers its whole calendar day. Times are minutes from midnight.
 - Each time a pause happens is an `Occurrence` with key `"2026-10-15#lunch"`: ended early, notification swiped away and held notifications use it. "End the pause" ends every pause in progress.
 - The history (`FreeTimeLedger`, plan phase 2): a minute counts when blocking is on and a pause in progress, not ended early, has apps to silence; it belongs to its calendar day, counts once for the first-started pause when pauses overlap, and its daylight part uses `SunTimes`. Still no alarms: `PreferencesManager.settleHistory()` credits the minutes since the last look (`history_seen_at`), on every `ZenNotificationManager.refresh()` (each minute with the screen on) and Home refresh, and **before** every write of a setting that decides whether the pause is on (`settleThen`: master switch, pauses, work apps, end/resume). Any new such setting must go through `settleThen`. Gaps longer than 3 days count only their last 3 (a weekend with the phone asleep; longer is more likely the phone off or a restored backup). Computed on intervals, real time across daylight saving.
-- Phase 1: Home still edits only the first pause (`startTimeMinutes`/`endTimeMinutes` read and write `pauses[0]`); the pause list screen comes in phase 3.
+- Home edits no times: pauses are created and edited in the Breaks tab (`PauseEditorSheet`); Home shows only today's pauses (`TodayCard`). The work apps are chosen per pause (`Route.AppSelection(pauseId)`; null = the shared `blocked_apps`).
 
 ### Preferences keys (`notification_blocker_prefs`)
 

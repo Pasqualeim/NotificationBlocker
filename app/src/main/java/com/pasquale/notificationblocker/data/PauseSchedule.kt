@@ -90,7 +90,11 @@ object PauseSchedule {
         Duration.between(now.atZone(zone), until.atZone(zone)).toMillis()
 
     /** The next time a pause starts after [now] (one in progress is skipped), or null if none is set. */
-    fun nextStart(pauses: List<Pause>, now: LocalDateTime, ended: Set<String> = emptySet()): LocalDateTime? {
+    fun nextStart(pauses: List<Pause>, now: LocalDateTime, ended: Set<String> = emptySet()): LocalDateTime? =
+        nextOccurrence(pauses, now, ended)?.start
+
+    /** The next pause to start after [now]; on a tie, the first in the list. */
+    fun nextOccurrence(pauses: List<Pause>, now: LocalDateTime, ended: Set<String> = emptySet()): Occurrence? {
         val today = now.toLocalDate()
         return pauses.asSequence()
             .filter { it.enabled }
@@ -101,6 +105,6 @@ object PauseSchedule {
                     .map { Occurrence(pause, it) }
             }
             .filter { it.start.isAfter(now) && it.key !in ended }
-            .minOfOrNull { it.start }
+            .minByOrNull { it.start }
     }
 }

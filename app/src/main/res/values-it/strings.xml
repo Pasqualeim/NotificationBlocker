@@ -28,28 +28,12 @@
     <string name="privacy_policy_link">Privacy</string>
 
     <!-- Schedule Section -->
-    <string name="schedule_title">Quando staccare</string>
-    <string name="schedule_start_time">Inizio</string>
-    <string name="schedule_end_time">Fine</string>
-    <plurals name="schedule_hours_dedicated">
-        <item quantity="one">%1$d ora libera</item>
-        <item quantity="many">%1$d ore libere</item>
-        <item quantity="other">%1$d ore libere</item>
-    </plurals>
-    <string name="schedule_time_dedicated">%1$s liberi</string>
-    <string name="timeline_now">Ora %1$s</string>
     <string name="duration_format">%1$d h %2$d min</string>
-    <string name="duration_hours_only">%1$d h libere</string>
 
     <!-- App Selection & Main Action -->
     <string name="select_apps">App di lavoro</string>
 
     <!-- Plurals -->
-    <plurals name="blocked_apps_count">
-        <item quantity="one">%1$d app selezionata</item>
-        <item quantity="many">%1$d app selezionate</item>
-        <item quantity="other">%1$d app selezionate</item>
-    </plurals>
 
     <!-- App Selection Screen -->
     <string name="app_selection_title">App di lavoro</string>
@@ -71,8 +55,6 @@
     <string name="navigate_back">Indietro</string>
     <string name="cd_search_icon">Icona di ricerca</string>
     <string name="cd_clear_search">Cancella testo di ricerca</string>
-    <string name="cd_start_time_picker">Seleziona ora di inizio</string>
-    <string name="cd_end_time_picker">Seleziona ora di fine</string>
     <string name="cd_master_switch">Metti in pausa le notifiche di lavoro</string>
     <string name="cd_toggle_app_blocking">Metti in pausa le notifiche di %1$s</string>
 
@@ -122,8 +104,6 @@
     <string name="life_day_beginning">Il lavoro può aspettare.</string>
     <string name="life_sun_after_work">Stacchi alle %1$s e ti restano %2$s di luce.</string>
     <string name="life_evening_after_work">Stacchi alle %1$s.</string>
-    <string name="schedule_sunshine">%1$s di luce nel tuo tempo libero</string>
-    <string name="schedule_no_sunshine">Il tuo tempo libero inizia dopo il tramonto</string>
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>
 
@@ -143,4 +123,65 @@
     </plurals>
     <string name="report_nothing_lost">Le trovi nelle rispettive app.</string>
     <string name="report_dismiss">OK</string>
+    <!-- Nook 2: schede, pause, il tempo tuo (bozze, le rivede il copywriter) -->
+    <string name="nav_today">Oggi</string>
+    <string name="nav_pauses">Pause</string>
+    <string name="nav_time">Il tempo tuo</string>
+    <string name="today_card_title">Oggi</string>
+    <string name="today_lived">%1$s tue</string>
+    <string name="today_no_pauses">Oggi nessuna pausa</string>
+    <string name="pause_default_name">Pausa</string>
+    <string name="pause_state_lived">vissuta</string>
+    <string name="pause_state_now">in corso</string>
+    <string name="pause_state_at">alle %1$s</string>
+    <string name="pause_state_ended">terminata</string>
+    <string name="pauses_title">Pause</string>
+    <string name="pauses_subtitle">Nei momenti segnati, le app di lavoro tacciono.</string>
+    <string name="pauses_empty">Nessuna pausa per ora. Aggiungine una: il pranzo, la sera, il weekend.</string>
+    <string name="pause_all_day">Tutto il giorno</string>
+    <string name="pause_times">%1$s - %2$s</string>
+    <string name="pause_add">Aggiungi pausa</string>
+    <plurals name="pauses_work_apps">
+        <item quantity="one">%1$d app, vale per tutte le pause</item>
+        <item quantity="many">%1$d app, valgono per tutte le pause</item>
+        <item quantity="other">%1$d app, valgono per tutte le pause</item>
+    </plurals>
+    <string name="pause_edit_title">Modifica pausa</string>
+    <string name="pause_new_title">Nuova pausa</string>
+    <string name="pause_name_label">Nome</string>
+    <string name="pause_name_hint">Pranzo, Sera, Weekend</string>
+    <string name="pause_start">INIZIO</string>
+    <string name="pause_end">FINE</string>
+    <string name="pause_days">Giorni</string>
+    <string name="pause_whole_day_hint">Inizio e fine uguali: tutto il giorno.</string>
+    <string name="pause_apps_label">App da silenziare</string>
+    <string name="pause_apps_all">Tutte le app di lavoro</string>
+    <plurals name="pause_apps_custom">
+        <item quantity="one">%1$d app scelta per questa pausa</item>
+        <item quantity="many">%1$d app scelte per questa pausa</item>
+        <item quantity="other">%1$d app scelte per questa pausa</item>
+    </plurals>
+    <string name="pause_apps_reset">Usa tutte le app di lavoro</string>
+    <string name="pause_delete">Elimina pausa</string>
+    <string name="pause_save">Salva</string>
+    <string name="pause_toggle">%1$s attiva o spenta</string>
+    <string name="app_selection_pause_title">App per %1$s</string>
+    <string name="stats_title">Il tempo tuo</string>
+    <string name="stats_day">Giorno</string>
+    <string name="stats_week">Settimana</string>
+    <string name="stats_month">Mese</string>
+    <string name="stats_total">%1$s tue</string>
+    <string name="stats_daylight">di cui %1$s con la luce del giorno</string>
+    <string name="stats_tile_yours">tue</string>
+    <string name="stats_tile_daylight">di luce</string>
+    <string name="stats_tile_held">notifiche fuori</string>
+    <string name="stats_legend_break">Pausa</string>
+    <string name="stats_legend_daylight">Con la luce del giorno</string>
+    <string name="stats_empty_days">Un giorno senza pausa è solo un puntino.</string>
+    <string name="stats_month_hint">Più è pieno il cerchio, più tempo tuo quel giorno.</string>
+    <string name="stats_prev">Precedente</string>
+    <string name="stats_next">Successivo</string>
+    <string name="stats_sunrise">alba %1$s</string>
+    <string name="stats_sunset">tramonto %1$s</string>
+    <string name="stats_range">%1$s - %2$s</string>
 </resources>
