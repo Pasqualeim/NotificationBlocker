@@ -58,6 +58,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 ├── data/
 │   ├── OffHours.kt                  # pure time-window logic (unit tested)
 │   ├── MorningReport.kt             # pure: held notifications per app, when to show the report (unit tested)
+│   ├── FreeTimeLedger.kt            # pure: break minutes lived per window (12 h cap), SproutStage (unit tested)
 │   └── PreferencesManager.kt        # SharedPreferences singleton, shouldBlock()
 ├── notification/
 │   ├── ZenNotificationState.kt      # pure: what the zen notification shows now (unit tested)
@@ -81,7 +82,8 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, in the top card's place until dismissed
     │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room
     │   ├── HomeFit.kt               # pure: the scale policy of HomeColumn (unit tested)
-    │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
+    │   ├── SproutCard.kt            # the sprout on Home, in the scene's place (homeScene, 2:1 or smaller): pixel-art sprite + hours lived + progress
+    │   ├── SceneCard.kt             # card framing the scene (no longer on Home since the sprout took its place); fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
     │   ├── ZenScene.kt              # animated scene: office desk (work) / lake pier (off work)
     │   ├── AmbientClock.kt          # the one 30 fps clock of Home's slow motion (scene + glow behind the bell)
     │   ├── SearchField.kt           # pill search field: bare BasicTextField (the Material TextField froze the list screen ~60 ms when it opened)
@@ -89,6 +91,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
     │   ├── AppItemRow.kt, AppIconImage.kt
     │   └── ShimmerSkeleton.kt, EmptyState.kt   # loading / empty states
+    ├── sprout/SproutArt.kt          # sprout pixel art: 24x24 char grids per stage, awake/asleep (pure, AWT previews in tests)
     ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light/rain/snow),
     │                                # ScenePainting → DeskPainting (office), NaturePainting (lake pier); ZenPainter (Compose + AWT in tests);
     │                                # LifeCopy (daylight / free-time messages on Home, unit tested)
@@ -108,7 +111,7 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Preferences keys (`notification_blocker_prefs`)
 
-`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `pause_ended_window` (window the user ended early with "End the pause": nothing is held until the next window; cleared when blocking is turned on again), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
+`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `pause_ended_window` (window the user ended early with "End the pause": nothing is held until the next window; cleared when blocking is turned on again), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"), `growth_minutes` (Long, break minutes lived in total: the sprout), `growth_window` / `growth_window_minutes` (latest window that added some, and how much, 12 h cap), `growth_seen_at` (Long epoch millis of the last settle). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
 
 ### App list
 
@@ -117,6 +120,12 @@ Apps come from `queryIntentActivities(ACTION_MAIN + CATEGORY_LAUNCHER)`, matched
 ### Permissions
 
 Only notification listener access is required, granted by the user in system settings (`Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`). `MainScreen` re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ `ZenNotificationCard` asks for it once, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
+
+### Sprout (growth with free time)
+
+Home shows a pixel-art sprout (`SproutCard`, in the scene's place) that grows with the break time actually lived: blocking on, at least one work app, inside the window, not ended early. Opening a work app during the break costs nothing (Nook does not see it); "End the pause" only stops the count from that moment, "Pause again" resumes it. It never shrinks, there are no streaks; one window adds 12 h at most. Stages by total hours: seed 0, sprout 8, seedling 40, sapling 120, tree 300 (`SproutStage`). Awake while paused, asleep in work hours.
+
+Still no alarms: `PreferencesManager.settleGrowth()` credits the minutes between two looks at the clock (`FreeTimeLedger.pausedMinutes`, a minute counts once it is over), and every settings setter settles **before** writing, so the time before a change counts with the old settings. Settled on every `ZenNotificationManager.refresh()` (each minute while the screen is on) and on every Home refresh. Any new setting that changes whether the pause is on must go through `settleGrowthThen`.
 
 ### Zen status notification
 
@@ -149,6 +158,12 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.
 - **Home fits one screen on every phone and the scene is never cropped** (rule and verification: `docs/DESIGN_SYSTEM.md`, "Home in una schermata"). If space is short the *rest* is resized, never the animation: cards scale down to 0.8 together (`HomeColumn`/`HomeFit`), only then the scene shrinks, whole, to 0.6, and only then the page scrolls. Home blocks are composed from the first frame and enter with `homeEntrance` (alpha + offset), never `AnimatedVisibility`. Text must not change size by itself: Home sizes are compact (16dp card padding, `titleLarge` status, `bodyMedium` texts, 22sp times) so common phones fit at scale 1, and the top of Home holds **one card at a time** (`TopCard`: permission → notification prompt → morning report → status card with the switch); a card stacked on top pushed the page past the screen, every text shrank, then grew back by 25% once it was gone. Every new block on Home eats height: re-check on the phone (`wm size`/`wm density`/`font_scale`, always reset after) before committing. Cost: `HomeColumn` measures the cards once per layout, like a `Column`; the scale never follows an animation frame by frame (that relaid out every card each frame and made the switch stutter), it changes once the heights are still (`SETTLE_MILLIS`) and grows back only for more than 56dp of room.
 - Performance: judge smoothness on a **release** build (debug Compose is ~2x slower and starts in 1.8 s instead of 0.4 s on a Galaxy A32). Measure with `adb shell dumpsys gfxinfo com.pasquale.nook framestats` (only the last 120 frames are kept, so reset right before the gesture; `Total frames rendered` over a few idle seconds gives the real frame rate). The test phone (Galaxy A32) is **90 Hz** (11 ms per frame) with a Mali-G52 whose clock sits at its minimum (299 of 950 MHz) even at 100% load, and it redraws the whole window on every frame (no partial updates): ~7 ms of GPU for an empty window, ~16 ms for Home, ~20 ms with the scene. So: **never start an animation that runs on its own clock** (`rememberInfiniteTransition`, `animate*AsState` loops) on a screen that stays open: it redraws the window on every vsync (90 per second) and the GPU never catches up. The breathing glow behind the bell did exactly that whenever the pause was on (the main state): 458 frames in 5 s, every one late, scroll and taps stuttering. Slow ambient motion reads `AmbientClock` (30 fps, shared by the scene and the glow, frozen while the page scrolls or another screen slides over Home); idle Home now renders 150 frames in 5 s. The Home scroll has no edge stretch (`overscrollEffect = null`): the page is barely taller than the screen and the stretch cost 18 ms of GPU per frame. Also: opaque slide transitions instead of cross-fades (two see-through screens cost ~27 ms of GPU per frame), app icons rasterized once at display size (`AppIconImage`), no Material `TextField` (60 ms to compose), and the app list's rows composed after the slide (`rowsReady`: ~4 ms per row, they froze the first frame of the slide). `app/src/main/baseline-prof.txt` compiles the app's own code ahead of time (the libraries bring their own profiles); to try a release build on a phone that has the debug one, re-sign it with the debug key (`apksigner sign --ks ~/.android/debug.keystore`) and `adb install -r`, which keeps the preferences. Always count the idle frames of Home in the state users spend most time in (pause on, inside the window), not only in the others.
+
+## Team
+
+Requests are routed to specialist agents by the lead (main session). Routing table and team rules:
+
+@../nook-ops/TEAM.md
 
 ## graphify
 
