@@ -41,6 +41,7 @@ Nessuna voce aperta: Kotlin, `targetSdk`, Gradle, firma e CI sono a posto (vedi 
 | Scelta "notifica della pausa sì/no" nell'app | S | Oggi si spegne dal canale di sistema o negando il permesso: un interruttore in app è più chiaro |
 | Onboarding al primo avvio | M | 2–3 pagine con illustrazione (candidata per Lottie, vedi `MOTION.md`) e richiesta del permesso |
 | Widget home | L | Glance: nuova dipendenza, da motivare |
+| Personaggio: scegliere il concept (A angolo, B Chai, C Chai nell'angolo) in `CHARACTER.md` | S | Poi: togliere le 'zz' del germoglio (contraddice `MOTION.md`: niente personaggi che dormono), numeri e barra fuori da Home, storico per giorno in `FreeTimeLedger` per le statistiche |
 | Pulire le notifiche già visibili all'inizio della fascia | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
 
 ## 4. Qualità
