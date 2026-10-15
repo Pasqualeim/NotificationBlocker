@@ -45,7 +45,8 @@ class NotificationBlockerService : NotificationListenerService() {
         // Group summaries duplicate their children; ongoing ones cannot be canceled at all
         val isSummary = notification.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
         if (notification.isClearable && !isSummary) {
-            prefs.recordFiltered(prefs.currentWindowKey(), notification.packageName, notification.key)
+            val window = prefs.currentWindowKey() ?: return
+            prefs.recordFiltered(window, notification.packageName, notification.key)
         }
     }
 

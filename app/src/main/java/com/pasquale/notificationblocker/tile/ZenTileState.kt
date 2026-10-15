@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.tile
 
-import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.ui.zen.TimeOfDay
 import com.pasquale.notificationblocker.ui.zen.ZenEnvironment
 import java.time.LocalDateTime
@@ -29,8 +30,8 @@ data class ZenTileState(
     val subtitle: TileSubtitle,
 ) {
     companion object {
-        /** @param endedEarly the user ended the current window early: the tile says when the next one starts */
-        fun resolve(now: LocalDateTime, blockingEnabled: Boolean, start: Int, end: Int, endedEarly: Boolean = false): ZenTileState {
+        /** @param ended pauses the user ended early: the tile says when the next one starts */
+        fun resolve(now: LocalDateTime, blockingEnabled: Boolean, pauses: List<Pause>, ended: Set<String> = emptySet()): ZenTileState {
             val minute = now.hour * 60 + now.minute
             val (sunrise, sunset) = ZenEnvironment.sunTimes(now.toLocalDate())
             val icon = when (ZenEnvironment.timeOfDay(minute, sunrise, sunset)) {
@@ -38,12 +39,13 @@ data class ZenTileState(
                 TimeOfDay.DAYLIGHT -> TileIcon.SUN
                 TimeOfDay.GOLDEN_HOUR, TimeOfDay.NIGHT -> TileIcon.LANTERN
             }
+            val inPause = PauseSchedule.activeAt(pauses, now, ended).isNotEmpty()
             val subtitle = when {
                 !blockingEnabled -> TileSubtitle.Off
-                endedEarly -> TileSubtitle.From(OffHours.nextStart(start, end))
-                start == end -> TileSubtitle.AllDay
-                OffHours.isWithin(minute, start, end) -> TileSubtitle.Until(end)
-                else -> TileSubtitle.From(start)
+                inPause -> PauseSchedule.untilMinutes(pauses, now, PauseSchedule.blockedUntil(pauses, now, ended), ended)
+                    ?.let { TileSubtitle.Until(it) } ?: TileSubtitle.AllDay
+                else -> PauseSchedule.nextStart(pauses, now, ended)
+                    ?.let { TileSubtitle.From(it.hour * 60 + it.minute) } ?: TileSubtitle.Off
             }
             return ZenTileState(blockingEnabled, icon, evening = icon == TileIcon.LANTERN, subtitle = subtitle)
         }

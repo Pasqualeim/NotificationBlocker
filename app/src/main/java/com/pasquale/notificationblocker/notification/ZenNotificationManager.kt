@@ -59,12 +59,12 @@ object ZenNotificationManager {
         val state = ZenNotificationState.resolve(
             now = LocalDateTime.now(),
             blockingEnabled = prefs.isBlockingEnabled,
-            start = prefs.startTimeMinutes,
-            end = prefs.endTimeMinutes,
+            pauses = prefs.pauses,
+            workApps = prefs.getBlockedApps(),
             dismissedWindow = prefs.zenDismissedWindow,
-            pauseEndedWindow = prefs.pauseEndedWindow,
-            // Without work apps or without the notification access Nook holds nothing: no "paused" claim
-            canHold = prefs.getBlockedApps().isNotEmpty() && hasListenerAccess(app),
+            ended = prefs.pauseEndedKeys,
+            // Without the notification access Nook holds nothing: no "paused" claim
+            canHold = hasListenerAccess(app),
             held = { window ->
                 val report = prefs.lastReport()?.takeIf { it.window == window }
                 (report?.total ?: 0) to report?.apps?.map { it.packageName }.orEmpty()
@@ -86,11 +86,11 @@ object ZenNotificationManager {
         }
     }
 
-    /** Ends the pause of [window] early: work notifications come through until the next window. */
+    /** Ends the pauses in progress early: work notifications come through until the next pause. */
     @Synchronized
-    fun endPause(context: Context, window: String) {
+    fun endPause(context: Context) {
         val app = context.applicationContext
-        PreferencesManager.getInstance(app).pauseEndedWindow = window
+        PreferencesManager.getInstance(app).endPausesNow()
         refresh(app)
         ZenTileService.requestUpdate(app)
     }
@@ -99,7 +99,7 @@ object ZenNotificationManager {
     @Synchronized
     fun resumePause(context: Context) {
         val app = context.applicationContext
-        PreferencesManager.getInstance(app).pauseEndedWindow = null
+        PreferencesManager.getInstance(app).resumePauses()
         refresh(app)
         ZenTileService.requestUpdate(app)
     }
@@ -179,7 +179,7 @@ object ZenNotificationManager {
             }
         }
 
-    /** "Work paused until 07:00", or "all day" for a whole-day window. */
+    /** "Work paused until 07:00", or "all day" for pauses that never stop. */
     fun title(context: Context, state: ZenNotificationState): String =
         state.endMinutes?.let { context.getString(R.string.zen_title_until, OffHours.format(it)) }
             ?: context.getString(R.string.zen_title_all_day)
@@ -235,8 +235,7 @@ object ZenNotificationManager {
     /** "End the pause" in the break notification. */
     class EndPauseReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val window = intent.getStringExtra(EXTRA_WINDOW) ?: return
-            endPause(context, window)
+            endPause(context)
         }
     }
 }

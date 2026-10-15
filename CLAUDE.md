@@ -57,7 +57,9 @@ adb logcat -s NotificationBlocker                      # expect "Canceling notif
 app/src/main/java/com/pasquale/notificationblocker/
 ├── MainActivity.kt                  # Activity, Route (NavKey) and NavDisplay graph
 ├── data/
-│   ├── OffHours.kt                  # pure time-window logic (unit tested)
+│   ├── Pause.kt                     # Pause (name, start, end, days, enabled, apps), Occurrence (one time it happens, key "date#id"), PauseCodec (prefs text)
+│   ├── PauseSchedule.kt             # pure: which pauses are on, the blocking rule, blockedUntil, nextStart (unit tested)
+│   ├── OffHours.kt                  # minutes helpers (format, currentMinutes) and the old single-window logic still used by Home's timeline and LifeCopy
 │   ├── MorningReport.kt             # pure: held notifications per app, when to show the report (unit tested)
 │   └── PreferencesManager.kt        # SharedPreferences singleton, shouldBlock()
 ├── notification/
@@ -101,15 +103,17 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Blocking rule (single source of truth)
 
-`PreferencesManager.shouldBlock(pkg) = isBlockingEnabled && isInOffHoursNow() && pkg in blockedApps`
+`PauseSchedule.shouldBlock(pkg) = isBlockingEnabled && some pause p is in progress now && p was not ended early && pkg in (p.apps ?: blockedApps)`
 
-- The off-hours window is evaluated **at notification post time** from the current clock. There are deliberately **no alarms** (`AlarmManager`), boot receivers or cached "currently off-hours" flags: they drifted after reboot/Doze. Do not reintroduce them unless a feature needs to act at the window boundary (e.g. clearing already-visible notifications).
-- `OffHours.isWithin(current, start, end)` uses a half-open window `[start, end)`, wraps past midnight when `start > end`, and treats `start == end` as the whole day.
-- Times are stored as minutes from midnight (defaults 22:00 → 07:00).
+- Nook 2 (plan: `docs/REDESIGN.md`) has a list of pauses, each with name, start, end, the days it **starts** on, an on/off switch and optional own apps (null = all the work apps). Pauses may overlap: a notification is held if any pause in progress holds its app.
+- Evaluated **at notification post time** from the current clock. There are deliberately **no alarms** (`AlarmManager`), boot receivers or cached "currently off-hours" flags: they drifted after reboot/Doze. Do not reintroduce them unless a feature needs to act at the window boundary (e.g. clearing already-visible notifications).
+- Each pause runs half-open `[start, end)`, wraps past midnight when `start > end` (Friday's 18:30-08:30 belongs to Friday) and `start == end` covers its whole calendar day. Times are minutes from midnight.
+- Each time a pause happens is an `Occurrence` with key `"2026-10-15#lunch"`: ended early, notification swiped away and held notifications use it. "End the pause" ends every pause in progress.
+- Phase 1: Home still edits only the first pause (`startTimeMinutes`/`endTimeMinutes` read and write `pauses[0]`); the pause list screen comes in phase 3.
 
 ### Preferences keys (`notification_blocker_prefs`)
 
-`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `pause_ended_window` (window the user ended early with "End the pause": nothing is held until the next window; cleared when blocking is turned on again), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
+`blocking_enabled` (Boolean), `pauses` (String, one pause per line, see `PauseCodec`; when missing, one pause every day built from the legacy `start_time` / `end_time`, defaults 22:00 → 07:00), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that pause occurrence, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (occurrence whose morning report was dismissed), `zen_dismissed_window` (occurrence in which the user swiped the zen notification away), `pause_ended_keys` (StringSet of occurrences ended early with "End the pause": nothing is held until the next pause; keys older than two days are dropped; cleared when blocking is turned on again; the old `pause_ended_window` is no longer read). Window keys written before Nook 2 are bare ISO dates (`Occurrence.dateOf` reads both), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
 
 ### App list
 

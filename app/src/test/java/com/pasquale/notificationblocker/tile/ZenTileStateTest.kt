@@ -1,5 +1,6 @@
 package com.pasquale.notificationblocker.tile
 
+import com.pasquale.notificationblocker.data.Pause
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -11,7 +12,7 @@ class ZenTileStateTest {
     private val summer = LocalDateTime.of(2026, 7, 10, 0, 0)
 
     private fun resolve(hour: Int, enabled: Boolean = true, start: Int = 17 * 60, end: Int = 9 * 60) =
-        ZenTileState.resolve(summer.withHour(hour), enabled, start, end)
+        ZenTileState.resolve(summer.withHour(hour), enabled, listOf(Pause("p", "", start, end)))
 
     @Test
     fun iconFollowsTheLight_leafSunLantern() {
@@ -39,9 +40,12 @@ class ZenTileStateTest {
 
     @Test
     fun pauseEndedEarly_saysWhenTheNextOneStarts() {
-        assertEquals(TileSubtitle.From(17 * 60), ZenTileState.resolve(summer.withHour(20), true, 17 * 60, 9 * 60, endedEarly = true).subtitle)
-        // Whole-day window: a new one starts at midnight
-        assertEquals(TileSubtitle.From(0), ZenTileState.resolve(summer.withHour(20), true, 8 * 60, 8 * 60, endedEarly = true).subtitle)
-        assertTrue(ZenTileState.resolve(summer.withHour(20), true, 17 * 60, 9 * 60, endedEarly = true).active)
+        val evening = listOf(Pause("p", "", 17 * 60, 9 * 60))
+        val ended = setOf("2026-07-10#p")
+        assertEquals(TileSubtitle.From(17 * 60), ZenTileState.resolve(summer.withHour(20), true, evening, ended).subtitle)
+        // Whole-day pause: a new one starts at midnight
+        val allDay = listOf(Pause("p", "", 8 * 60, 8 * 60))
+        assertEquals(TileSubtitle.From(0), ZenTileState.resolve(summer.withHour(20), true, allDay, ended).subtitle)
+        assertTrue(ZenTileState.resolve(summer.withHour(20), true, evening, ended).active)
     }
 }

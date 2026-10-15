@@ -70,7 +70,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // The Quick Settings tile and the break notification write these preferences: follow them live
     // (kept as a field, the SharedPreferences registry only holds listeners weakly)
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == PreferencesManager.KEY_BLOCKING_ENABLED || key == PreferencesManager.KEY_PAUSE_ENDED_WINDOW) {
+        if (key == PreferencesManager.KEY_BLOCKING_ENABLED || key == PreferencesManager.KEY_PAUSE_ENDED_KEYS ||
+            key == PreferencesManager.KEY_PAUSES) {
             _isBlockingEnabled.value = preferencesManager.isBlockingEnabled
             refreshOffHoursStatus()
         }

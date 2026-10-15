@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.notification
 
 import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.data.Pause
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
@@ -23,7 +24,10 @@ class ZenNotificationStateTest {
         canHold: Boolean = true,
         count: Int = 0,
         apps: List<String> = emptyList(),
-    ) = ZenNotificationState.resolve(now, enabled, start, end, dismissed, ended, canHold) { count to apps }
+        workApps: Set<String> = setOf("work"),
+    ) = ZenNotificationState.resolve(
+        now, enabled, listOf(Pause("p", "", start, end)), workApps, dismissed, setOfNotNull(ended), canHold,
+    ) { count to apps }
 
     @Test
     fun hiddenWhenBlockingIsOff_orOutsideTheWindow() {
@@ -35,6 +39,7 @@ class ZenNotificationStateTest {
     @Test
     fun hiddenWhenNookHoldsNothing_noWorkAppsOrNoAccess() {
         assertNull(resolve(summer.withHour(18), canHold = false))
+        assertNull(resolve(summer.withHour(18), workApps = emptySet()))
     }
 
     @Test

@@ -3,62 +3,94 @@ package com.pasquale.notificationblocker.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class PreferencesManager private constructor(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    // Master switch: when false nothing is ever blocked, regardless of the schedule
+    // Master switch: when false nothing is ever blocked, regardless of the pauses
     var isBlockingEnabled: Boolean
         get() = prefs.getBoolean(KEY_BLOCKING_ENABLED, false)
         set(value) = prefs.edit {
             putBoolean(KEY_BLOCKING_ENABLED, value)
-            // Turning blocking on again is an explicit request: a pause ended early starts again
-            if (value) remove(KEY_PAUSE_ENDED_WINDOW)
+            // Turning blocking on again is an explicit request: pauses ended early start again
+            if (value) remove(KEY_PAUSE_ENDED_KEYS)
         }
 
-    // Store time as minutes from midnight
+    /**
+     * The user's pauses. Before Nook 2 there was one window ("start_time"/"end_time"): read as a single
+     * pause every day until the list is first written.
+     */
+    var pauses: List<Pause>
+        get() = if (prefs.contains(KEY_PAUSES)) PauseCodec.decode(prefs.getString(KEY_PAUSES, null).orEmpty()) else listOf(legacyPause())
+        @Synchronized set(value) = prefs.edit { putString(KEY_PAUSES, PauseCodec.encode(value)) }
+
+    private fun legacyPause() = Pause(
+        id = LEGACY_PAUSE_ID,
+        name = "",
+        start = prefs.getInt(KEY_START_TIME, 22 * 60), // Default 22:00
+        end = prefs.getInt(KEY_END_TIME, 7 * 60), // Default 07:00
+    )
+
+    // The Home screen still edits one pause (the first) until it gets its own pause list
     var startTimeMinutes: Int
-        get() = prefs.getInt(KEY_START_TIME, 22 * 60) // Default 22:00
-        set(value) = prefs.edit { putInt(KEY_START_TIME, value) }
+        get() = (pauses.firstOrNull() ?: legacyPause()).start
+        set(value) = updateFirstPause { it.copy(start = value) }
 
     var endTimeMinutes: Int
-        get() = prefs.getInt(KEY_END_TIME, 7 * 60) // Default 07:00
-        set(value) = prefs.edit { putInt(KEY_END_TIME, value) }
+        get() = (pauses.firstOrNull() ?: legacyPause()).end
+        set(value) = updateFirstPause { it.copy(end = value) }
+
+    @Synchronized
+    private fun updateFirstPause(change: (Pause) -> Pause) {
+        val all = pauses
+        pauses = listOf(change(all.firstOrNull() ?: legacyPause())) + all.drop(1)
+    }
 
     // Asked once: the user tapped "Not now" (or denied) on the zen notification prompt
     var zenPromptDismissed: Boolean
         get() = prefs.getBoolean(KEY_ZEN_PROMPT_DISMISSED, false)
         set(value) = prefs.edit { putBoolean(KEY_ZEN_PROMPT_DISMISSED, value) }
 
-    // Window (ISO start date) in which the user swiped the zen notification away: not reposted until the next one
+    // Occurrence (see [Occurrence.key]) in which the user swiped the zen notification away: not reposted until the next one
     var zenDismissedWindow: String?
         get() = prefs.getString(KEY_ZEN_DISMISSED_WINDOW, null)
         set(value) = prefs.edit { putString(KEY_ZEN_DISMISSED_WINDOW, value) }
 
-    // Window (ISO start date) the user ended early ("End the pause" in the break notification): work
-    // notifications come through until the next window. Cleared when blocking is turned on again
-    var pauseEndedWindow: String?
-        get() = prefs.getString(KEY_PAUSE_ENDED_WINDOW, null)
-        set(value) = prefs.edit { putString(KEY_PAUSE_ENDED_WINDOW, value) }
+    /**
+     * Occurrences the user ended early ("End the pause" in the break notification): work notifications
+     * come through until they would have ended. Cleared when blocking is turned on again.
+     */
+    val pauseEndedKeys: Set<String>
+        get() = prefs.getStringSet(KEY_PAUSE_ENDED_KEYS, emptySet()).orEmpty()
 
-    /** True when the current window was ended early by the user. */
-    fun isPauseEndedNow(): Boolean {
-        val ended = pauseEndedWindow ?: return false
-        return isInOffHoursNow() && ended == currentWindowKey()
+    /** Ends early every pause in progress; keys older than two days are dropped on the way. */
+    @Synchronized
+    fun endPausesNow() {
+        val now = LocalDateTime.now()
+        val keep = pauseEndedKeys.filter { key ->
+            Occurrence.dateOf(key)?.isBefore(now.toLocalDate().minusDays(2)) == false
+        }
+        val active = PauseSchedule.activeAt(pauses, now).map { it.key }
+        prefs.edit { putStringSet(KEY_PAUSE_ENDED_KEYS, (keep + active).toSet()) }
     }
 
-    /** True while Nook really holds work notifications: on, inside the window, not ended early. */
-    fun isPausedNow(): Boolean = isBlockingEnabled && isInOffHoursNow() && !isPauseEndedNow()
+    /** Undoes [endPausesNow] ("Pause again" on Home). */
+    fun resumePauses() = prefs.edit { remove(KEY_PAUSE_ENDED_KEYS) }
 
-    /** Key of the off-hours window containing now (ISO date of its start). */
-    fun currentWindowKey(): String = OffHours.windowStartDate(
-        today = LocalDate.now(),
-        currentMinutes = OffHours.currentMinutes(),
-        start = startTimeMinutes,
-        end = endTimeMinutes,
-    ).toString()
+    /** True when inside a pause, but every pause in progress was ended early by the user. */
+    fun isPauseEndedNow(): Boolean {
+        val now = LocalDateTime.now()
+        return PauseSchedule.activeAt(pauses, now).isNotEmpty() && PauseSchedule.activeAt(pauses, now, pauseEndedKeys).isEmpty()
+    }
+
+    /** True while Nook really holds work notifications: on, inside a pause, not ended early. */
+    fun isPausedNow(): Boolean = isBlockingEnabled && PauseSchedule.activeAt(pauses, LocalDateTime.now(), pauseEndedKeys).isNotEmpty()
+
+    /** Key of the pause held notifications are counted in ([PauseSchedule.counterOccurrence]); null outside pauses. */
+    fun currentWindowKey(): String? =
+        PauseSchedule.counterOccurrence(pauses, getBlockedApps(), LocalDateTime.now(), pauseEndedKeys)?.key
 
     /** Work notifications dismissed during [window]; the counter restarts with each window. */
     fun filteredCount(window: String): Int =
@@ -111,17 +143,16 @@ class PreferencesManager private constructor(context: Context) {
     fun unregisterListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
         prefs.unregisterOnSharedPreferenceChangeListener(listener)
 
-    fun isInOffHoursNow(): Boolean =
-        OffHours.isWithin(OffHours.currentMinutes(), startTimeMinutes, endTimeMinutes)
+    /** Inside at least one pause, whether or not it was ended early. */
+    fun isInOffHoursNow(): Boolean = PauseSchedule.activeAt(pauses, LocalDateTime.now()).isNotEmpty()
 
-    fun shouldBlock(packageName: String): Boolean = BlockingRule.shouldBlock(
+    fun shouldBlock(packageName: String): Boolean = PauseSchedule.shouldBlock(
         packageName = packageName,
         blockingEnabled = isBlockingEnabled,
-        blockedApps = getBlockedApps(),
-        currentMinutes = OffHours.currentMinutes(),
-        start = startTimeMinutes,
-        end = endTimeMinutes,
-        endedEarly = isPauseEndedNow(),
+        workApps = getBlockedApps(),
+        pauses = pauses,
+        now = LocalDateTime.now(),
+        ended = pauseEndedKeys,
     )
 
     companion object {
@@ -136,7 +167,9 @@ class PreferencesManager private constructor(context: Context) {
         private const val KEY_FILTERED_COUNT = "filtered_count"
         private const val KEY_FILTERED_KEYS = "filtered_keys"
         private const val KEY_REPORT_SEEN_WINDOW = "report_seen_window"
-        const val KEY_PAUSE_ENDED_WINDOW = "pause_ended_window"
+        const val KEY_PAUSE_ENDED_KEYS = "pause_ended_keys"
+        const val KEY_PAUSES = "pauses"
+        private const val LEGACY_PAUSE_ID = "main"
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null

@@ -10,7 +10,7 @@ data class AppCount(val packageName: String, val count: Int)
  * What waited outside during one off-hours window: shown once on Home after the window ends
  * ("While you were off, 23 work notifications waited outside: Slack, Teams and 2 more").
  *
- * @param window ISO start date of the window (see [OffHours.windowStartDate])
+ * @param window key of the pause occurrence ([Occurrence.key]; older versions stored the bare ISO date)
  * @param apps apps with held notifications, most first
  */
 data class MorningReport(val window: String, val total: Int, val apps: List<AppCount>) {
@@ -62,7 +62,7 @@ data class MorningReport(val window: String, val total: Int, val apps: List<AppC
             seenWindow: String?,
         ): Boolean {
             if (report == null || report.window == seenWindow || report.window == currentWindow) return false
-            val start = runCatching { LocalDate.parse(report.window) }.getOrNull() ?: return false
+            val start = Occurrence.dateOf(report.window) ?: return false
             return !start.isBefore(today.minusDays(1)) && !start.isAfter(today)
         }
     }

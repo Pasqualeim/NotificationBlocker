@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.notification
 
-import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.ui.zen.TimeOfDay
 import com.pasquale.notificationblocker.ui.zen.ZenEnvironment
 import java.time.LocalDateTime
@@ -23,10 +24,11 @@ enum class ZenPhase {
  * What the zen notification shows right now. Pure data, resolved from the clock and the
  * preferences, so the rules are unit tested and the manager only renders it.
  *
- * @param endMinutes end of the off-hours window (minutes from midnight), null for a whole-day window
- * @param filteredCount work notifications held so far in this window
+ * @param window key of the pause in progress that started first ([com.pasquale.notificationblocker.data.Occurrence.key])
+ * @param endMinutes when work comes through again (minutes from midnight), null for pauses that never stop
+ * @param filteredCount work notifications held so far in this pause
  * @param heldApps packages of the apps they came from, most first
- * @param timeoutMillis time until the window ends: the system removes the notification then
+ * @param timeoutMillis time until the pauses end: the system removes the notification then
  */
 data class ZenNotificationState(
     val phase: ZenPhase,
@@ -46,36 +48,37 @@ data class ZenNotificationState(
 
         /**
          * The state to show at [now], or null when the notification must not be shown. It is shown only
-         * while Nook really holds work notifications: blocking on, inside the window, not ended early
-         * ([pauseEndedWindow]), at least one work app and the notification access granted ([canHold]).
-         * A window the user swiped the notification away from ([dismissedWindow]) stays quiet.
+         * while Nook really holds work notifications: blocking on, a pause in progress that was not ended
+         * early ([ended]) and has apps to silence, and the notification access granted ([canHold]).
+         * A pause the user swiped the notification away from ([dismissedWindow]) stays quiet.
          *
-         * @param held work notifications held in a window: total and apps, most first
+         * @param held work notifications held in a pause: total and apps, most first
          */
         fun resolve(
             now: LocalDateTime,
             blockingEnabled: Boolean,
-            start: Int,
-            end: Int,
+            pauses: List<Pause>,
+            workApps: Set<String>,
             dismissedWindow: String?,
-            pauseEndedWindow: String? = null,
+            ended: Set<String> = emptySet(),
             canHold: Boolean = true,
             held: (window: String) -> Pair<Int, List<String>>,
         ): ZenNotificationState? {
+            if (!blockingEnabled || !canHold) return null
+            if (PauseSchedule.holdingAt(pauses, workApps, now, ended).isEmpty()) return null
+            val window = PauseSchedule.counterOccurrence(pauses, workApps, now, ended)?.key ?: return null
+            if (window == dismissedWindow) return null
             val minutes = now.hour * 60 + now.minute
-            if (!blockingEnabled || !canHold || !OffHours.isWithin(minutes, start, end)) return null
-            val window = OffHours.windowStartDate(now.toLocalDate(), minutes, start, end).toString()
-            if (window == dismissedWindow || window == pauseEndedWindow) return null
             val (sunrise, sunset) = ZenEnvironment.sunTimes(now.toLocalDate())
-            val untilEnd = OffHours.minutesUntilEnd(minutes, start, end)
+            val until = PauseSchedule.blockedUntil(pauses, now, ended)
             val (count, apps) = held(window)
             return ZenNotificationState(
                 phase = ZenPhase.of(ZenEnvironment.timeOfDay(minutes, sunrise, sunset)),
                 window = window,
-                endMinutes = if (untilEnd == null) null else end,
+                endMinutes = PauseSchedule.untilMinutes(pauses, now, until, ended),
                 filteredCount = count,
                 heldApps = apps,
-                timeoutMillis = untilEnd?.let { it * 60_000L - now.second * 1000L },
+                timeoutMillis = until?.let { PauseSchedule.millisUntil(now, it) },
             )
         }
     }
