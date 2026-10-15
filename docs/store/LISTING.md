@@ -38,20 +38,21 @@ Nook: stacca dal lavoro
 Metti in pausa le notifiche di lavoro quando stacchi. Le altre arrivano.
 ```
 
-**Descrizione completa** (1571/4000)
+**Descrizione completa** (1892/4000)
 
 ```
-Nook mette in pausa le notifiche delle app di lavoro quando stacchi. Scegli le app (per esempio la mail, la chat e il calendario dell'ufficio) e l'orario in cui non lavori. In quella fascia le loro notifiche spariscono appena arrivano. Tutte le altre, dai messaggi di famiglia alle chiamate, arrivano come sempre.
+Nook mette in pausa le notifiche delle app di lavoro quando stacchi. Scegli le app (per esempio la mail, la chat e il calendario dell'ufficio) e crea le tue pause. Durante una pausa le loro notifiche spariscono appena arrivano. Tutte le altre, dai messaggi di famiglia alle chiamate, arrivano come sempre.
 
 PERCHÉ
 Abbiamo una vita oltre il lavoro: un pomeriggio libero, una cena, un weekend. Nook serve a non farsi raggiungere dal lavoro in quei momenti, senza spegnere tutto il telefono.
 
 COSA FA
 • Scegli quali app sono di lavoro. Le altre non vengono toccate.
-• Imposti quando stacchi, anche a cavallo della mezzanotte o per tutto il giorno.
-• Un interruttore accende e spegne la pausa. C'è anche un riquadro nelle Impostazioni rapide.
+• Crei quante pause vuoi (pranzo, sera, weekend), ognuna con il suo nome, gli orari e i giorni, anche a cavallo della mezzanotte o per tutto il giorno. Se serve, una pausa può avere app sue.
+• Un interruttore accende e spegne tutte le pause. C'è anche un riquadro nelle Impostazioni rapide.
 • Una notifica silenziosa ti ricorda che la pausa è attiva e fino a che ora. Se ti serve, la termini da lì con un tocco. È facoltativa.
 • Quando torni, Nook ti dice quante notifiche di lavoro sono arrivate e da quali app.
+• "Il tempo tuo": quante ore di pausa hai vissuto, quante con la luce del sole e quante notifiche sono rimaste fuori, per giorno, settimana e mese. Restano sul telefono.
 • Una piccola scena animata segue la luce vera del giorno e le stagioni: una scrivania mentre lavori, un giardino quando stacchi.
 • Tema chiaro e scuro, in italiano e in inglese.
 
@@ -82,20 +83,21 @@ Nook: Work-Life Balance
 Pause work notifications when you're off. Everything else still comes in.
 ```
 
-**Full description** (1486/4000)
+**Full description** (1817/4000)
 
 ```
-Nook pauses notifications from your work apps when you're off. Pick the apps (your work email, chat and calendar, for example) and the hours when you don't work. During those hours their notifications disappear as soon as they arrive. Everything else, from family messages to calls, comes in as usual.
+Nook pauses notifications from your work apps when you're off. Pick the apps (your work email, chat and calendar, for example) and set up your breaks. During a break their notifications disappear as soon as they arrive. Everything else, from family messages to calls, comes in as usual.
 
 WHY
 We have a life beyond work: a free afternoon, a dinner, a weekend. Nook keeps work from reaching you in those moments, without switching off your whole phone.
 
 WHAT IT DOES
 • You choose which apps are work apps. The others are left alone.
-• You set when you switch off, even across midnight or for the whole day.
-• One switch turns the break on and off. There's also a Quick Settings tile.
+• You create as many breaks as you like (lunch, evening, weekend), each with its own name, hours and days, even across midnight or for the whole day. If you need to, a break can have its own apps.
+• One switch turns all your breaks on and off. There's also a Quick Settings tile.
 • A silent notification reminds you that the break is on and when it ends. If you need to, you can end it from there with one tap. It's optional.
 • When you're back, Nook tells you how many work notifications came in and from which apps.
+• "Your time": how many hours of break you lived, how many in daylight and how many notifications were kept out, by day, week and month. It stays on your phone.
 • A small animated scene follows the real daylight and the seasons: a desk while you work, a garden when you're off.
 • Light and dark theme, in English and Italian.
 
@@ -165,9 +167,9 @@ URL: `https://pasqualeim.github.io/NotificationBlocker/`
 ```
 No account is needed. To try the main feature:
 1. Open Nook and tap "Open settings" on the "Allow notification access" card, then enable Nook.
-2. Under "When to switch off", set a start time a few minutes before now.
+2. Open the "Breaks" tab and edit the first break: set its start a few minutes before now and its end later (or use the same time for both, which is the whole day).
 3. Tap "Work apps" and select any app that can post a notification.
-4. Turn on the switch on the status card. Notifications from the selected app are removed while the break is on.
+4. Back on the "Today" tab, turn on the switch on the status card. Notifications from the selected app are removed while the break is on.
 Nook only reads the package name of each notification to decide whether to remove it. It never reads or stores notification content and has no internet permission.
 ```
 
@@ -203,6 +205,6 @@ Nook only reads the package name of each notification to decide whether to remov
 | Voce | Stato |
 |---|---|
 | Testi IT/EN | Pronti |
-| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti (rifatti il 05/10/2026: Home compatta, notifica della pausa nuova) |
+| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti ma vecchi (05/10/2026: Home con orari e pulsante in basso, prima delle tre schede): da rifare prima della pubblicazione |
 | Risposte ai moduli | Pronte, da ricontrollare in Play Console |
 | Verifica marchio "Nook" | Da fare (Pasquale) |

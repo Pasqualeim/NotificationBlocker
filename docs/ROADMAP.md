@@ -10,11 +10,11 @@ Prima di andare su Google Play, il prodotto si valida con un test indipendente. 
 
 | # | Voce | Chi | Note |
 |---|---|---|---|
-| 1 | Sistemare l'app: rifare la logica del punteggio e la logica collegata, più il riccio | Claude / Pasquale | Vedi la riga "Personaggio" in sezione 3. Il germoglio MVP è nello stash (`stash@{0}`), non nel codice |
+| 1 | Sistemare l'app: Nook 2 (`REDESIGN.md`) | Claude / Pasquale | Fasi 1-3 e revisione dei testi fatte (più pause, storico, tre schede). Resta la fase 4, il riccio (riga 1d). Il germoglio MVP è nello stash (`stash@{0}`), non nel codice |
 | 1a | Testi a una pausa sola | Claude (`copywriter`) | Fatta la revisione dei testi nuovi (fase 5). Restano alcune frasi scritte per una fascia sola (`hero_subtitle_outside`, `pause_ended_text`, `report_title`, `life_*`): rileggerle ora che le pause sono più d'una |
 | 1b | `sunlight` nei controlli di contrasto | Claude | Aggiungere `LightSunlight`/`DarkSunlight` a `tools/palette/contrast.py` e alle tabelle di `DESIGN_SYSTEM.md` (oggi assente: barre non testuali, serve il rapporto col fondo) |
-| 1c | Screenshot dello store e immagini del sito da rifare | Claude / Pasquale | Quelli attuali (`docs/store/screenshots/`, `LISTING.md`, `nook-site`) mostrano la Home vecchia con orari e CTA |
-| 1d | Riccio (fase 4 di `REDESIGN.md`) | Claude / Pasquale | Dopo la fase 3 |
+| 1c | Screenshot dello store e immagini del sito da rifare | Claude / Pasquale | Quelli attuali (`docs/store/screenshots/`, `LISTING.md`, `nook-site`) mostrano la Home vecchia (orari e pulsante in basso) e non le tre schede |
+| 1d | Riccio (fase 4 di `REDESIGN.md`) | Claude / Pasquale | Scelto, ma ancora niente disegnato (il kit di pixel art è stato lasciato da parte per ora). Punteggio e hobby da progettare con lo storico che c'è già |
 | 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Dopo il punto 1: schermate, scene e personaggio veri (`~/Documents/Developer/nook-site`) |
 | 3 | Iscrizione al sito con email | Claude / Pasquale | Già nel sito: tabella D1 `signups` (email, `community` telegram o email). Chi si iscrive riceve il link per scaricare l'APK e l'invito al canale Telegram (novità, consigli) |
 | 3a | Deploy del sito | Pasquale | Non ancora online: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio (e `privacy_policy_url`, `LISTING.md`) |
@@ -33,20 +33,19 @@ Nessuna voce aperta: Kotlin, `targetSdk`, Gradle, firma e CI sono a posto (vedi 
 | Splash screen API | S | `androidx.core:core-splashscreen` per un'icona dedicata sullo splash. Il colore è già giusto: tema chiaro/scuro con lo sfondo della pagina (`window_background`) |
 | Lingua per app | S | `locales_config.xml` → l'utente sceglie italiano/inglese dalle impostazioni di sistema (Android 13+) |
 | Material 3 Expressive | M | `MotionScheme.expressive()`, componenti espressivi dove hanno senso. Richiede BOM aggiornata |
-| Sole → luna, timeline "ora" animata | M | Vedi `MOTION.md` |
+| Sole → luna, indicatore "ora" animato | M | Vedi `MOTION.md`; la timeline non c'è più, resta la barra di 24 ore della `TodayCard` |
 | Rifiniture della lista app | S | Lista app a strisce `surface`/`background` fra top bar, header e lista (emersa con la palette Chai) |
 
 ## 3. Funzionalità
 
 | Voce | Costo | Note |
 |---|---|---|
-| Selezione giorni della settimana | M | Es. weekend tutto il giorno. Estendere `OffHours` + test; nuova chiave nelle preferenze |
-| Contatore nella card di stato | S | Il contatore per fascia esiste già (`filtered_count`, deduplicato per notifica, mostrato nella notifica della pausa): mostrarlo anche nella `HeroHeader` |
+| Contatore nella card di stato | S | Il contatore per pausa esiste già (`filtered_count`, deduplicato per notifica, mostrato nella notifica della pausa e, per giorno, in "Il tempo tuo"): mostrarlo anche nella `HeroHeader` |
 | Scelta "notifica della pausa sì/no" nell'app | S | Oggi si spegne dal canale di sistema o negando il permesso: un interruttore in app è più chiaro |
 | Onboarding al primo avvio | M | 2–3 pagine con illustrazione (candidata per Lottie, vedi `MOTION.md`) e richiesta del permesso |
 | Widget home | L | Glance: nuova dipendenza, da motivare |
-| Personaggio: il riccio | L | Concept scelto (`CHARACTER.md`): pixel art (~48x48) disegnata dal proprietario, animazione di Claude. Logica di crescita e punteggio da rifare da zero attorno al riccio (non ancora progettata); il germoglio MVP resta nello stash. Parte della fase di test, punto 1 |
-| Pulire le notifiche già visibili all'inizio della fascia | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
+| Personaggio: il riccio | L | Concept scelto (`CHARACTER.md`): pixel art (~48x48) disegnata dal proprietario, animazione di Claude. Punteggio e hobby sul `FreeTimeLedger` per giorno (piano in `REDESIGN.md`, sezione 3); il germoglio MVP resta nello stash. Parte della fase di test, punto 1 |
+| Pulire le notifiche già visibili all'inizio di una pausa | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
 
 ## 4. Qualità
 
@@ -82,6 +81,8 @@ Ogni nuova dipendenza va motivata qui (regola "dipendenze minime").
 
 ## Fatto
 
+Le voci più vecchie descrivono l'app com'era allora (una sola fascia, Home con orari e pulsante in basso); lo stato attuale è in `CLAUDE.md`.
+
 | Voce | Note |
 |---|---|
 | Scena animata (`ZenScene`) | Scrivania al lavoro / paesaggio fuori orario, luce reale e 4 stagioni, 30 fps con livelli in cache GPU |
@@ -90,12 +91,13 @@ Ogni nuova dipendenza va motivata qui (regola "dipendenze minime").
 | Notifica della pausa rivista | Solo quando Nook trattiene davvero (prima diceva "in pausa" anche senza app di lavoro o senza accesso alle notifiche); mai mentre lavori. Titolo con l'ora di fine, testo con quante notifiche e da quali app (nomi nascosti a schermo bloccato), pontile sul lago al posto dei bambù, tazza come icona di stato. Nuovo pulsante "Termina la pausa" (fino alla prossima fascia, nessun allarme: deciso a ogni notifica) e "Rimetti in pausa" in Home (una notifica di conferma con "Annulla" è stata provata e tolta: non si capiva); il riquadro dice quando riparte |
 | Riquadro Impostazioni rapide "Nook" | `ZenTileService`, icona per fase, sincronizzato con app e notifica |
 | Fondamenta (fase 0 della revisione lo-fi) | Scena visibile (`SceneCard` 2:1), messaggi "vita" e ore di sole collegati alla UI, permesso notifiche chiesto con `ZenNotificationCard`, timeline/saluto/fascia aggiornati ogni minuto (`rememberCurrentMinutes`), contatore filtrate deduplicato, lista app ricaricata al resume. Via `INTERNET`, stringhe inutilizzate e componenti morti. Dipendenze AndroidX aggiornate (BOM 2026.09), `targetSdk` 36, R8 in release |
-| Messaggi "vita" | Ore di sole e tempo libero rimasti, in `HeroHeader` (`LifeCopy`, testato; la riga in `ScheduleCard` è sparita con la fase 3) |
+| Messaggi "vita" | Ore di sole e tempo libero rimasti, in `HeroHeader` (`LifeCopy`, testato) |
 | Palette e token (fase 1 della revisione lo-fi) | Palette calda "Chai" (chiaro) / "Lo-fi night" (scuro) con tutti i ruoli M3 assegnati e contrasto WCAG verificato (tabelle in `DESIGN_SYSTEM.md`, regola "`primary` come testo mai su `surfaceContainerHighest` né `primaryContainer`"). Token di movimento in `ui/theme/Motion.kt` usati ovunque (niente durate inline; alone dell'`HeroHeader` attivo solo in `ACTIVE_INSIDE`). Forme del tema (`MaterialTheme.shapes`) al posto dei `RoundedCornerShape` sparsi, niente `Color.White`/`Color(0x…)` nei componenti (salvo la maschera `BlendMode` di `MutedBellIcon`). Illustrazione (`ZenPalette`) invariata: le scene lo-fi sono la fase 2, il nuovo layout della Home (mock-up `mockups/home_active_warm.svg`) la fase 3 |
 | Scene e Home (fasi 2–3 della revisione) | Scene procedurali tenute (scrivania sulla città, giardino giapponese; la stanza lo-fi con personaggio è stata scartata) e arricchite: pioggia stabile per data, schermo scuro di notte, sole sulla scrivania, carpe koi. Home come il mock-up: card di stato compatta con lo Switch nella riga del titolo, scena prima del programma, pillole INIZIO → FINE, etichetta "Ora" sulla timeline, CTA senza banda. Icona del launcher: lucchetto crema con la luna come buco della serratura su arancio (anche monocromatica); rimosse le webp di default |
-| Nook 2, fase 3: tre schede | `NavigationBar` in basso (`TabsScreen`, enum `Tab`, un `SaveableStateHolder` per scheda; `Route.Tabs` e `Route.AppSelection(pauseId)`). Oggi = `MainScreen` (card di stato, scena, `TodayCard` con le pause di oggi); tolti la CTA "App di lavoro" in basso, `ScheduleCard`, `Timeline24h` e i selettori d'orario dalla Home. Pause = `PausesScreen` + `PauseCard` + `PauseEditorSheet` (nome, inizio/fine, giorni, app per pausa, "Usa tutte le app di lavoro"). Il tuo tempo = `StatsScreen` + `StatsCharts` (settimana, mese, giorno) su `data/Stats.kt` (testato). Colore `sunlight` (solo barre della luce, non testo). Icone `ic_nav_pauses`, `ic_nav_time`. Piano in `docs/REDESIGN.md` |
-| Rapporto del mattino | `MorningReportCard` sulla Home dopo la fine della fascia: quante notifiche di lavoro hanno aspettato fuori e da quali app (le due con più notifiche + "altre N"), "niente è perso". Una volta per fascia, finché non tocchi "Ok, grazie"; solo per fasce iniziate oggi o ieri. Dati dal contatore esistente (`filtered_keys` ora salva anche il pacchetto) |
-| CI e test della regola di blocco | `.github/workflows/ci.yml` (`assembleDebug`, `testDebugUnitTest`, `lintDebug` a ogni push e PR). `BlockingRule` è la regola pura, `PreferencesManager.shouldBlock` la usa con clock e preferenze reali; coperta da `BlockingRuleTest` |
+| Nook 2, fasi 1-2: pause e storico | `Pause`, `PauseSchedule` (puro, testato) al posto della finestra unica (migrazione da `start_time`/`end_time` a una pausa "Sera"), pause sovrapposte, chiavi di occorrenza (`pause_ended_keys`), giorni della settimana, app per pausa. Storico per giorno in `FreeTimeLedger` (minuti vissuti, di luce con `SunTimes`, notifiche lasciate fuori, minuti per pausa) e `Stats.kt`. Nessun permesso o dipendenza nuovi |
+| Nook 2, fase 3: tre schede | `NavigationBar` in basso (`TabsScreen`, enum `Tab`, un `SaveableStateHolder` per scheda; `Route.Tabs` e `Route.AppSelection(pauseId)`). Oggi = `MainScreen` (card di stato, scena, `TodayCard` con le pause di oggi); tolti la CTA "App di lavoro" in basso, `ScheduleCard`, `Timeline24h` e i selettori d'orario dalla Home. Pause = `PausesScreen` + `PauseCard` + `PauseEditorSheet` (nome, inizio/fine, giorni, app per pausa, "Usa tutte le app di lavoro"). Il tempo tuo = `StatsScreen` + `StatsCharts` (settimana, mese, giorno) su `data/Stats.kt` (testato). Colore `sunlight` (solo barre della luce, non testo). Icone `ic_nav_pauses`, `ic_nav_time`. Piano in `docs/REDESIGN.md` |
+| Rapporto del mattino | `MorningReportCard` sulla Home dopo la fine di una pausa: quante notifiche di lavoro hanno aspettato fuori e da quali app (le due con più notifiche + "altre N"), "niente è perso". Una volta per pausa, finché non tocchi "Ok, grazie"; solo per pause iniziate oggi o ieri. Dati dal contatore esistente (`filtered_keys` ora salva anche il pacchetto) |
+| CI e test della regola di blocco | `.github/workflows/ci.yml` (`assembleDebug`, `testDebugUnitTest`, `lintDebug` a ogni push e PR). La regola pura è oggi `PauseSchedule.shouldBlock` (coperta da `PauseScheduleTest`), `PreferencesManager.shouldBlock` la usa con clock e preferenze reali |
 | `targetSdk` 37 e Gradle 9.8 | Wrapper 9.8.0 con checksum ufficiale; lint a 0 errori. Prove complete su emulatore Android 17 (API 37) e su un Galaxy A32 con Android 13 (API 33). Google Play chiede almeno API 36 dal 31 agosto 2026 |
 | Kotlin 2.4.20 + kotlinx-serialization 1.11 | Versioni nel catalogo (`kotlin`, `kotlinxSerializationCore`); il plugin Kotlin di AGP risolve a 2.4.20. Lint senza avvisi |
 | Disclosure e informativa privacy | `PermissionCard` spiega cosa vede l'app (solo il pacchetto), cosa fa e che nulla lascia il telefono; il pulsante (oggi "Apri impostazioni") porta al consenso di sistema. Link all'informativa (`docs/index.html`, EN+IT, servita da GitHub Pages: URL in `privacy_policy_url`) |

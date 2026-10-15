@@ -1,10 +1,10 @@
 # Nook 2: più pause, statistiche, il riccio
 
-Piano del rifacimento (fase di test, punto 1 della roadmap). Stato: **proposta**, da approvare prima di toccare il codice.
+Piano del rifacimento (fase di test, punto 1 della roadmap). Stato: **fasi 1-3 e revisione dei testi fatte** (più pause, storico, tre schede); **fase 4 (il riccio) e il sito sono i prossimi passi**; Google Play per ultimo, dopo il test via Telegram/email.
 
 ## Perché
 
-Oggi Nook ha una sola fascia al giorno, nessuno storico e un personaggio (il germoglio) messo da parte. Il proprietario vuole:
+Prima di Nook 2 c'era una sola fascia al giorno, nessuno storico e un personaggio (il germoglio, nello stash) messo da parte. Il proprietario vuole:
 
 - **più pause al giorno**, ognuna con nome, orari e giorni (pranzo, sera, weekend);
 - **statistiche vere**, con un grafico grande per giorno, settimana o mese;
@@ -99,15 +99,15 @@ Il resto cambia di conseguenza:
 
 Ogni fase finisce con test, lint, review `android-reviewer` e commit su `main`.
 
-1. **Pause e regola di blocco.** `Pause`, `PauseSchedule` (puro, testato), salvataggio e migrazione, servizio, notifica della pausa, riquadro, resoconto. La UI resta quella di oggi, ma mostra la prima pausa: l'app funziona a ogni passo.
-2. **Storico.** Registro per giorno (vissuto, luce, notifiche) e saldo; ore di sole spostate in `data/`. Test.
-3. **Navigazione e schermate.** Barra in basso, Pause con editor, Il tempo tuo con i tre grafici, Oggi rifatta. Prima i mockup (SVG come quelli di `docs/mockups/`), poi il codice. Controllo di Home in una schermata e dei frame sul Galaxy A32.
-4. **Il riccio.** Catalogo degli hobby e soglie, oggetti della tana, script che importa i tuoi PNG (`tools/character/`), animazioni sull'orologio condiviso. Fino ai tuoi disegni, un segnaposto semplice.
-5. **Testi e documenti.** `copywriter` per tutte le stringhe IT/EN, `docs-keeper` per `CLAUDE.md`, `MOTION.md`, `DESIGN_SYSTEM.md`, store e sito.
+1. **[Fatta] Pause e regola di blocco.** `Pause`, `PauseSchedule` (puro, testato), salvataggio e migrazione, servizio, notifica della pausa, riquadro, resoconto. La UI resta quella di oggi, ma mostra la prima pausa: l'app funziona a ogni passo.
+2. **[Fatta] Storico.** Registro per giorno (vissuto, luce, notifiche) e saldo; ore di sole spostate in `data/`. Test.
+3. **[Fatta] Navigazione e schermate.** Barra in basso, Pause con editor, Il tempo tuo con i tre grafici, Oggi rifatta. Prima i mockup (SVG come quelli di `docs/mockups/`), poi il codice. Controllo di Home in una schermata e dei frame sul Galaxy A32.
+4. **[Da fare] Il riccio.** Catalogo degli hobby e soglie, oggetti della tana, script che importa i tuoi PNG (`tools/character/`), animazioni sull'orologio condiviso. Il kit di pixel art è stato lasciato da parte per ora: non c'è ancora niente di disegnato, e `tools/character/sketch.py` non gira senza lo stash. Fino ai disegni, un segnaposto semplice.
+5. **[Fatta per l'app] Testi e documenti.** `copywriter` per tutte le stringhe IT/EN, `docs-keeper` per `CLAUDE.md`, `MOTION.md`, `DESIGN_SYSTEM.md`, store e sito.
 
 Le fasi 1 e 2 non cambiano l'aspetto dell'app; dalla 3 si vede il nuovo Nook.
 
-## 6. Decisioni aperte
+## 6. Decisioni aperte (riguardano la fase 4)
 
 1. **Tetto:** un limite di punti al giorno (es. 12 h, così un weekend intero non vale il doppio) o nessun limite?
 2. **Peso della luce:** ×1,5 va bene, o la luce si conta solo nelle statistiche?
