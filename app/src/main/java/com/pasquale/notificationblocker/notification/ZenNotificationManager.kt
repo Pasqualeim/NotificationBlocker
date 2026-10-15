@@ -56,6 +56,8 @@ object ZenNotificationManager {
     fun refresh(context: Context) {
         val app = context.applicationContext
         val prefs = PreferencesManager.getInstance(app)
+        // Runs every minute while the screen is on: the history follows the clock without alarms
+        prefs.settleHistory()
         val state = ZenNotificationState.resolve(
             now = LocalDateTime.now(),
             blockingEnabled = prefs.isBlockingEnabled,

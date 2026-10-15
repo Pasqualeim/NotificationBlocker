@@ -127,6 +127,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Called on resume: the clock may have crossed the window boundary while the app was away. */
     fun refreshOffHoursStatus() {
+        preferencesManager.settleHistory()
         _isInOffHoursNow.value = preferencesManager.isInOffHoursNow()
         _isPauseEnded.value = preferencesManager.isPauseEndedNow()
         refreshZenNotification()

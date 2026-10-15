@@ -3,7 +3,10 @@ package com.pasquale.notificationblocker.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class PreferencesManager private constructor(context: Context) {
 
@@ -12,7 +15,7 @@ class PreferencesManager private constructor(context: Context) {
     // Master switch: when false nothing is ever blocked, regardless of the pauses
     var isBlockingEnabled: Boolean
         get() = prefs.getBoolean(KEY_BLOCKING_ENABLED, false)
-        set(value) = prefs.edit {
+        set(value) = settleThen {
             putBoolean(KEY_BLOCKING_ENABLED, value)
             // Turning blocking on again is an explicit request: pauses ended early start again
             if (value) remove(KEY_PAUSE_ENDED_KEYS)
@@ -24,7 +27,7 @@ class PreferencesManager private constructor(context: Context) {
      */
     var pauses: List<Pause>
         get() = if (prefs.contains(KEY_PAUSES)) PauseCodec.decode(prefs.getString(KEY_PAUSES, null).orEmpty()) else listOf(legacyPause())
-        @Synchronized set(value) = prefs.edit { putString(KEY_PAUSES, PauseCodec.encode(value)) }
+        set(value) = settleThen { putString(KEY_PAUSES, PauseCodec.encode(value)) }
 
     private fun legacyPause() = Pause(
         id = LEGACY_PAUSE_ID,
@@ -73,11 +76,48 @@ class PreferencesManager private constructor(context: Context) {
             Occurrence.dateOf(key)?.isBefore(now.toLocalDate().minusDays(2)) == false
         }
         val active = PauseSchedule.activeAt(pauses, now).map { it.key }
-        prefs.edit { putStringSet(KEY_PAUSE_ENDED_KEYS, (keep + active).toSet()) }
+        settleThen { putStringSet(KEY_PAUSE_ENDED_KEYS, (keep + active).toSet()) }
     }
 
     /** Undoes [endPausesNow] ("Pause again" on Home). */
-    fun resumePauses() = prefs.edit { remove(KEY_PAUSE_ENDED_KEYS) }
+    fun resumePauses() = settleThen { remove(KEY_PAUSE_ENDED_KEYS) }
+
+    /** The history, one entry per calendar day that had some break or held notification. */
+    val history: Map<LocalDate, DayStats>
+        get() = HistoryCodec.decode(prefs.getString(KEY_HISTORY, null).orEmpty())
+
+    /**
+     * Credits the break minutes lived since the last look at the clock ([FreeTimeLedger.settle]). Called on
+     * every refresh, and before every change of a setting that decides whether the pause is on ([settleThen]),
+     * so the time before a change counts with the old settings.
+     */
+    @Synchronized
+    fun settleHistory(now: LocalDateTime = LocalDateTime.now()) {
+        val seenAt = prefs.getLong(KEY_HISTORY_SEEN_AT, -1L)
+        val nowMillis = now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        // First look: start counting from here
+        if (seenAt < 0) {
+            prefs.edit { putLong(KEY_HISTORY_SEEN_AT, nowMillis) }
+            return
+        }
+        // The clock went back: wait until it passes the last look again, so no minute counts twice
+        if (nowMillis <= seenAt) return
+        val from = LocalDateTime.ofInstant(Instant.ofEpochMilli(seenAt), ZoneId.systemDefault())
+        val config = FreeTimeLedger.Config(isBlockingEnabled, getBlockedApps(), pauses, pauseEndedKeys)
+        val before = history
+        val after = FreeTimeLedger.settle(before, from, now, config)
+        prefs.edit {
+            if (after != before) putString(KEY_HISTORY, HistoryCodec.encode(after))
+            putLong(KEY_HISTORY_SEEN_AT, nowMillis)
+        }
+    }
+
+    /** Settles the history, then writes a setting that can turn the pause on or off. */
+    @Synchronized
+    private fun settleThen(write: SharedPreferences.Editor.() -> Unit) {
+        settleHistory()
+        prefs.edit(action = write)
+    }
 
     /** True when inside a pause, but every pause in progress was ended early by the user. */
     fun isPauseEndedNow(): Boolean {
@@ -108,10 +148,12 @@ class PreferencesManager private constructor(context: Context) {
         val entry = MorningReport.entry(packageName, notificationKey)
         // Entries written by older versions in this same window: the raw key, alone or after the package
         if (entry in seen || notificationKey in seen || "$packageName\n$notificationKey" in seen) return
+        val days = FreeTimeLedger.addHeld(history, LocalDate.now())
         prefs.edit {
             putString(KEY_FILTERED_WINDOW, window)
             putInt(KEY_FILTERED_COUNT, filteredCount(window) + 1)
             putStringSet(KEY_FILTERED_KEYS, seen + entry)
+            putString(KEY_HISTORY, HistoryCodec.encode(days))
         }
     }
 
@@ -134,7 +176,7 @@ class PreferencesManager private constructor(context: Context) {
         // Always write a new set: mutating the instance returned by getStringSet is unsafe
         val apps = getBlockedApps().toMutableSet()
         if (blocked) apps.add(packageName) else apps.remove(packageName)
-        prefs.edit { putStringSet(KEY_BLOCKED_APPS, apps) }
+        settleThen { putStringSet(KEY_BLOCKED_APPS, apps) }
     }
 
     fun registerListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
@@ -170,6 +212,8 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_PAUSE_ENDED_KEYS = "pause_ended_keys"
         const val KEY_PAUSES = "pauses"
         private const val LEGACY_PAUSE_ID = "main"
+        private const val KEY_HISTORY = "history"
+        private const val KEY_HISTORY_SEEN_AT = "history_seen_at"
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null
