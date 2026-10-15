@@ -125,7 +125,7 @@
     </plurals>
     <string name="report_nothing_lost">You can find them in their apps.</string>
     <string name="report_dismiss">OK</string>
-    <!-- Nook 2: tabs, breaks, your time (drafts, the copywriter reviews them) -->
+    <!-- Nook 2: tabs, breaks, your time (reviewed by the copywriter) -->
     <string name="nav_today">Today</string>
     <string name="nav_pauses">Breaks</string>
     <string name="nav_time">Your time</string>
@@ -138,8 +138,8 @@
     <string name="pause_state_at">at %1$s</string>
     <string name="pause_state_ended">ended early</string>
     <string name="pauses_title">Breaks</string>
-    <string name="pauses_subtitle">During these times your work apps stay quiet.</string>
-    <string name="pauses_empty">No breaks yet. Add one: lunch, the evening, the weekend.</string>
+    <string name="pauses_subtitle">In these hours your work notifications are paused.</string>
+    <string name="pauses_empty">No breaks yet. Add one for lunch, the evening or the weekend.</string>
     <string name="pause_all_day">All day</string>
     <string name="pause_times">%1$s - %2$s</string>
     <string name="pause_add">Add a break</string>
@@ -154,8 +154,8 @@
     <string name="pause_start">START</string>
     <string name="pause_end">END</string>
     <string name="pause_days">Days</string>
-    <string name="pause_whole_day_hint">Same start and end: the whole day.</string>
-    <string name="pause_apps_label">Apps to silence</string>
+    <string name="pause_whole_day_hint">Same start and end means the whole day.</string>
+    <string name="pause_apps_label">Apps to pause</string>
     <string name="pause_apps_all">All work apps</string>
     <plurals name="pause_apps_custom">
         <item quantity="one">%1$d app chosen for this break</item>

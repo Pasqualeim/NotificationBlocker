@@ -123,28 +123,28 @@
     </plurals>
     <string name="report_nothing_lost">Le trovi nelle rispettive app.</string>
     <string name="report_dismiss">OK</string>
-    <!-- Nook 2: schede, pause, il tempo tuo (bozze, le rivede il copywriter) -->
+    <!-- Nook 2: schede, pause, il tempo tuo (riviste dal copywriter) -->
     <string name="nav_today">Oggi</string>
     <string name="nav_pauses">Pause</string>
     <string name="nav_time">Il tempo tuo</string>
     <string name="today_card_title">Oggi</string>
     <string name="today_lived">%1$s tue</string>
-    <string name="today_no_pauses">Oggi nessuna pausa</string>
+    <string name="today_no_pauses">Nessuna pausa oggi</string>
     <string name="pause_default_name">Pausa</string>
     <string name="pause_state_lived">vissuta</string>
     <string name="pause_state_now">in corso</string>
     <string name="pause_state_at">alle %1$s</string>
-    <string name="pause_state_ended">terminata</string>
+    <string name="pause_state_ended">finita prima</string>
     <string name="pauses_title">Pause</string>
-    <string name="pauses_subtitle">Nei momenti segnati, le app di lavoro tacciono.</string>
-    <string name="pauses_empty">Nessuna pausa per ora. Aggiungine una: il pranzo, la sera, il weekend.</string>
+    <string name="pauses_subtitle">In questi orari le notifiche di lavoro sono in pausa.</string>
+    <string name="pauses_empty">Nessuna pausa per ora. Aggiungine una per il pranzo, la sera o il weekend.</string>
     <string name="pause_all_day">Tutto il giorno</string>
     <string name="pause_times">%1$s - %2$s</string>
-    <string name="pause_add">Aggiungi pausa</string>
+    <string name="pause_add">Aggiungi una pausa</string>
     <plurals name="pauses_work_apps">
-        <item quantity="one">%1$d app, vale per tutte le pause</item>
-        <item quantity="many">%1$d app, valgono per tutte le pause</item>
-        <item quantity="other">%1$d app, valgono per tutte le pause</item>
+        <item quantity="one">%1$d app, per tutte le pause</item>
+        <item quantity="many">%1$d app, per tutte le pause</item>
+        <item quantity="other">%1$d app, per tutte le pause</item>
     </plurals>
     <string name="pause_edit_title">Modifica pausa</string>
     <string name="pause_new_title">Nuova pausa</string>
@@ -153,8 +153,8 @@
     <string name="pause_start">INIZIO</string>
     <string name="pause_end">FINE</string>
     <string name="pause_days">Giorni</string>
-    <string name="pause_whole_day_hint">Inizio e fine uguali: tutto il giorno.</string>
-    <string name="pause_apps_label">App da silenziare</string>
+    <string name="pause_whole_day_hint">Inizio e fine uguali vuol dire tutto il giorno.</string>
+    <string name="pause_apps_label">App da mettere in pausa</string>
     <string name="pause_apps_all">Tutte le app di lavoro</string>
     <plurals name="pause_apps_custom">
         <item quantity="one">%1$d app scelta per questa pausa</item>
@@ -174,7 +174,7 @@
     <string name="stats_daylight">di cui %1$s con la luce del giorno</string>
     <string name="stats_tile_yours">tue</string>
     <string name="stats_tile_daylight">di luce</string>
-    <string name="stats_tile_held">notifiche fuori</string>
+    <string name="stats_tile_held">notifiche tenute fuori</string>
     <string name="stats_legend_break">Pausa</string>
     <string name="stats_legend_daylight">Con la luce del giorno</string>
     <string name="stats_empty_days">Un giorno senza pausa è solo un puntino.</string>

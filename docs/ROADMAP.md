@@ -11,7 +11,7 @@ Prima di andare su Google Play, il prodotto si valida con un test indipendente. 
 | # | Voce | Chi | Note |
 |---|---|---|---|
 | 1 | Sistemare l'app: rifare la logica del punteggio e la logica collegata, più il riccio | Claude / Pasquale | Vedi la riga "Personaggio" in sezione 3. Il germoglio MVP è nello stash (`stash@{0}`), non nel codice |
-| 1a | Revisione dei testi della fase 3 | Claude (`copywriter`) | Le stringhe di Pause, Il tuo tempo, `TodayCard`, editor e nav sono bozze (fase 5) |
+| 1a | Testi a una pausa sola | Claude (`copywriter`) | Fatta la revisione dei testi nuovi (fase 5). Restano alcune frasi scritte per una fascia sola (`hero_subtitle_outside`, `pause_ended_text`, `report_title`, `life_*`): rileggerle ora che le pause sono più d'una |
 | 1b | `sunlight` nei controlli di contrasto | Claude | Aggiungere `LightSunlight`/`DarkSunlight` a `tools/palette/contrast.py` e alle tabelle di `DESIGN_SYSTEM.md` (oggi assente: barre non testuali, serve il rapporto col fondo) |
 | 1c | Screenshot dello store e immagini del sito da rifare | Claude / Pasquale | Quelli attuali (`docs/store/screenshots/`, `LISTING.md`, `nook-site`) mostrano la Home vecchia con orari e CTA |
 | 1d | Riccio (fase 4 di `REDESIGN.md`) | Claude / Pasquale | Dopo la fase 3 |
