@@ -4,18 +4,18 @@ Stato del progetto: cosa manca per pubblicare, miglioramenti pianificati e cosa 
 
 Legenda costo: **S** < 1h · **M** mezza giornata · **L** più giorni.
 
-## 0. Pubblicazione
+## 0. Fase di test (prima del Play Store)
 
-Guida passo passo per la parte manuale: [`PUBLISHING.md`](PUBLISHING.md). Testi, screenshot e risposte ai moduli dello store: [`store/LISTING.md`](store/LISTING.md).
+Prima di andare su Google Play, il prodotto si valida con un test indipendente. Ordine deciso dal proprietario il 15/10/2026.
 
-| Voce | Chi | Note |
-|---|---|---|
-| Verifica del marchio "Nook" | Pasquale | Prima di tutto. Vedi `PUBLISHING.md`, passo 1 |
-| Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
-| Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
-| Sito per raccogliere i tester | Claude / Pasquale | Pronto in locale (`~/Documents/Developer/nook-site`, IT/EN, provato su iPhone). Mancano: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio. Con il dominio: spostare lì l'informativa (`privacy_policy_url`, `LISTING.md`) |
-| Scheda dello store | Pronta | Testi IT/EN, icona, feature graphic e 5 screenshot IT/EN con le scene nuove (rifatti il 02/10/2026, telefono con cornice). Rifarli se cambiano Home o scene: `LISTING.md`, "Grafica" |
-| Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
+| # | Voce | Chi | Note |
+|---|---|---|---|
+| 1 | Sistemare l'app: rifare la logica del punteggio e la logica collegata, più il riccio | Claude / Pasquale | Vedi la riga "Personaggio" in sezione 3. Il germoglio MVP è nello stash (`stash@{0}`), non nel codice |
+| 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Dopo il punto 1: schermate, scene e personaggio veri (`~/Documents/Developer/nook-site`) |
+| 3 | Iscrizione al sito con email | Claude / Pasquale | Già nel sito: tabella D1 `signups` (email, `community` telegram o email). Chi si iscrive riceve il link per scaricare l'APK e l'invito al canale Telegram (novità, consigli) |
+| 3a | Deploy del sito | Pasquale | Non ancora online: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio (e `privacy_policy_url`, `LISTING.md`) |
+| 3b | Invio del link all'APK | Pasquale | Per email a chi si iscrive; serve un APK firmato da distribuire |
+| 3c | Canale Telegram | Pasquale | Aggiornamenti e consigli; i feedback dei tester entrano nel punto 1 |
 
 ## 1. Fondamenta (prima di tutto il resto)
 
@@ -41,7 +41,7 @@ Nessuna voce aperta: Kotlin, `targetSdk`, Gradle, firma e CI sono a posto (vedi 
 | Scelta "notifica della pausa sì/no" nell'app | S | Oggi si spegne dal canale di sistema o negando il permesso: un interruttore in app è più chiaro |
 | Onboarding al primo avvio | M | 2–3 pagine con illustrazione (candidata per Lottie, vedi `MOTION.md`) e richiesta del permesso |
 | Widget home | L | Glance: nuova dipendenza, da motivare |
-| Personaggio: scegliere il concept (A angolo, B Chai, C Chai nell'angolo) in `CHARACTER.md` | S | Poi: togliere le 'zz' del germoglio (contraddice `MOTION.md`: niente personaggi che dormono), numeri e barra fuori da Home, storico per giorno in `FreeTimeLedger` per le statistiche |
+| Personaggio: il riccio | L | Concept scelto (`CHARACTER.md`): pixel art (~48x48) disegnata dal proprietario, animazione di Claude. Logica di crescita e punteggio da rifare da zero attorno al riccio (non ancora progettata); il germoglio MVP resta nello stash. Parte della fase di test, punto 1 |
 | Pulire le notifiche già visibili all'inizio della fascia | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
 
 ## 4. Qualità
@@ -52,6 +52,19 @@ Nessuna voce aperta: Kotlin, `targetSdk`, Gradle, firma e CI sono a posto (vedi 
 | Test strumentali della notifica della pausa e del riquadro | M | Oggi verificati a mano su emulatore (`cmd statusbar add-tile/click-tile`, `cmd alarm set-time`): automatizzarli |
 | Screenshot test delle preview | M | Compose Preview Screenshot Testing (plugin AGP) |
 | Baseline profile generato con Macrobenchmark | M | Oggi `baseline-prof.txt` compila in anticipo tutto il codice dell'app con un jolly (le librerie portano il loro profilo); un profilo registrato su un percorso reale (avvio, Home, lista app) includerebbe anche i metodi delle librerie che servono davvero |
+
+## 5. Pubblicazione su Google Play (ultimo passo, dopo la fase di test)
+
+Si fa alla fine, dopo la fase di test indipendente (sezione 0). Guida passo passo per la parte manuale: [`PUBLISHING.md`](PUBLISHING.md). Testi, screenshot e risposte ai moduli dello store: [`store/LISTING.md`](store/LISTING.md).
+
+| Voce | Chi | Note |
+|---|---|---|
+| Verifica del marchio "Nook" | Pasquale | Prima di tutto. Vedi `PUBLISHING.md`, passo 1 |
+| Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
+| Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
+| Sito (deploy e dominio) | Claude / Pasquale | Nella fase di test (sezione 0). Pronto in locale (`~/Documents/Developer/nook-site`, IT/EN, provato su iPhone). Mancano: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio. Con il dominio: spostare lì l'informativa (`privacy_policy_url`, `LISTING.md`) |
+| Scheda dello store | Pronta | Testi IT/EN, icona, feature graphic e 5 screenshot IT/EN con le scene nuove (rifatti il 02/10/2026, telefono con cornice). Rifarli se cambiano Home o scene: `LISTING.md`, "Grafica" |
+| Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
 
 ## Dipendenze da valutare
 

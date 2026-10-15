@@ -1,6 +1,19 @@
 # Il personaggio di Nook
 
-Studio per dare a Nook un personaggio suo: riconoscibile, originale, e che non metta mai ansia. Stato: **proposta**, niente è ancora nell'app oltre al germoglio (`SproutArt`, `SproutCard`, `FreeTimeLedger`). Le bozze sono in [`character/`](character/), generate da `tools/character/sketch.py` (si modifica lo script, non i PNG).
+Studio per dare a Nook un personaggio suo: riconoscibile, originale, e che non metta mai ansia. Stato: **concept scelto: il riccio** (15/10/2026). Niente è ancora nell'app: il germoglio MVP (`SproutArt`, `SproutCard`, `FreeTimeLedger`) non è mai stato committato e sta in `git stash` (`stash@{0}`). Le bozze A/B/C in [`character/`](character/) sono storia, generate da `tools/character/sketch.py`, che legge `SproutArt.kt`: oggi quel file esiste solo nello stash, quindi lo script non gira sull'albero committato.
+
+## Il riccio (concept scelto)
+
+![Il riccio](character/riccio_concept_antigravity.webp)
+
+Concept di Antigravity/Gemini: un riccio con un dolcevita blu. Appende il badge di lavoro a un gancio (è lo "stacchi"), sta in poltrona con le cuffie e una tazza di tè, cammina con un libro e una borsa di tela, scrive il diario sotto una lampada. Il proprietario lo ridisegna in pixel art (circa 48x48), Claude lo anima. La logica di crescita e punteggio si rifà da zero attorno al riccio (non ancora progettata). Le regole e la checklist qui sotto restano valide.
+
+Note da tenere:
+
+- Gli occhi non devono mai sembrare chiusi o addormentati (attenzione alla posa in poltrona): vale la regola 3.
+- Lampada e scrivania devono leggersi come diario, non come straordinari.
+- I ricci sono notturni: lo teniamo sveglio e adatto al giorno, con luce e attività da tempo libero.
+- Semplificare per il pixel art piccolo; il dolcevita blu è il segno distintivo.
 
 ## 1. L'anima
 
@@ -61,7 +74,9 @@ Vista della settimana: sette colonne, ogni giorno con la sua pausa. Un giorno se
 
 Bozza: [`mockups/character_home.svg`](mockups/character_home.svg).
 
-## 4. Tre concept
+## 4. Tre concept (scartati)
+
+Storia: il proprietario ha scelto il riccio. Restano qui per ricordare cosa si è valutato; i riferimenti a Chai, all'angolo e al germoglio non valgono più.
 
 Le bozze usano la palette dell'app (Chai chiaro, Lo-fi night scuro) e il germoglio vero, letto da `SproutArt.kt`.
 
@@ -139,7 +154,7 @@ Parole da non usare per Chai:
 
 ## 7. Decisioni aperte
 
-1. Quale concept (A, B o C).
+1. ~~Quale concept (A, B o C).~~ Deciso: il riccio. Restano: nome, logica di crescita, pose e stati.
 2. Il nome: "Chai" è una proposta (è anche il nome della palette chiara).
 3. Gli oggetti dell'angolo e le ore che li sbloccano: si tengono le soglie del germoglio (8, 40, 120, 300 h) o servono più oggetti, più fitti?
 4. La scena (`ZenScene`, `SceneCard`, `ui/zen`): con l'angolo che ha già la finestra sulla luce vera, la scena si toglie o diventa la vista fuori dalla finestra?

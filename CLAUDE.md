@@ -18,7 +18,7 @@ Related docs (read before UI work):
 - `docs/DESIGN_SYSTEM.md`: colors, type, shapes, components, copy tone
 - `docs/MOTION.md`: animation tokens and rules
 - `docs/ROADMAP.md`: project status (publishing, open items, done); update it when you ship or drop an item
-- `docs/CHARACTER.md`: character study (rules, anti-stress checklist, concepts A/B/C; status: proposal, nothing shipped); read before touching the sprout/character
+- `docs/CHARACTER.md`: character study (rules, anti-stress checklist; chosen concept: the hedgehog "il riccio", pixel art by the owner, animation by Claude; concepts A/B/C discarded; nothing shipped); read before touching the character
 - `docs/PUBLISHING.md`: the owner's step-by-step Google Play checklist (manual steps: accounts, testing, forms)
 - `docs/store/LISTING.md`: store texts IT/EN, screenshots in `docs/store/screenshots/`, Play Console form answers. Keep it in sync with the app (a new permission, data flow or feature changes the Data safety answers)
 
@@ -59,7 +59,6 @@ app/src/main/java/com/pasquale/notificationblocker/
 ├── data/
 │   ├── OffHours.kt                  # pure time-window logic (unit tested)
 │   ├── MorningReport.kt             # pure: held notifications per app, when to show the report (unit tested)
-│   ├── FreeTimeLedger.kt            # pure: break minutes lived per window (12 h cap), SproutStage (unit tested)
 │   └── PreferencesManager.kt        # SharedPreferences singleton, shouldBlock()
 ├── notification/
 │   ├── ZenNotificationState.kt      # pure: what the zen notification shows now (unit tested)
@@ -83,8 +82,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── MorningReportCard.kt     # "While you were off": held notifications of the last window, in the top card's place until dismissed
     │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room
     │   ├── HomeFit.kt               # pure: the scale policy of HomeColumn (unit tested)
-    │   ├── SproutCard.kt            # the sprout on Home, in the scene's place (homeScene, 2:1 or smaller): pixel-art sprite + hours lived + progress
-    │   ├── SceneCard.kt             # card framing the scene (no longer on Home since the sprout took its place); fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
+    │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
     │   ├── ZenScene.kt              # animated scene: office desk (work) / lake pier (off work)
     │   ├── AmbientClock.kt          # the one 30 fps clock of Home's slow motion (scene + glow behind the bell)
     │   ├── SearchField.kt           # pill search field: bare BasicTextField (the Material TextField froze the list screen ~60 ms when it opened)
@@ -92,7 +90,6 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── CurrentMinutes.kt        # rememberCurrentMinutes(): minute tick for clocks, timeline, greeting
     │   ├── AppItemRow.kt, AppIconImage.kt
     │   └── ShimmerSkeleton.kt, EmptyState.kt   # loading / empty states
-    ├── sprout/SproutArt.kt          # sprout pixel art: 24x24 char grids per stage, awake/asleep (pure, AWT previews in tests)
     ├── zen/                         # vector scene, pure Kotlin: ZenEnvironment (season/time of day/light/rain/snow),
     │                                # ScenePainting → DeskPainting (office), NaturePainting (lake pier); ZenPainter (Compose + AWT in tests);
     │                                # LifeCopy (daylight / free-time messages on Home, unit tested)
@@ -112,7 +109,7 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Preferences keys (`notification_blocker_prefs`)
 
-`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `pause_ended_window` (window the user ended early with "End the pause": nothing is held until the next window; cleared when blocking is turned on again), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"), `growth_minutes` (Long, break minutes lived in total: the sprout), `growth_window` / `growth_window_minutes` (latest window that added some, and how much, 12 h cap), `growth_seen_at` (Long epoch millis of the last settle). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
+`blocking_enabled` (Boolean), `start_time` / `end_time` (Int minutes), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that window, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (window whose morning report was dismissed), `zen_dismissed_window` (window in which the user swiped the zen notification away), `pause_ended_window` (window the user ended early with "End the pause": nothing is held until the next window; cleared when blocking is turned on again), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
 
 ### App list
 
@@ -122,11 +119,9 @@ Apps come from `queryIntentActivities(ACTION_MAIN + CATEGORY_LAUNCHER)`, matched
 
 Only notification listener access is required, granted by the user in system settings (`Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`). `MainScreen` re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ `ZenNotificationCard` asks for it once, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
 
-### Sprout (growth with free time)
+### Sprout MVP (parked, not in the code)
 
-Home shows a pixel-art sprout (`SproutCard`, in the scene's place) that grows with the break time actually lived: blocking on, at least one work app, inside the window, not ended early. Opening a work app during the break costs nothing (Nook does not see it); "End the pause" only stops the count from that moment, "Pause again" resumes it. It never shrinks, there are no streaks; one window adds 12 h at most. Stages by total hours: seed 0, sprout 8, seedling 40, sapling 120, tree 300 (`SproutStage`). Awake while paused, asleep in work hours.
-
-Still no alarms: `PreferencesManager.settleGrowth()` credits the minutes between two looks at the clock (`FreeTimeLedger.pausedMinutes`, a minute counts once it is over), and every settings setter settles **before** writing, so the time before a change counts with the old settings. Settled on every `ZenNotificationManager.refresh()` (each minute while the screen is on) and on every Home refresh. Any new setting that changes whether the pause is on must go through `settleGrowthThen`.
+A pixel-art sprout that grew with the break time (`FreeTimeLedger`, `SproutCard`, `SproutArt`, prefs `growth_*`, `settleGrowth`) was never committed. It is parked in `git stash` (`stash@{0}`, "germoglio MVP (messo da parte per il riccio)"). The committed app has no sprout, no growth logic and no `growth_*` keys: Home shows the scene (`SceneCard`/`ZenScene`). The character is now a hedgehog (`docs/CHARACTER.md`) and the growth/score logic will be redesigned from scratch around it (not designed yet). Do not restore the stash as is.
 
 ### Zen status notification
 
@@ -145,7 +140,7 @@ The Quick Settings tile (`ZenTileService`, active tile: no polling) toggles `blo
 - Components: stateless composables in `ui/components`, taking state + lambdas, `modifier: Modifier = Modifier` as the first optional parameter. Every component gets `@Preview`s for its main states.
 - Animations: follow `docs/MOTION.md` (`label =` on every animation, no motion on first composition unless it is an entrance). Durations, easing and press springs come from `ui/theme/Motion.kt` (`Motion.standard(Motion.SHORT)`, `Motion.press()`, `Motion.Stagger`…), never inline numbers; choreography owned by one component is a named `private const` listed in the `MOTION.md` catalog. Animated state that must survive a status change lives **outside** `AnimatedContent`.
 - Icons: only `material-icons-core` is on the classpath. Adding `material-icons-extended` roughly doubles the debug APK; prefer copying the single needed icon as an `ImageVector` or vector drawable (see `res/drawable/ic_moon*.xml`).
-- Keep dependencies minimal: the original scaffold pulled in Room, Retrofit, CameraX, Coil, Play Services etc. without using them; they were removed on purpose. Any new dependency needs a reason in `docs/ROADMAP.md` (`lottie-compose` was removed with the "end of shift" card; `tools/lottie/lottie_kit.py` stays for a future Lottie asset). Generated assets: edit the script, not the output. The launcher icon: `tools/icon/launcher_icon.py` writes the adaptive-icon drawables and `docs/store/icon-512.png`; `tools/character/sketch.py` writes the character drafts (`docs/character/*.png`, `docs/mockups/character_home.svg`); `tools/palette/contrast.py` checks `Color.kt` and prints the contrast tables of `DESIGN_SYSTEM.md` (run it after any color change).
+- Keep dependencies minimal: the original scaffold pulled in Room, Retrofit, CameraX, Coil, Play Services etc. without using them; they were removed on purpose. Any new dependency needs a reason in `docs/ROADMAP.md` (`lottie-compose` was removed with the "end of shift" card; `tools/lottie/lottie_kit.py` stays for a future Lottie asset). Generated assets: edit the script, not the output. The launcher icon: `tools/icon/launcher_icon.py` writes the adaptive-icon drawables and `docs/store/icon-512.png`; `tools/character/sketch.py` writes the historical A/B/C character drafts (`docs/character/*.png`, `docs/mockups/character_home.svg`); it reads `SproutArt.kt`, which now exists only in the stash, so it does not run on the committed tree; `tools/palette/contrast.py` checks `Color.kt` and prints the contrast tables of `DESIGN_SYSTEM.md` (run it after any color change).
 - Log tag for the service: `NotificationBlocker`.
 - User-facing copy: plain, human, concrete (see "Testi e tono" in `docs/DESIGN_SYSTEM.md`). Review new strings with the `unslop` skill rules; the permission disclosure must keep its four points (what the app sees, what it doesn't do, nothing leaves the phone, revocable).
 
@@ -164,11 +159,12 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 
 The owner wants to be told when a request is not the most useful thing to do now. Before starting anything bigger than a quick answer, compare it with what is still open:
 
-1. `docs/ROADMAP.md`, section "0. Pubblicazione": anything that blocks the first release (trademark check, Play Console, closed test with 12 testers for 14 days, site deploy, store listing).
+1. `docs/ROADMAP.md`, section "0. Fase di test (prima del Play Store)", in the owner's order: (1) fix the app: redo the score logic and the related logic, plus the hedgehog; (2) the site advertises the final product; (3) site email sign-up (D1 `signups`, `community` telegram|email): sign-ups get the APK link by email and an invitation to a Telegram channel (updates, tips) to validate the product before Play. The site is not deployed yet.
 2. Uncommitted or half-finished work in the tree (`git status`): finish, commit or drop it before opening a new front.
-3. Then the other roadmap sections, in order: foundations, look & feel, features, quality.
+3. Then the rest of the roadmap, in order: foundations, look & feel, features, quality.
+4. Last: Google Play publishing (`docs/ROADMAP.md`, "Pubblicazione": trademark check, Play Console, closed test with 12 testers for 14 days, store listing). It comes after the independent testing phase.
 
-If the request sits clearly below an open item above (e.g. polishing the character, new scenes, nice-to-have features while publishing is still blocked), say so **before** doing it, in two or three lines: what it is, why it can wait, what should come first. Then do what the owner decides; it is a warning, never a refusal. Do not warn on quick questions, bug fixes, things that unblock publishing, or when the owner already said they want to do it anyway in this conversation. Warn once per topic, not at every turn.
+If the request sits clearly below an open item above (e.g. polishing the character, new scenes, nice-to-have features while the testing phase is still open), say so **before** doing it, in two or three lines: what it is, why it can wait, what should come first. Then do what the owner decides; it is a warning, never a refusal. Do not warn on quick questions, bug fixes, things that unblock the testing phase, or when the owner already said they want to do it anyway in this conversation. Warn once per topic, not at every turn.
 
 ### Antigravity for side work
 
