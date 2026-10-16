@@ -45,6 +45,25 @@ class PreferencesManager private constructor(context: Context) {
         putString(KEY_ONE_OFF_PAUSES, PauseCodec.encode(kept))
     }
 
+    /**
+     * The first-launch setup should run: never finished, and Nook never set up. People updating from an
+     * older Nook have pauses, a window or the switch saved, and skip it. Work apps are not a sign: the
+     * setup writes them as they are ticked, and leaving halfway must bring it back next time.
+     */
+    val needsOnboarding: Boolean
+        get() = !prefs.getBoolean(KEY_ONBOARDING_DONE, false) &&
+            listOf(KEY_PAUSES, KEY_START_TIME, KEY_BLOCKING_ENABLED).none { prefs.contains(it) }
+
+    /**
+     * Ends the first-launch setup: saves the chosen [pauses] and turns Nook on. An empty list is saved
+     * as such, so the old default window (22:00-07:00) does not appear unasked.
+     */
+    fun completeOnboarding(pauses: List<Pause>) = settleThen {
+        putString(KEY_PAUSES, PauseCodec.encode(pauses))
+        putBoolean(KEY_BLOCKING_ENABLED, true)
+        putBoolean(KEY_ONBOARDING_DONE, true)
+    }
+
     /** Public holidays count as days off (off by default: not everyone has them free). */
     var holidaysEnabled: Boolean
         get() = prefs.getBoolean(KEY_HOLIDAYS_ENABLED, false)
@@ -274,6 +293,7 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_PAUSES = "pauses"
         const val KEY_ONE_OFF_PAUSES = "one_off_pauses"
         const val KEY_HOLIDAYS_ENABLED = "holidays_enabled"
+        private const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val LEGACY_PAUSE_ID = "main"
         private const val KEY_HISTORY = "history"
         private const val KEY_HISTORY_SEEN_AT = "history_seen_at"

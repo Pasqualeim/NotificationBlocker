@@ -259,4 +259,24 @@
     <string name="widget_quick">Stacca 1 h</string>
     <!-- Sample text of the widget preview in the launcher's widget list -->
     <string name="widget_preview_sub">Prossima: Pranzo alle 13:00</string>
+    <string name="onboarding_step">Passo %1$d di %2$d</string>
+    <string name="onboarding_apps_title">Quali app sono di lavoro?</string>
+    <string name="onboarding_apps_text">Scegli le app che ti portano lavoro. Durante le pause le loro notifiche restano fuori; il resto arriva come sempre.</string>
+    <string name="onboarding_apps_more">Scegli tra tutte le app</string>
+    <string name="onboarding_apps_pick">Scegli le app di lavoro</string>
+    <string name="onboarding_pauses_title">Quando vuoi staccare?</string>
+    <string name="onboarding_pauses_text">Parti da queste. Orari e giorni li cambi quando vuoi.</string>
+    <string name="onboarding_evening">Sera</string>
+    <string name="onboarding_lunch">Pranzo</string>
+    <string name="onboarding_weekend">Weekend</string>
+    <string name="onboarding_access_title">Un solo permesso</string>
+    <string name="onboarding_access_later">Puoi farlo anche dopo: te lo ricorda la schermata Oggi.</string>
+    <string name="onboarding_back">Indietro</string>
+    <string name="onboarding_next">Continua</string>
+    <string name="onboarding_finish">Inizia</string>
+    <plurals name="onboarding_hours">
+        <item quantity="one">Sono %1$d ora a settimana senza lavoro.</item>
+        <item quantity="many">Sono %1$d ore a settimana senza lavoro.</item>
+        <item quantity="other">Sono %1$d ore a settimana senza lavoro.</item>
+    </plurals>
 </resources>

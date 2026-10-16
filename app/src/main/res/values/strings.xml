@@ -256,4 +256,23 @@
     <string name="widget_quick">Pause 1 h</string>
     <!-- Sample text of the widget preview in the launcher's widget list -->
     <string name="widget_preview_sub">Next: Lunch at 13:00</string>
+    <string name="onboarding_step">Step %1$d of %2$d</string>
+    <string name="onboarding_apps_title">Which apps are work?</string>
+    <string name="onboarding_apps_text">Pick the apps that bring work. Their notifications wait out your breaks; everything else comes through as usual.</string>
+    <string name="onboarding_apps_more">Choose from all apps</string>
+    <string name="onboarding_apps_pick">Choose your work apps</string>
+    <string name="onboarding_pauses_title">When do you switch off?</string>
+    <string name="onboarding_pauses_text">Start from these. You can change times and days whenever you like.</string>
+    <string name="onboarding_evening">Evening</string>
+    <string name="onboarding_lunch">Lunch</string>
+    <string name="onboarding_weekend">Weekend</string>
+    <string name="onboarding_access_title">One permission</string>
+    <string name="onboarding_access_later">You can also do it later: Today will remind you.</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_next">Continue</string>
+    <string name="onboarding_finish">Start</string>
+    <plurals name="onboarding_hours">
+        <item quantity="one">That is %1$d hour a week without work.</item>
+        <item quantity="other">That is %1$d hours a week without work.</item>
+    </plurals>
 </resources>

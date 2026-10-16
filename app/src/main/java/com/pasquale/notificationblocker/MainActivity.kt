@@ -45,6 +45,7 @@ import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.screens.AppSelectionScreen
 import com.pasquale.notificationblocker.ui.screens.DaysOffScreen
 import com.pasquale.notificationblocker.ui.screens.MainScreen
+import com.pasquale.notificationblocker.ui.screens.OnboardingScreen
 import com.pasquale.notificationblocker.ui.screens.PausesScreen
 import com.pasquale.notificationblocker.ui.screens.StatsScreen
 import com.pasquale.notificationblocker.ui.theme.Motion
@@ -55,6 +56,10 @@ sealed interface Route : NavKey {
     /** The three tabs (Today, Breaks, Your time) under the bottom bar. */
     @Serializable
     data object Tabs : Route
+
+    /** First launch: work apps, first breaks, notification access. */
+    @Serializable
+    data object Onboarding : Route
 
     /** Days off: ranges of dates and the public holidays. */
     @Serializable
@@ -93,7 +98,7 @@ fun NotificationBlockerApp(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
 ) {
-    val backStack = rememberNavBackStack(Route.Tabs)
+    val backStack = rememberNavBackStack(if (viewModel.needsOnboarding) Route.Onboarding else Route.Tabs)
 
     NavDisplay(
         backStack = backStack,
@@ -117,6 +122,16 @@ fun NotificationBlockerApp(
                     viewModel = viewModel,
                     pauseId = key.pauseId,
                     onNavigateBack = { backStack.removeLastOrNull() },
+                )
+            }
+            Route.Onboarding -> NavEntry(key) {
+                OnboardingScreen(
+                    viewModel = viewModel,
+                    onEditAllApps = { backStack.add(Route.AppSelection(null)) },
+                    onDone = {
+                        backStack.add(Route.Tabs)
+                        backStack.removeAll { it == Route.Onboarding }
+                    },
                 )
             }
             Route.DaysOff -> NavEntry(key) {

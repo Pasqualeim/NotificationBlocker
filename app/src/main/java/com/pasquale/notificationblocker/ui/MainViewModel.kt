@@ -267,6 +267,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         refreshZenNotification()
     }
 
+    /** True on a fresh install until the first-launch setup is done. Read once, when the app starts. */
+    val needsOnboarding: Boolean = preferencesManager.needsOnboarding
+
+    /** Saves the breaks picked in the first-launch setup and turns Nook on. */
+    fun completeOnboarding(pauses: List<Pause>) {
+        preferencesManager.completeOnboarding(pauses)
+        _isBlockingEnabled.value = true
+        onPausesChanged()
+        refreshZenNotification()
+        refreshLife()
+    }
+
     /** Adds [pause], or replaces the one with the same id. */
     fun savePause(pause: Pause) {
         val all = preferencesManager.pauses
