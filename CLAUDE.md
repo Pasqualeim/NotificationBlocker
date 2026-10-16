@@ -60,6 +60,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 ├── data/
 │   ├── Pause.kt                     # Pause (name, start, end, days, enabled, apps), Occurrence (one time it happens, key "date#id"), PauseCodec (prefs text)
 │   ├── PauseSchedule.kt             # pure: which pauses are on, the blocking rule, blockedUntil, nextStart (unit tested)
+│   ├── WeekCoverage.kt              # pure: the typical week for the Breaks tab (stretches per weekday, hours a week covered, overlaps once) (unit tested)
 │   ├── Stats.kt                     # pure: StatsRange, PeriodStats, DaySpans for Stats (unit tested)
 │   ├── FreeTimeLedger.kt            # pure: per-day history (lived, daylight, held, minutes per pause), HistoryCodec (unit tested)
 │   ├── SunTimes.kt                  # pure: sunrise/sunset for a fixed latitude in the phone's zone (scenes and daylight in the history)
@@ -77,17 +78,20 @@ app/src/main/java/com/pasquale/notificationblocker/
 └── ui/
     ├── MainViewModel.kt             # AndroidViewModel shared by all screens (StateFlows)
     ├── screens/
-    │   ├── MainScreen.kt            # Today tab: staggered entrance of top card, scene, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
-    │   ├── PausesScreen.kt          # Breaks tab: grouped list of PauseRows, add/edit via PauseEditorSheet
-    │   ├── StatsScreen.kt           # Stats tab: week / month / day ranges, charts of StatsCharts, fed by data/Stats.kt
+    │   ├── MainScreen.kt            # Today tab: own header (no TopAppBar), staggered entrance of top card, scene, TodayMetrics, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
+    │   ├── PausesScreen.kt          # Breaks tab: WeekCoverageCard, grouped list of PauseRows, add/edit via PauseEditorSheet
+    │   ├── StatsScreen.kt           # Stats tab: week / month / day ranges, charts of StatsCharts (count-up total, DaylightRing), fed by data/Stats.kt
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter; one plain list: the apps picked when it opens come first, rows never move while you pick; rows are composed once the slide is over
     ├── components/
     │   ├── HeroHeader.kt            # status card (3 HeroStatus states) + master Switch
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on
-    │   ├── TodayCard.kt             # "Today" card on Home: the pauses of today (TodayPauses, unit tested), hours lived
-    │   ├── PauseRow.kt              # PauseRow (ListItem), DayPills (editor), daysSummary, pauseColor/pauseName/pauseTimes: one pause in the Breaks list
+    │   ├── TodayHeader.kt           # TodayHeader (date, greeting, mug badge) and TodayMetrics (free today, daylight, paused)
+    │   ├── Visuals.kt               # PauseAvatar (time-of-day icon), Modifier.entrance, CountUpText, MetricTile
+    │   ├── WeekCoverageCard.kt      # top of Breaks: hours a week without work notifications + seven 24 h tracks (data/WeekCoverage.kt)
+    │   ├── TodayCard.kt             # "Today" card on Home: now/next line with the progress of the pause on now, the pauses of today with state chips (TodayPauses, unit tested), hours lived
+    │   ├── PauseRow.kt              # PauseRow (ListItem), DayPills (editor), daysSummary, pauseColor/pauseName/pauseTimes: one pause in the Breaks list, with its PauseAvatar
     │   ├── PauseEditorSheet.kt      # ModalBottomSheet: name, start/end (TimePickerDialog), days, apps row (opens AppSelection for that pause), "Use all work apps"
-    │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, TotalsRow (Stats, a grouped list)
+    │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, DaylightRing, TotalsRow (icons, "Average a day"; Stats, a grouped list)
     │   ├── PermissionCard.kt        # listener-permission prompt (in the top card's place until access is granted)
     │   ├── MorningReportCard.kt     # held notifications after a pause, in the top card's place until dismissed
     │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room

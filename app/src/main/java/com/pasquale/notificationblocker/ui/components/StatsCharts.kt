@@ -1,5 +1,13 @@
 package com.pasquale.notificationblocker.ui.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import com.pasquale.notificationblocker.ui.theme.Motion
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -59,6 +67,9 @@ fun WeekChart(days: List<DayStats>, today: LocalDate, modifier: Modifier = Modif
     val dot = MaterialTheme.colorScheme.outlineVariant
     val grid = MaterialTheme.colorScheme.outlineVariant
     val locale = LocalConfiguration.current.locales[0]
+    // The bars grow up from the base line each time another week shows
+    val grow = remember(days.firstOrNull()?.date) { Animatable(0f) }
+    LaunchedEffect(grow) { grow.animateTo(1f, Motion.standard(Motion.SLOW)) }
     Column(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth().height(170.dp)) {
             Row(
@@ -71,7 +82,7 @@ fun WeekChart(days: List<DayStats>, today: LocalDate, modifier: Modifier = Modif
                     val label = day.date.dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, locale) + ": " + durationText(day.livedMinutes)
                     Canvas(
                         modifier = Modifier
-                            .width(22.dp)
+                            .width(26.dp)
                             .fillMaxHeight()
                             .semantics { contentDescription = label },
                     ) {
@@ -82,8 +93,8 @@ fun WeekChart(days: List<DayStats>, today: LocalDate, modifier: Modifier = Modif
                             drawCircle(dot, 4.dp.toPx(), Offset(size.width / 2, size.height - 4.dp.toPx()))
                             return@Canvas
                         }
-                        val h = size.height * day.livedMinutes / (maxHours * 60f)
-                        val s = size.height * day.daylightMinutes / (maxHours * 60f)
+                        val h = size.height * day.livedMinutes / (maxHours * 60f) * grow.value
+                        val s = size.height * day.daylightMinutes / (maxHours * 60f) * grow.value
                         drawRoundRect(sage, Offset(0f, size.height - h), Size(size.width, h), radius)
                         if (s > 0f) drawRoundRect(sun, Offset(0f, size.height - s), Size(size.width, s), radius)
                     }
@@ -109,7 +120,7 @@ fun WeekChart(days: List<DayStats>, today: LocalDate, modifier: Modifier = Modif
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = if (day.date == today) FontWeight.Bold else FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.width(22.dp),
+                    modifier = Modifier.width(26.dp),
                     textAlign = TextAlign.Center,
                 )
             }
@@ -253,28 +264,74 @@ fun LegendItem(color: Color, label: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** The three totals under the chart: time of your own, daylight, notifications kept out. */
+/** The totals under the chart, as a grouped list: free time, daylight, notifications paused, average a day. */
 @Composable
-fun TotalsRow(livedMinutes: Int, daylightMinutes: Int, held: Int, modifier: Modifier = Modifier) {
+fun TotalsRow(livedMinutes: Int, daylightMinutes: Int, held: Int, modifier: Modifier = Modifier, averageMinutes: Int? = null) {
     Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
-        Column(modifier = Modifier.padding(vertical = 4.dp)) {
-            TotalLine(MaterialTheme.colorScheme.secondary, stringResource(R.string.stats_tile_yours), durationText(livedMinutes))
-            TotalLine(MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_tile_daylight), durationText(daylightMinutes))
-            TotalLine(MaterialTheme.colorScheme.primary, stringResource(R.string.stats_tile_held), held.toString())
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            TotalLine(painterResource(R.drawable.ic_mug), MaterialTheme.colorScheme.secondary, stringResource(R.string.stats_tile_yours), durationText(livedMinutes))
+            TotalLine(painterResource(R.drawable.ic_tile_sun), MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_tile_daylight), durationText(daylightMinutes))
+            TotalLine(rememberVectorPainter(Icons.Filled.Notifications), MaterialTheme.colorScheme.primary, stringResource(R.string.stats_tile_held), held.toString())
+            if (averageMinutes != null) {
+                TotalLine(painterResource(R.drawable.ic_nav_time), MaterialTheme.colorScheme.tertiary, stringResource(R.string.stats_average), durationText(averageMinutes))
+            }
         }
     }
 }
 
 @Composable
-private fun TotalLine(color: Color, label: String, value: String) {
+private fun TotalLine(icon: androidx.compose.ui.graphics.painter.Painter, color: Color, label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.size(10.dp).background(color, CircleShape))
+        Box(modifier = Modifier.size(36.dp).background(color.copy(alpha = 0.16f), CircleShape), contentAlignment = Alignment.Center) {
+            androidx.compose.material3.Icon(
+                painter = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(20.dp),
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         Text(text = value, style = MaterialTheme.typography.titleMedium, maxLines = 1)
+    }
+}
+
+/**
+ * Ring of the daylight share: the whole ring is the free time of the period, the warm arc the part
+ * of it in daylight, with the percentage inside. The arc sweeps in when a new period shows.
+ */
+@Composable
+fun DaylightRing(livedMinutes: Int, daylightMinutes: Int, modifier: Modifier = Modifier) {
+    val share = if (livedMinutes > 0) daylightMinutes.toFloat() / livedMinutes else 0f
+    val sweep = remember { Animatable(0f) }
+    LaunchedEffect(share) { sweep.animateTo(share, Motion.standard(Motion.SLOW)) }
+    val track = MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f)
+    val sun = MaterialTheme.colorScheme.sunlight
+    Box(modifier = modifier.size(88.dp), contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val stroke = 10.dp.toPx()
+            val inset = stroke / 2
+            val arcSize = Size(size.width - stroke, size.height - stroke)
+            drawArc(track, 0f, 360f, false, Offset(inset, inset), arcSize, style = androidx.compose.ui.graphics.drawscope.Stroke(stroke))
+            if (sweep.value > 0f) {
+                drawArc(
+                    sun, -90f, 360f * sweep.value, false, Offset(inset, inset), arcSize,
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round),
+                )
+            }
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "${(sweep.value * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, maxLines = 1)
+            Text(
+                text = stringResource(R.string.stats_ring_label),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+            )
+        }
     }
 }
 

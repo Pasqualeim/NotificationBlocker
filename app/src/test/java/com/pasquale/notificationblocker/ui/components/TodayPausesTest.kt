@@ -39,4 +39,19 @@ class TodayPausesTest {
     @Test
     fun disabledPauses_areLeftOut() =
         assertEquals(emptyList<TodayPause>(), TodayPauses.of(listOf(lunch.copy(enabled = false)), now, emptySet()))
+
+    @Test
+    fun overnightPauseOnNow_countsTheWholeOccurrence() {
+        val evening = Pause("evening", "Sera", 18 * 60 + 30, 8 * 60 + 30)
+        // 20:00: 12 h 30 left of a 14 h pause, though only 18:30-24:00 is on today's bar
+        val beforeMidnight = TodayPauses.of(listOf(evening), LocalDateTime.of(2026, 10, 15, 20, 0), emptySet())
+            .single { it.state == TodayPauseState.NOW }
+        assertEquals(14 * 60, beforeMidnight.totalMinutes)
+        assertEquals(12 * 60 + 30, beforeMidnight.minutesLeft)
+        // 02:00: last night's pause, 6 h 30 left
+        val afterMidnight = TodayPauses.of(listOf(evening), LocalDateTime.of(2026, 10, 16, 2, 0), emptySet())
+            .single { it.state == TodayPauseState.NOW }
+        assertEquals(14 * 60, afterMidnight.totalMinutes)
+        assertEquals(6 * 60 + 30, afterMidnight.minutesLeft)
+    }
 }

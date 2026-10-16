@@ -19,7 +19,6 @@
     <string name="greeting_welcome_life">Buonasera</string>
     <string name="greeting_time_breathe">Buongiorno</string>
     <string name="greeting_enjoy_sun">Buon pomeriggio</string>
-    <string name="greeting_time_begins">Buonasera</string>
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Consenti l\'accesso alle notifiche</string>
@@ -128,7 +127,6 @@
     <string name="nav_pauses">Pause</string>
     <string name="nav_time">Statistiche</string>
     <string name="today_card_title">Oggi</string>
-    <string name="today_lived">%1$s libere</string>
     <string name="today_no_pauses">Nessuna pausa oggi</string>
     <string name="pause_default_name">Pausa</string>
     <string name="pause_state_lived">Fatta</string>
@@ -168,7 +166,6 @@
     <string name="stats_day">Giorno</string>
     <string name="stats_week">Settimana</string>
     <string name="stats_month">Mese</string>
-    <string name="stats_total">%1$s di tempo libero</string>
     <string name="stats_daylight">%1$s con la luce del giorno</string>
     <string name="stats_tile_yours">Tempo in pausa</string>
     <string name="stats_tile_daylight">Con la luce del giorno</string>
@@ -185,4 +182,16 @@
     <string name="pause_days_weekdays">Lun–ven</string>
     <string name="pause_days_weekend">Weekend</string>
     <string name="pauses_section_apps">App</string>
+    <string name="week_coverage_label">Ogni settimana</string>
+    <string name="week_coverage_caption">senza notifiche di lavoro</string>
+    <string name="pauses_section_list">Le tue pause</string>
+    <string name="today_now">Ora: %1$s</string>
+    <string name="today_left">ancora %1$s</string>
+    <string name="today_next">Prossima: %1$s alle %2$s, tra %3$s</string>
+    <string name="metric_free">Libere oggi</string>
+    <string name="metric_daylight">Con la luce</string>
+    <string name="metric_paused">In pausa</string>
+    <string name="stats_average">Media al giorno</string>
+    <string name="stats_ring_label">di luce</string>
+    <string name="stats_total_label">Tempo libero</string>
 </resources>

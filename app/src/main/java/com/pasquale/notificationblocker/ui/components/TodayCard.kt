@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,14 +12,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -26,13 +29,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.Occurrence
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -40,9 +43,20 @@ import java.time.LocalDateTime
 /** Where one of today's pauses stands. */
 enum class TodayPauseState { LIVED, NOW, ENDED, LATER }
 
-/** One of today's pauses on Home: its stretch of today (minutes 0-1440) and where it stands. */
+/**
+ * One of today's pauses on Home: its stretch of today (minutes 0-1440), where it stands, and for the
+ * whole occurrence (which may start yesterday or end tomorrow) its length and the minutes left.
+ */
 @Immutable
-data class TodayPause(val pause: Pause, val colorIndex: Int, val startMinute: Int, val endMinute: Int, val state: TodayPauseState)
+data class TodayPause(
+    val pause: Pause,
+    val colorIndex: Int,
+    val startMinute: Int,
+    val endMinute: Int,
+    val state: TodayPauseState,
+    val totalMinutes: Int = endMinute - startMinute,
+    val minutesLeft: Int = 0,
+)
 
 object TodayPauses {
 
@@ -67,7 +81,11 @@ object TodayPauses {
                             !now.isBefore(o.start) -> TodayPauseState.NOW
                             else -> TodayPauseState.LATER
                         }
-                        TodayPause(pause, index, minutes(dayStart, a), minutes(dayStart, b), state)
+                        TodayPause(
+                            pause, index, minutes(dayStart, a), minutes(dayStart, b), state,
+                            totalMinutes = java.time.Duration.between(o.start, o.end).toMinutes().toInt(),
+                            minutesLeft = java.time.Duration.between(now, o.end).toMinutes().toInt().coerceAtLeast(0),
+                        )
                     }
             }
             .sortedBy { it.startMinute }
@@ -84,13 +102,13 @@ object TodayPauses {
 }
 
 /**
- * "Today" on Home: a 24 h bar with every pause of the day in its color, a dot at the current time, the
- * time lived so far and one line per pause (lived, on now, ended early, or when it starts).
+ * "Today" on Home: the pause on now with how far it has gone (or the next one today), a 24 h bar with
+ * every pause of the day in its color and a dot at the current time, then one row per pause with its
+ * avatar, times and where it stands.
  */
 @Composable
 fun TodayCard(
     pauses: List<TodayPause>,
-    livedMinutes: Int,
     nowMinute: Int,
     modifier: Modifier = Modifier,
     isBlockingEnabled: Boolean = true,
@@ -100,21 +118,9 @@ fun TodayCard(
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.today_card_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f),
-                )
-                if (livedMinutes > 0) {
-                    Text(
-                        text = stringResource(R.string.today_lived, durationText(livedMinutes)),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            }
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(text = stringResource(R.string.today_card_title), style = MaterialTheme.typography.titleMedium)
+            if (isBlockingEnabled) NowLine(pauses = pauses, nowMinute = nowMinute)
             val colors = pauses.associate { it.colorIndex to pauseColor(it.colorIndex) }
             DayBar(pauses = pauses, colorOf = { colors[it] ?: Color.Unspecified }, nowMinute = nowMinute)
             if (pauses.isEmpty()) {
@@ -127,31 +133,82 @@ fun TodayCard(
             // One line per pause, even when it shows twice on the bar (last night's evening and tonight's)
             for (p in TodayPauses.oneEach(pauses)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(10.dp).background(colors[p.colorIndex] ?: Color.Unspecified, CircleShape))
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = pauseName(p.pause),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f),
-                    )
-                    // With Nook off nothing is on or lived, and a pause still to come needs no label: only the times
-                    val state = when {
-                        !isBlockingEnabled -> null
-                        p.state == TodayPauseState.LIVED -> stringResource(R.string.pause_state_lived)
-                        p.state == TodayPauseState.NOW -> stringResource(R.string.pause_state_now)
-                        p.state == TodayPauseState.ENDED -> stringResource(R.string.pause_state_ended)
-                        else -> null
+                    PauseAvatar(pause = p.pause, index = p.colorIndex, size = 32.dp, enabled = isBlockingEnabled)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = pauseName(p.pause), style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                        Text(
+                            text = pauseTimes(p.pause),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
-                    Text(
-                        text = listOfNotNull(state, pauseTimes(p.pause)).joinToString("  ·  "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.End,
-                    )
+                    // With Nook off nothing is on or lived; a pause still to come needs no label
+                    if (isBlockingEnabled) StateChip(p.state)
                 }
             }
         }
     }
+}
+
+/** The pause on now and how much of it is gone, or the next one today; nothing when neither. */
+@Composable
+private fun NowLine(pauses: List<TodayPause>, nowMinute: Int) {
+    // With overlapping pauses, the one that ends first: that is when work comes through again
+    val now = pauses.filter { it.state == TodayPauseState.NOW }.minByOrNull { it.minutesLeft }
+    val next = pauses.firstOrNull { it.state == TodayPauseState.LATER && it.startMinute > nowMinute }
+    when {
+        now != null -> Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            val total = now.totalMinutes.coerceAtLeast(1)
+            val left = now.minutesLeft.coerceIn(0, total)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.today_now, pauseName(now.pause)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                Text(
+                    text = stringResource(R.string.today_left, durationText(left)),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
+            val target = 1f - left.toFloat() / total
+            val progress = remember { Animatable(0f) }
+            LaunchedEffect(target) { progress.animateTo(target, Motion.standard(Motion.SLOW)) }
+            LinearProgressIndicator(
+                progress = { progress.value },
+                modifier = Modifier.fillMaxWidth().height(6.dp),
+                color = pauseColor(now.colorIndex),
+                trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                drawStopIndicator = {},
+            )
+        }
+        next != null -> Text(
+            text = stringResource(R.string.today_next, pauseName(next.pause), OffHours.format(next.startMinute), durationText(next.startMinute - nowMinute)),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** Small pill with where a pause stands today; none for a pause still to come. */
+@Composable
+private fun StateChip(state: TodayPauseState) {
+    val (text, container, content) = when (state) {
+        TodayPauseState.NOW -> Triple(R.string.pause_state_now, MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+        TodayPauseState.LIVED -> Triple(R.string.pause_state_lived, MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurfaceVariant)
+        TodayPauseState.ENDED -> Triple(R.string.pause_state_ended, MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurfaceVariant)
+        TodayPauseState.LATER -> return
+    }
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.labelMedium,
+        color = content,
+        modifier = Modifier
+            .background(container, CircleShape)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+    )
 }
 
 @Composable
@@ -197,7 +254,7 @@ private val previewPauses = listOf(
 @Composable
 fun TodayCardPreview() {
     NotificationBlockerTheme {
-        TodayCard(previewPauses, livedMinutes = 130, nowMinute = 1132, modifier = Modifier.padding(16.dp))
+        TodayCard(previewPauses, nowMinute = 1132, modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -205,6 +262,6 @@ fun TodayCardPreview() {
 @Composable
 fun TodayCardEmptyPreview() {
     NotificationBlockerTheme(darkTheme = true) {
-        TodayCard(emptyList(), livedMinutes = 0, nowMinute = 600, modifier = Modifier.padding(16.dp))
+        TodayCard(emptyList(), nowMinute = 600, modifier = Modifier.padding(16.dp))
     }
 }

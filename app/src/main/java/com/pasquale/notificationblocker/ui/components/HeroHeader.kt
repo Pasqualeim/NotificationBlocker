@@ -151,8 +151,6 @@ private fun HeroHeaderContent(
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
 
-    val greetingRes = rememberWarmGreetingRes()
-
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -293,13 +291,6 @@ private fun HeroHeaderContent(
                                 Text(stringResource(R.string.hero_pause_again), fontWeight = FontWeight.SemiBold)
                             }
                         }
-                        if (targetStatus == HeroStatus.ACTIVE_INSIDE) {
-                            Text(
-                                text = stringResource(greetingRes),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = animatedContentColor,
-                            )
-                        }
                     }
                 }
 
@@ -370,17 +361,6 @@ private fun BreathingGlow(
 }
 
 private const val BREATH_SECONDS = Motion.AMBIENT * 2 / 1000f
-
-@Composable
-private fun rememberWarmGreetingRes(): Int {
-    val minutes by rememberCurrentMinutes()
-    return when (minutes / 60) {
-        in 5..11 -> R.string.greeting_time_breathe
-        in 12..17 -> R.string.greeting_enjoy_sun
-        in 18..22 -> R.string.greeting_welcome_life
-        else -> R.string.greeting_time_begins
-    }
-}
 
 @Preview(showBackground = true, name = "Hero - Active Inside")
 @Composable

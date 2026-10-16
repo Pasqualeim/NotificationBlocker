@@ -1,6 +1,9 @@
 package com.pasquale.notificationblocker.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,8 +43,11 @@ import com.pasquale.notificationblocker.data.PauseCodec
 import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.PauseRow
+import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
+import com.pasquale.notificationblocker.ui.components.entrance
+import com.pasquale.notificationblocker.data.WeekCoverage
+import java.time.LocalDate
 import com.pasquale.notificationblocker.ui.components.PauseEditorSheet
-import com.pasquale.notificationblocker.ui.components.pauseColor
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
@@ -129,6 +136,14 @@ fun PausesContent(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            item(key = "week") {
+                WeekCoverageCard(
+                    coverage = remember(pauses) { WeekCoverage.of(pauses) },
+                    today = LocalDate.now().dayOfWeek,
+                    modifier = Modifier.entrance(0),
+                )
+            }
+            if (pauses.isNotEmpty()) item(key = "pausesHeader") { SectionHeader(R.string.pauses_section_list) }
             if (pauses.isEmpty()) {
                 item {
                     Text(
@@ -141,13 +156,17 @@ fun PausesContent(
             } else {
                 // One rounded group, rows split by dividers, like the system settings
                 item(key = "pauses") {
-                    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
-                        Column {
+                    Surface(
+                        shape = MaterialTheme.shapes.extraLarge,
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        modifier = Modifier.entrance(1),
+                    ) {
+                        Column(modifier = Modifier.padding(vertical = 4.dp)) {
                             pauses.forEachIndexed { index, pause ->
                                 if (index > 0) HorizontalDivider(modifier = Modifier.padding(start = 72.dp, end = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
                                 PauseRow(
                                     pause = pause,
-                                    color = pauseColor(index),
+                                    index = index,
                                     onClick = { onPauseClick(pause) },
                                     onEnabledChange = { onPauseEnabledChange(pause.id, it) },
                                     isOnNow = pause.id in onNow,
@@ -159,10 +178,22 @@ fun PausesContent(
             }
             item(key = "apps") {
                 SectionHeader(R.string.pauses_section_apps)
-                Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    modifier = Modifier.entrance(2),
+                ) {
                     ListItem(
                         modifier = Modifier.clickable(onClick = onEditWorkApps),
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        leadingContent = {
+                            Box(
+                                modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(20.dp))
+                            }
+                        },
                         headlineContent = { Text(text = stringResource(R.string.select_apps)) },
                         supportingContent = { Text(text = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount)) },
                         trailingContent = {
@@ -190,7 +221,7 @@ private fun SectionHeader(text: Int) {
         text = stringResource(text),
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.secondary,
-        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
     )
 }
 

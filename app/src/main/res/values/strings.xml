@@ -22,7 +22,6 @@
     <string name="greeting_welcome_life">Good evening</string>
     <string name="greeting_time_breathe">Good morning</string>
     <string name="greeting_enjoy_sun">Good afternoon</string>
-    <string name="greeting_time_begins">Good evening</string>
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Allow notification access</string>
@@ -130,7 +129,6 @@
     <string name="nav_pauses">Breaks</string>
     <string name="nav_time">Stats</string>
     <string name="today_card_title">Today</string>
-    <string name="today_lived">%1$s free</string>
     <string name="today_no_pauses">No breaks today</string>
     <string name="pause_default_name">Break</string>
     <string name="pause_state_lived">Done</string>
@@ -168,7 +166,6 @@
     <string name="stats_day">Day</string>
     <string name="stats_week">Week</string>
     <string name="stats_month">Month</string>
-    <string name="stats_total">%1$s of free time</string>
     <string name="stats_daylight">%1$s in daylight</string>
     <string name="stats_tile_yours">Break time</string>
     <string name="stats_tile_daylight">In daylight</string>
@@ -185,4 +182,17 @@
     <string name="pause_days_weekdays">Weekdays</string>
     <string name="pause_days_weekend">Weekends</string>
     <string name="pauses_section_apps">Apps</string>
+    <string name="week_coverage_label">Every week</string>
+    <string name="week_coverage_caption">without work notifications</string>
+    <string name="pauses_section_list">Your breaks</string>
+    <string name="today_now">Now: %1$s</string>
+    <string name="today_left">%1$s left</string>
+    <string name="today_next">Next: %1$s at %2$s, in %3$s</string>
+    <string name="metric_free">Free today</string>
+    <string name="metric_daylight">In daylight</string>
+    <string name="metric_paused">Paused</string>
+    <string name="stats_average">Average a day</string>
+    <string name="stats_ring_label">daylight</string>
+    <string name="stats_total_label">Free time</string>
+    <string name="duration_compact" translatable="false">%1$d h %2$02d</string>
 </resources>

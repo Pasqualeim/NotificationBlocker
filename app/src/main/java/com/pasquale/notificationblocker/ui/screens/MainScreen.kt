@@ -47,6 +47,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.HeroHeader
+import com.pasquale.notificationblocker.ui.components.TodayHeader
+import com.pasquale.notificationblocker.ui.components.TodayMetrics
 import com.pasquale.notificationblocker.ui.components.HomeColumn
 import com.pasquale.notificationblocker.ui.components.MorningReportCard
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
@@ -111,6 +113,8 @@ fun MainScreen(
         isInOffHoursNow = isInOffHoursNow,
         todayPauses = todayPauses,
         livedTodayMinutes = history[now.toLocalDate()]?.livedMinutes ?: 0,
+        heldToday = history[now.toLocalDate()]?.held ?: 0,
+        daylightTodayMinutes = history[now.toLocalDate()]?.daylightMinutes ?: 0,
         currentMinutes = currentMinutes,
         nextPauseStart = nextPauseStart,
         hasListenerPermission = hasListenerPermission,
@@ -157,15 +161,23 @@ fun MainScreenContent(
     onDismissZenPrompt: () -> Unit = {},
     morningReport: MorningReportUi? = null,
     onDismissMorningReport: () -> Unit = {},
+    heldToday: Int = 0,
+    daylightTodayMinutes: Int = 0,
 ) {
+    var animatedHeaderVisible by remember { mutableStateOf(value = false) }
+    var animatedMetricsVisible by remember { mutableStateOf(value = false) }
     var animatedTopCardVisible by remember { mutableStateOf(value = false) }
     var animatedScheduleVisible by remember { mutableStateOf(value = false) }
     var animatedSceneVisible by remember { mutableStateOf(value = false) }
 
     LaunchedEffect(Unit) {
+        animatedHeaderVisible = true
+        delay(Motion.Stagger)
         animatedTopCardVisible = true
         delay(Motion.Stagger)
         animatedSceneVisible = true
+        delay(Motion.Stagger)
+        animatedMetricsVisible = true
         delay(Motion.Stagger)
         animatedScheduleVisible = true
     }
@@ -186,8 +198,14 @@ fun MainScreenContent(
             // reaches an edge, and the stretch redraws the whole page offscreen (18 ms of GPU per frame
             // on a Galaxy A32 against 5 ms without it)
             .verticalScroll(scrollState, overscrollEffect = null)
-            .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
+            .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 16.dp),
     ) {
+        TodayHeader(
+            date = LocalDateTime.now().toLocalDate(),
+            minute = currentMinutes,
+            modifier = Modifier.homeEntrance(animatedHeaderVisible),
+        )
+
         // One card at the top, the most urgent thing first: an extra card would push the page past the
         // screen and HomeColumn would shrink every text, then grow it back once the card is gone
         val topCard = when {
@@ -234,9 +252,15 @@ fun MainScreenContent(
             clock = ambientClock,
         )
 
+        TodayMetrics(
+            livedMinutes = livedTodayMinutes,
+            held = heldToday,
+            daylightMinutes = daylightTodayMinutes,
+            modifier = Modifier.homeEntrance(animatedMetricsVisible),
+        )
+
         TodayCard(
             pauses = todayPauses,
-            livedMinutes = livedTodayMinutes,
             nowMinute = currentMinutes,
             isBlockingEnabled = isBlockingEnabled,
             modifier = Modifier.homeEntrance(animatedScheduleVisible),

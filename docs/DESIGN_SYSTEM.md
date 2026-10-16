@@ -222,7 +222,7 @@ Misurato sul codice attuale (card in scala / scena, prima con la card del permes
 | 360×720dp | 1,0 | 0,8 / 0,88 | 0,87 / intera |
 | 360×640dp | 1,0 | 0,8 / 0,6 + scorre | 0,8 / 0,71 |
 
-Misure compatte della Home (non riaumentarle senza rifare la tabella): barra superiore condivisa (`TopAppBar`, titolo "Nook" `titleLarge`, tazza da 28dp in un riquadro da 48dp); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
+Misure compatte della Home (non riaumentarle senza rifare la tabella): intestazione propria di Oggi (`TodayHeader`: data, saluto, tazza da 28dp in un riquadro da 48dp; niente `TopAppBar`); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
 
 Come si rispetta:
 
@@ -248,15 +248,17 @@ Da provare almeno: 1080×2400 @420 font 1,1 (A32), 1080×2340 @480 font 1,0 e 1,
 
 ## Componenti
 
-Ordine della Home (come `docs/mockups/home_active_warm.svg`): barra superiore condivisa con la tazza (`ic_mug`, la stessa dell'icona) e il titolo "Nook" → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `TodayCard` (le pause di oggi); sotto, la `NavigationBar` a tre schede (Oggi con l'icona Material Home, Pause, Statistiche). Niente CTA né selettori d'orario sulla Home: si modificano nella scheda Pause (`PauseEditorSheet`).
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): intestazione `TodayHeader` (data, saluto, tazza `ic_mug`, la stessa dell'icona; niente `TopAppBar` nella scheda Oggi, le altre due ne hanno una semplice) → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `TodayMetrics` (tre cifre di oggi: tempo libero, luce, notifiche in pausa) → `TodayCard` (le pause di oggi); sotto, la `NavigationBar` a tre schede (Oggi con l'icona Material Home, Pause, Statistiche). Niente CTA né selettori d'orario sulla Home: si modificano nella scheda Pause (`PauseEditorSheet`).
 
 | Componente | File | Note |
 |---|---|---|
 | Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `titleLarge`) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
 | Campanella animata | `MutedBellIcon.kt` | Stato "silenziato" = barra diagonale; vedi `MOTION.md` |
-| Oggi | `TodayCard.kt` | Le pause di oggi (`TodayPauses`) e le ore vissute; sola lettura |
-| Pause | `PausesScreen.kt`, `PauseRow.kt`, `PauseEditorSheet.kt` | Righe `ListItem` (`PauseRow`: colore `pauseColor`, giorni riassunti da `daysSummary`) in una sola superficie raggruppata; l'editor è un `ModalBottomSheet` con nome, inizio/fine (`TimePicker` 24h in `AlertDialog`), giorni (`DayPills`), app per pausa |
-| Statistiche | `StatsScreen.kt`, `StatsCharts.kt` | `WeekChart`, `MonthCalendar`, `DayChart`, totali (`TotalsRow`) come elenco raggruppato; barre della luce in `sunlight` (solo grafica, mai testo) |
+| Intestazione di Oggi | `TodayHeader.kt` | `TodayHeader` (data, saluto per ora del giorno, tazza in un badge) e `TodayMetrics` (tre `MetricTile`: tempo libero, luce, notifiche in pausa; cifre con `CountUpText`) |
+| Oggi | `TodayCard.kt` | Riga "ora / dopo" con l'avanzamento della pausa in corso (sull'occorrenza intera), le pause di oggi (`TodayPauses`) con chip di stato e le ore vissute; sola lettura |
+| Elementi visivi | `Visuals.kt` | `PauseAvatar` (icona per ora d'inizio: alba, giorno, sera, notte; colore come `pauseColor`; attenuato se la pausa è spenta), `MetricTile`, `CountUpText`, `Modifier.entrance` (animazioni una tantum, vedi `MOTION.md`) |
+| Pause | `PausesScreen.kt`, `WeekCoverageCard.kt`, `PauseRow.kt`, `PauseEditorSheet.kt` | In cima `WeekCoverageCard` (ore a settimana senza notifiche di lavoro e sette tracce da 24 h, da `data/WeekCoverage.kt`); righe `ListItem` (`PauseRow` con `PauseAvatar`: colore `pauseColor`, giorni riassunti da `daysSummary`) in una sola superficie raggruppata; l'editor è un `ModalBottomSheet` con nome, inizio/fine (`TimePicker` 24h in `AlertDialog`), giorni (`DayPills`), app per pausa |
+| Statistiche | `StatsScreen.kt`, `StatsCharts.kt` | `WeekChart`, `MonthCalendar`, `DayChart`, `DaylightRing`, totale che conta (`CountUpText`), totali (`TotalsRow`, con icone e "Media al giorno") come elenco raggruppato; barre della luce in `sunlight` (solo grafica, mai testo) |
 | Permesso | `PermissionCard.kt` | Al posto della card di stato finché manca l'accesso (senza, l'interruttore non servirebbe a niente); porta alle impostazioni di sistema |
 | Resoconto del mattino | `MorningReportCard.kt` | Al posto della card di stato finché non tocchi "OK" |
 | Riga app | `AppItemRow.kt` | Bordo e container animati (`Motion.SHORT`) quando l'app è selezionata |

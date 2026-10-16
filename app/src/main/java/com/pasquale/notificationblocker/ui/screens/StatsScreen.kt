@@ -46,7 +46,10 @@ import com.pasquale.notificationblocker.data.PeriodStats
 import com.pasquale.notificationblocker.data.StatsRange
 import com.pasquale.notificationblocker.data.SunTimes
 import com.pasquale.notificationblocker.ui.MainViewModel
+import com.pasquale.notificationblocker.ui.components.CountUpText
 import com.pasquale.notificationblocker.ui.components.DayChart
+import com.pasquale.notificationblocker.ui.components.DaylightRing
+import com.pasquale.notificationblocker.ui.components.entrance
 import com.pasquale.notificationblocker.ui.components.LegendItem
 import com.pasquale.notificationblocker.ui.components.MonthCalendar
 import com.pasquale.notificationblocker.ui.components.TotalsRow
@@ -124,18 +127,31 @@ fun StatsContent(
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.stats_next))
             }
         }
-        Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
-            Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.stats_total, durationText(period.livedMinutes)),
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                    Text(
-                        text = stringResource(R.string.stats_daylight, durationText(period.daylightMinutes)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            modifier = Modifier.entrance(1),
+        ) {
+            Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.stats_total_label),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        CountUpText(
+                            target = period.livedMinutes,
+                            style = MaterialTheme.typography.headlineLarge,
+                            format = { durationText(it) },
+                        )
+                        Text(
+                            text = stringResource(R.string.stats_daylight, durationText(period.daylightMinutes)),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    if (range != StatsRange.DAY) DaylightRing(period.livedMinutes, period.daylightMinutes)
                 }
                 val colors = pauses.mapIndexed { i, p -> p.id to pauseColor(i) }.toMap()
                 when (range) {
@@ -168,7 +184,17 @@ fun StatsContent(
                 }
             }
         }
-        TotalsRow(livedMinutes = period.livedMinutes, daylightMinutes = period.daylightMinutes, held = period.held)
+        // Average over the days of the period already lived since the history began, so a week in
+        // progress or the month Nook was installed in is not diluted
+        val since = history.keys.minOrNull() ?: today
+        val elapsed = period.days.count { !it.date.isAfter(today) && !it.date.isBefore(since) }
+        TotalsRow(
+            livedMinutes = period.livedMinutes,
+            daylightMinutes = period.daylightMinutes,
+            held = period.held,
+            averageMinutes = if (range != StatsRange.DAY && elapsed > 0) period.livedMinutes / elapsed else null,
+            modifier = Modifier.entrance(2),
+        )
         if (range == StatsRange.MONTH) {
             Text(
                 text = stringResource(R.string.stats_month_hint),

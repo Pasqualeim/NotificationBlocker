@@ -70,37 +70,23 @@ fun daysSummary(days: Set<DayOfWeek>): String {
 }
 
 /**
- * One pause in the Breaks list, as a list row: a round mark in the pause's color with its initial, name,
+ * One pause in the Breaks list, as a list row: its avatar (time-of-day icon in the pause's color), name,
  * times and days, and its own switch. A tap anywhere else opens the editor.
  */
 @Composable
 fun PauseRow(
     pause: Pause,
-    color: Color,
+    index: Int,
     onClick: () -> Unit,
     onEnabledChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     isOnNow: Boolean = false,
 ) {
     val name = pauseName(pause)
-    val locale = LocalConfiguration.current.locales[0]
     ListItem(
         modifier = modifier.clickable(onClick = onClick),
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        leadingContent = {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(if (pause.enabled) color else MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = String(Character.toChars(name.codePointAt(0))).uppercase(locale),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (pause.enabled) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        },
+        leadingContent = { PauseAvatar(pause = pause, index = index, enabled = pause.enabled) },
         headlineContent = { Text(text = name) },
         supportingContent = {
             Text(text = listOfNotNull(pauseTimes(pause), daysSummary(pause.days)).joinToString("  ·  "))
@@ -171,7 +157,7 @@ private val lunch = Pause("lunch", "Pranzo", 13 * 60, 14 * 60, days = DayOfWeek.
 @Composable
 fun PauseRowPreview() {
     NotificationBlockerTheme {
-        PauseRow(lunch, MaterialTheme.colorScheme.tertiary, onClick = {}, onEnabledChange = {}, modifier = Modifier.padding(16.dp))
+        PauseRow(lunch, 0, onClick = {}, onEnabledChange = {}, modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -181,7 +167,7 @@ fun PauseRowDarkPreview() {
     NotificationBlockerTheme(darkTheme = true) {
         PauseRow(
             Pause("weekend", "Weekend", 0, 0, days = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)),
-            MaterialTheme.colorScheme.primary,
+            2,
             onClick = {},
             onEnabledChange = {},
             modifier = Modifier.padding(16.dp),
