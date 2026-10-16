@@ -79,15 +79,15 @@ private val LightColorScheme = lightColorScheme(
 )
 
 /**
- * Nook's theme, Material 3 Expressive like the system apps: on Android 12+ the colors come from the
- * wallpaper (Material You); the "Chai" / "Lo-fi night" palette is the fallback below Android 12 and
- * what the previews and the scene's own tones are tuned on.
+ * Nook's theme, Material 3 Expressive like the system apps, in the brand's own "Chai" / "Lo-fi night"
+ * palette. [dynamicColor] (wallpaper colors, Material You) stays off on purpose: the warm palette is
+ * part of what Nook is; the owner chose it over the wallpaper's colors.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun QuietHoursTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -126,7 +126,7 @@ fun QuietHoursTheme(
 @Composable
 fun NotificationBlockerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     QuietHoursTheme(

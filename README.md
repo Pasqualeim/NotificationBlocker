@@ -20,7 +20,7 @@ Tre schede in basso: **Oggi**, **Pause**, **Il tempo tuo**.
 - **Notifica della pausa** (facoltativa, Android 13+): notifica silenziosa e fissa mentre una pausa è attiva, con l'ora in cui finisce e quante notifiche di lavoro sono state messe in pausa. Il pulsante **Termina la pausa** fa arrivare di nuovo le notifiche di lavoro fino alla prossima pausa.
 - **Riquadro "Nook"** nelle Impostazioni rapide: accende e spegne tutto dalla tendina.
 - **Dopo la pausa**: la Home mostra quante notifiche di lavoro sono arrivate e da quali app.
-- **Tema**: aspetto nativo Pixel (Material 3 Expressive): colori dinamici da Android 12 (Material You), font di sistema; la palette calda "Chai" / "Lo-fi night" resta il ripiego sotto Android 12; edge-to-edge.
+- **Tema**: aspetto nativo Pixel (Material 3 Expressive) nei colori di Nook, palette calda "Chai" / "Lo-fi night" (niente colori dallo sfondo), font di sistema; edge-to-edge.
 - **Lingue**: italiano e inglese.
 
 Prossimi passi: il personaggio (un riccio, non ancora disegnato), il sito con l'iscrizione al test, poi Google Play.
