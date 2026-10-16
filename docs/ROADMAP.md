@@ -42,8 +42,6 @@ Nessuna voce aperta: Kotlin, `targetSdk`, Gradle, firma e CI sono a posto (vedi 
 |---|---|---|
 | Contatore nella card di stato | S | Il contatore per pausa esiste già (`filtered_count`, deduplicato per notifica, mostrato nella notifica della pausa e, per giorno, in "Statistiche"): mostrarlo anche nella `HeroHeader` |
 | Scelta "notifica della pausa sì/no" nell'app | S | Oggi si spegne dal canale di sistema o negando il permesso: un interruttore in app è più chiaro |
-| Onboarding al primo avvio | M | 2–3 pagine con illustrazione (candidata per Lottie, vedi `MOTION.md`) e richiesta del permesso |
-| Widget home | L | Glance: nuova dipendenza, da motivare |
 | Personaggio: il riccio | L | Concept scelto (`CHARACTER.md`): pixel art (~48x48) disegnata dal proprietario, animazione di Claude. Punteggio e hobby sul `FreeTimeLedger` per giorno (piano in `REDESIGN.md`, sezione 3); il germoglio MVP resta nello stash. Parte della fase di test, punto 1 |
 | Pulire le notifiche già visibili all'inizio di una pausa | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
 
@@ -75,9 +73,9 @@ Ogni nuova dipendenza va motivata qui (regola "dipendenze minime").
 
 | Libreria | Per cosa | Stato |
 |---|---|---|
-| `com.airbnb.android:lottie-compose` | Animazione "Fine turno" | Tolta con la card (luna e stelle contraddicevano il brand, e la scena racconta già lo stacco). Riaggiungerla solo per l'onboarding, se serve |
+| `com.airbnb.android:lottie-compose` | Animazione "Fine turno" | Tolta con la card (luna e stelle contraddicevano il brand, e la scena racconta già lo stacco). L'onboarding è stato fatto in Compose senza Lottie |
 | `androidx.core:core-splashscreen` | Splash screen API su API < 31 | Proposta |
-| `androidx.glance:glance-appwidget` | Widget | In attesa |
+| `androidx.glance:glance-appwidget` | Widget | Non usata: il widget è fatto con `RemoteViews` (nessuna dipendenza nuova) |
 
 ## Fatto
 
@@ -98,6 +96,11 @@ Le voci più vecchie descrivono l'app com'era allora (una sola fascia, Home con 
 | Nook 2, fasi 1-2: pause e storico | `Pause`, `PauseSchedule` (puro, testato) al posto della finestra unica (migrazione da `start_time`/`end_time` a una pausa "Sera"), pause sovrapposte, chiavi di occorrenza (`pause_ended_keys`), giorni della settimana, app per pausa. Storico per giorno in `FreeTimeLedger` (minuti vissuti, di luce con `SunTimes`, notifiche lasciate fuori, minuti per pausa) e `Stats.kt`. Nessun permesso o dipendenza nuovi |
 | Nook 2, fase 3: tre schede | `NavigationBar` in basso (`TabsScreen`, enum `Tab`, un `SaveableStateHolder` per scheda; `Route.Tabs` e `Route.AppSelection(pauseId)`). Oggi = `MainScreen` (card di stato, scena, `TodayCard` con le pause di oggi); tolti la CTA "App di lavoro" in basso, `ScheduleCard`, `Timeline24h` e i selettori d'orario dalla Home. Pause = `PausesScreen` + `PauseCard` + `PauseEditorSheet` (nome, inizio/fine, giorni, app per pausa, "Usa tutte le app di lavoro"). Il tempo tuo = `StatsScreen` + `StatsCharts` (settimana, mese, giorno) su `data/Stats.kt` (testato). Colore `sunlight` (solo barre della luce, non testo). Icone `ic_nav_pauses`, `ic_nav_time`. Piano in `docs/REDESIGN.md` |
 | Restyling Material 3 nativo | `TopAppBar` condivisa dalle tre schede (Oggi mostra "Nook" con la tazza), icona Material Home per Oggi, terza scheda rinominata "Statistiche" / "Stats" (era "Il tempo tuo"), `PauseCard.kt` diventa `PauseRow.kt` (righe `ListItem` in una superficie raggruppata; `DayPills` resta per l'editor, nuovo `daysSummary`), totali di Statistiche come elenco raggruppato, forme meno tonde (`Shape.kt`: 6/10/16/20/24dp), tolti i grassetti forzati, testi riscritti. Nessuna dipendenza nuova |
+| Pausa subito | `QuickPause` (id `quick<HHmm>`), `QuickPauseSheet`, pulsante nella card di stato. Pausa una tantum con data (`Pause.date`, ottavo campo di `PauseCodec`, chiave `one_off_pauses`); `PreferencesManager.allPauses()` (pause + una tantum + festivi) è ciò che leggono blocco, storico, notifica, riquadro e widget. Nessun permesso o dato nuovo |
+| Giorni liberi e festivi | `data/DaysOff.kt` (testato): intervalli di date (max 62 giorni) come pause di giornata intera `off<stamp>`, tenuti interi finché non sono passati; festivi italiani con Pasqua e Pasquetta dietro `holidays_enabled` (id `holiday`, spenti di default). `DaysOffScreen`, `Route.DaysOff`, gruppo "Altro" in Pause. Chiude la voce "nessuna eccezione per data" |
+| Rapporto con le app | `MorningReportCard` elenca le app con più notifiche trattenute, ciascuna con icona, conteggio e "Apri"; una frase dice quante sono arrivate |
+| Widget home | `widget/NookWidgetState.kt` (puro, testato) e `NookWidgetProvider` con `RemoteViews`, senza Glance: stato, pausa in corso o prossima, "Pausa 1 h". Ridisegnato da `ZenNotificationManager.refresh()` solo se il testo cambia (niente allarmi; l'aggiornamento di sistema ogni 30 minuti è di scorta). La pausa parte da un ricevitore privato (non esportato). Colori `widget_*` in XML, uguali a `Color.kt`. Nessun permesso nuovo |
+| Onboarding al primo avvio | `OnboardingScreen`, `Route.Onboarding`, chiave `onboarding_done`: app di lavoro, modelli di pausa (Sera, Pranzo, Weekend), accesso alle notifiche con la disclosure in quattro punti. Concluso, salva le pause scelte (anche nessuna) e accende Nook. Chi aggiorna da una versione precedente lo salta (`needsOnboarding`) |
 | Rapporto del mattino | `MorningReportCard` sulla Home dopo la fine di una pausa: quante notifiche di lavoro hanno aspettato fuori e da quali app (le due con più notifiche + "altre N"), "niente è perso". Una volta per pausa, finché non tocchi "Ok, grazie"; solo per pause iniziate oggi o ieri. Dati dal contatore esistente (`filtered_keys` ora salva anche il pacchetto) |
 | CI e test della regola di blocco | `.github/workflows/ci.yml` (`assembleDebug`, `testDebugUnitTest`, `lintDebug` a ogni push e PR). La regola pura è oggi `PauseSchedule.shouldBlock` (coperta da `PauseScheduleTest`), `PreferencesManager.shouldBlock` la usa con clock e preferenze reali |
 | `targetSdk` 37 e Gradle 9.8 | Wrapper 9.8.0 con checksum ufficiale; lint a 0 errori. Prove complete su emulatore Android 17 (API 37) e su un Galaxy A32 con Android 13 (API 33). Google Play chiede almeno API 36 dal 31 agosto 2026 |

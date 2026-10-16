@@ -56,9 +56,11 @@ adb logcat -s NotificationBlocker                      # expect "Canceling notif
 
 ```
 app/src/main/java/com/pasquale/notificationblocker/
-├── MainActivity.kt                  # Activity, Route (Tabs, AppSelection(pauseId)), NavDisplay graph, TabsScreen: bottom NavigationBar with Tab enum (Today / Breaks / Stats), one shared TopAppBar ("Nook" with the mug on Today, tab title elsewhere), Material Home icon for Today, one SaveableStateHolder per tab
+├── MainActivity.kt                  # Activity, Route (Onboarding, Tabs, DaysOff, AppSelection(pauseId)), NavDisplay graph, TabsScreen: bottom NavigationBar with Tab enum (Today / Breaks / Stats), one shared TopAppBar ("Nook" with the mug on Today, tab title elsewhere), Material Home icon for Today, one SaveableStateHolder per tab
 ├── data/
-│   ├── Pause.kt                     # Pause (name, start, end, days, enabled, apps), Occurrence (one time it happens, key "date#id"), PauseCodec (prefs text)
+│   ├── Pause.kt                     # Pause (name, start, end, days, enabled, apps, date: set for one-off pauses, `startsOn`), Occurrence (one time it happens, key "date#id"), PauseCodec (prefs text, 8th field = date)
+│   ├── QuickPause.kt                # pure: "Pause now", a one-off pause from this minute for the chosen time (ids "quick<HHmm>", one at a time; unit tested)
+│   ├── DaysOff.kt                   # pure: ranges of days off (whole-day dated pauses, id "off<stamp>", max 62 days) and Italian public holidays incl. Easter (id "holiday"); unit tested
 │   ├── PauseSchedule.kt             # pure: which pauses are on, the blocking rule, blockedUntil, nextStart (unit tested)
 │   ├── WeekCoverage.kt              # pure: the typical week for the Breaks tab (stretches per weekday, hours a week covered, overlaps once) (unit tested)
 │   ├── Stats.kt                     # pure: StatsRange, PeriodStats, DaySpans for Stats (unit tested)
@@ -66,12 +68,15 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   ├── SunTimes.kt                  # pure: sunrise/sunset for a fixed latitude in the phone's zone (scenes and daylight in the history)
 │   ├── OffHours.kt                  # minutes helpers (format, currentMinutes) and the single-window test that `LifeCopy` still uses for the daylight messages
 │   ├── MorningReport.kt             # pure: held notifications per app, when to show the report (unit tested)
-│   └── PreferencesManager.kt        # SharedPreferences singleton, shouldBlock()
+│   └── PreferencesManager.kt        # SharedPreferences singleton, shouldBlock(), allPauses(), needsOnboarding
 ├── notification/
 │   ├── ZenNotificationState.kt      # pure: what the zen notification shows now (unit tested)
 │   └── ZenNotificationManager.kt    # posts/updates/removes the silent ongoing zen notification
 ├── service/
 │   └── NotificationBlockerService.kt  # NotificationListenerService, cancels notifications (also sweeps the active ones on connect), drives zen refresh
+├── widget/
+│   ├── NookWidgetState.kt           # pure: what the home screen widget shows (status, break in progress or next, "Pause 1 h"; unit tested)
+│   └── NookWidgetProvider.kt        # RemoteViews widget (no Glance), redrawn from ZenNotificationManager.refresh only when its text changes; private QuickPauseReceiver (not exported) starts the 1 h pause
 ├── tile/
 │   ├── ZenTileState.kt              # pure: tile icon/label/subtitle (unit tested)
 │   └── ZenTileService.kt            # Quick Settings tile "Nook": toggles blocking
@@ -79,7 +84,9 @@ app/src/main/java/com/pasquale/notificationblocker/
     ├── MainViewModel.kt             # AndroidViewModel shared by all screens (StateFlows)
     ├── screens/
     │   ├── MainScreen.kt            # Today tab: own header (no TopAppBar), staggered entrance of top card, scene, TodayMetrics, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
-    │   ├── PausesScreen.kt          # Breaks tab: WeekCoverageCard, grouped list of PauseRows, add/edit via PauseEditorSheet
+    │   ├── PausesScreen.kt          # Breaks tab: WeekCoverageCard, grouped list of PauseRows, add/edit via PauseEditorSheet, "More" group with Days off
+    │   ├── DaysOffScreen.kt         # Route.DaysOff: add/remove ranges of days off, public holidays switch (`holidays_enabled`)
+    │   ├── OnboardingScreen.kt      # Route.Onboarding, first launch: work apps, break templates (Evening, Lunch, Weekend), notification access with the four-point disclosure
     │   ├── StatsScreen.kt           # Stats tab: week / month / day ranges, charts of StatsCharts (count-up total, DaylightRing), fed by data/Stats.kt
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter; one plain list: the apps picked when it opens come first, rows never move while you pick; rows are composed once the slide is over
     ├── components/
@@ -93,7 +100,8 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── PauseEditorSheet.kt      # ModalBottomSheet: name, start/end (TimePickerDialog), days, apps row (opens AppSelection for that pause), "Use all work apps"
     │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, DaylightRing, TotalsRow (icons, "Average a day"; Stats, a grouped list)
     │   ├── PermissionCard.kt        # listener-permission prompt (in the top card's place until access is granted)
-    │   ├── MorningReportCard.kt     # held notifications after a pause, in the top card's place until dismissed
+    │   ├── MorningReportCard.kt     # held notifications after a pause (top apps with icon, count and Open), in the top card's place until dismissed
+    │   ├── QuickPauseSheet.kt       # bottom sheet of "Pause now" (button on the status card): choose how long
     │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room
     │   ├── HomeFit.kt               # pure: the scale policy of HomeColumn (unit tested)
     │   ├── SceneCard.kt             # card framing the scene on Home; fills the size it is given (HomeColumn gives it 2:1 or smaller, never cropped)
@@ -115,10 +123,11 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Blocking rule (single source of truth)
 
-`PauseSchedule.shouldBlock(pkg) = isBlockingEnabled && some pause p is in progress now && p was not ended early && pkg in (p.apps ?: blockedApps)`
+`PauseSchedule.shouldBlock(pkg) = isBlockingEnabled && some pause p (from `PreferencesManager.allPauses()`) is in progress now && p was not ended early && pkg in (p.apps ?: blockedApps)`
 
 - Nook 2 (plan: `docs/REDESIGN.md`) has a list of pauses, each with name, start, end, the days it **starts** on, an on/off switch and optional own apps (null = all the work apps). Pauses may overlap: a notification is held if any pause in progress holds its app.
 - Evaluated **at notification post time** from the current clock. There are deliberately **no alarms** (`AlarmManager`), boot receivers or cached "currently off-hours" flags: they drifted after reboot/Doze. Do not reintroduce them unless a feature needs to act at the window boundary (e.g. clearing already-visible notifications).
+- `allPauses()` = the weekly `pauses` + `one_off_pauses` + the public holidays (when `holidays_enabled`; generated for yesterday..a week ahead, never stored). Blocking, history, break notification, tile and widget all read it. A pause with `date` set is a dated one-off: it starts only on that day (`Pause.startsOn`), ignoring `days`. Three kinds: "Pause now" (`QuickPause`, id `quick<HHmm>`; starting one turns blocking on and replaces the previous one), days off (`DaysOff`: whole-day pauses with `start == end`, one per date sharing the id `off<stamp>`, max 62 days, a range stays whole until its last day is past), Italian public holidays (id `holiday`, Easter and Easter Monday included, off by default). Other expired one-offs are dropped after yesterday.
 - Each pause runs half-open `[start, end)`, wraps past midnight when `start > end` (Friday's 18:30-08:30 belongs to Friday) and `start == end` covers its whole calendar day. Times are minutes from midnight.
 - Each time a pause happens is an `Occurrence` with key `"2026-10-15#lunch"`: ended early, notification swiped away and held notifications use it. "End the pause" ends every pause in progress.
 - The history (`FreeTimeLedger`, plan phase 2): a minute counts when blocking is on and a pause in progress, not ended early, has apps to silence; it belongs to its calendar day, counts once for the first-started pause when pauses overlap, and its daylight part uses `SunTimes`. Still no alarms: `PreferencesManager.settleHistory()` credits the minutes since the last look (`history_seen_at`), on every `ZenNotificationManager.refresh()` (each minute with the screen on) and Home refresh, and **before** every write of a setting that decides whether the pause is on (`settleThen`: master switch, pauses, work apps, end/resume). Any new such setting must go through `settleThen`. Gaps longer than 3 days count only their last 3 (a weekend with the phone asleep; longer is more likely the phone off or a restored backup). Computed on intervals, real time across daylight saving.
@@ -126,7 +135,7 @@ The app has two themes: `QuietHoursTheme` (used by `MainActivity`) and `Notifica
 
 ### Preferences keys (`notification_blocker_prefs`)
 
-`blocking_enabled` (Boolean), `pauses` (String, one pause per line, see `PauseCodec`; when missing, one pause every day built from the legacy `start_time` / `end_time`, defaults 22:00 → 07:00), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that pause occurrence, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (occurrence whose morning report was dismissed), `zen_dismissed_window` (occurrence in which the user swiped the zen notification away), `pause_ended_keys` (StringSet of occurrences ended early with "End the pause": nothing is held until the next pause; keys older than two days are dropped; cleared when blocking is turned on again; the old `pause_ended_window` is no longer read). Window keys written before Nook 2 are bare ISO dates (`Occurrence.dateOf` reads both), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"), `history` (String, one line per day, see `HistoryCodec`: lived, daylight, held, minutes per pause; kept forever, about 30 KB a year, goes into the Android backup), `history_seen_at` (Long epoch millis of the last settle). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
+`blocking_enabled` (Boolean), `one_off_pauses` (String, same format as `pauses` with the date as 8th tab-separated field: quick pause and days off), `holidays_enabled` (Boolean, default false), `onboarding_done` (Boolean; the first-launch setup runs only if it is false and none of `pauses`, `start_time`, `blocking_enabled` exists, so updates from older versions skip it; finishing saves the chosen pauses, possibly none, and turns blocking on), `pauses` (String, one pause per line, see `PauseCodec`; when missing, one pause every day built from the legacy `start_time` / `end_time`, defaults 22:00 → 07:00), `blocked_apps` (StringSet), `last_celebrated_window` (String, legacy: written by the removed "end of shift" card, no longer read), `filtered_window` / `filtered_count` / `filtered_keys` (work notifications held in that pause occurrence, counted once per notification key; group summaries and non-clearable ones are not counted; `filtered_keys` entries are `package\nfingerprint`, the first 8 bytes of the SHA-256 of the notification key in hex: the key is never stored, its tag can be a chat id with a phone number and the file goes into the Android backup; older versions wrote `package\nkey` or the bare key), `report_seen_window` (occurrence whose morning report was dismissed), `zen_dismissed_window` (occurrence in which the user swiped the zen notification away), `pause_ended_keys` (StringSet of occurrences ended early with "End the pause": nothing is held until the next pause; keys older than two days are dropped; cleared when blocking is turned on again; the old `pause_ended_window` is no longer read). Window keys written before Nook 2 are bare ISO dates (`Occurrence.dateOf` reads both), `zen_prompt_dismissed` (Boolean, notification-permission prompt answered "Not now"), `history` (String, one line per day, see `HistoryCodec`: lived, daylight, held, minutes per pause; kept forever, about 30 KB a year, goes into the Android backup), `history_seen_at` (Long epoch millis of the last settle). Always write a new set for `blocked_apps` (never mutate the one returned by `getStringSet`).
 
 ### App list
 
@@ -166,7 +175,7 @@ The Quick Settings tile (`ZenTileService`, active tile: no polling) toggles `blo
 See `docs/ROADMAP.md` for the full list. Most relevant:
 
 - Notifications already visible when a pause starts are not cleared. (When the listener service connects, e.g. after boot or an update, `sweepActiveNotifications()` does remove the ones that `shouldBlock`, so nothing posted while it was unbound leaks.)
-- Pauses are per weekday since Nook 2; there are no date exceptions (holidays) yet.
+- Date exceptions exist (days off ranges, Italian public holidays, "Pause now"); no holidays for other countries yet.
 - `.agent/plan.md` is the original scaffolding brief: historical, outdated (mentions AlarmManager and components that no longer exist).
 - Release builds run R8; extra keep rules go in `app/proguard-rules.pro`.
 - **Home fits one screen on every phone and the scene is never cropped** (rule and verification: `docs/DESIGN_SYSTEM.md`, "Home in una schermata"). If space is short the *rest* is resized, never the animation: cards scale down to 0.8 together (`HomeColumn`/`HomeFit`), only then the scene shrinks, whole, to 0.6, and only then the page scrolls. Home blocks are composed from the first frame and enter with `homeEntrance` (alpha + offset), never `AnimatedVisibility`. Text must not change size by itself: Home sizes are compact (16dp card padding, `titleLarge` status, `bodyMedium` texts) so common phones fit at scale 1, and the top of Home holds **one card at a time** (`TopCard`: permission → notification prompt → morning report → status card with the switch); a card stacked on top pushed the page past the screen, every text shrank, then grew back by 25% once it was gone. Every new block on Home eats height: re-check on the phone (`wm size`/`wm density`/`font_scale`, always reset after) before committing. Cost: `HomeColumn` measures the cards once per layout, like a `Column`; the scale never follows an animation frame by frame (that relaid out every card each frame and made the switch stutter), it changes once the heights are still (`SETTLE_MILLIS`) and grows back only for more than 56dp of room.
