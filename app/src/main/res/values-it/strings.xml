@@ -6,10 +6,12 @@
     <string name="status_disabled">Spento</string>
     <string name="status_active">In pausa ora</string>
     <string name="status_standby">Programmato</string>
+    <string name="status_next_at">Pausa alle %1$s</string>
 
     <!-- Hero Subtitles -->
     <string name="hero_subtitle_disabled">Le notifiche arrivano tutte, come sempre.</string>
-    <string name="hero_subtitle_outside">Le notifiche di lavoro arrivano fino all\'inizio della pausa.</string>
+    <string name="hero_subtitle_outside">Fino ad allora le notifiche di lavoro arrivano come sempre.</string>
+    <string name="hero_subtitle_no_next">Nessuna pausa in arrivo: le notifiche di lavoro arrivano come sempre.</string>
     <string name="hero_subtitle_inside">Le notifiche delle app di lavoro sono in pausa.</string>
     <string name="status_ended">Pausa finita</string>
     <string name="pause_ended_text">Le notifiche di lavoro arrivano di nuovo. La prossima pausa inizia alle %1$s.</string>
@@ -121,7 +123,7 @@
     <string name="today_card_title">Oggi</string>
     <string name="today_no_pauses">Nessuna pausa oggi</string>
     <string name="pause_default_name">Pausa</string>
-    <string name="pause_state_lived">Fatta</string>
+    <string name="pause_state_lived">Passata</string>
     <string name="pause_state_now">In corso</string>
     <string name="pause_state_ended">Finita prima</string>
     <string name="pauses_title">Pause</string>
@@ -142,6 +144,7 @@
     <string name="pause_end">Fine</string>
     <string name="pause_days">Giorni</string>
     <string name="pause_whole_day_hint">Con inizio e fine uguali la pausa dura tutto il giorno.</string>
+    <string name="pause_overnight_hint">Finisce il giorno dopo alle %1$s.</string>
     <string name="pause_apps_label">App da mettere in pausa</string>
     <string name="pause_apps_all">Tutte le app di lavoro</string>
     <plurals name="pause_apps_custom">
@@ -159,9 +162,10 @@
     <string name="stats_week">Settimana</string>
     <string name="stats_month">Mese</string>
     <string name="stats_daylight">%1$s con la luce del giorno</string>
-    <string name="stats_tile_yours">Tempo in pausa</string>
-    <string name="stats_tile_daylight">Con la luce del giorno</string>
+    <string name="stats_tile_yours">Tempo libero</string>
+    <string name="stats_tile_daylight">Con la luce</string>
     <string name="stats_tile_held">Notifiche in pausa</string>
+    <string name="stats_empty">Qui compare il tempo libero che ti dai con le pause, a partire dalla prima.</string>
     <string name="stats_legend_break">Pausa</string>
     <string name="stats_legend_daylight">Con la luce del giorno</string>
     <string name="stats_month_hint">Più il cerchio è pieno, più tempo libero hai avuto quel giorno.</string>
@@ -180,15 +184,15 @@
     <string name="today_now">Ora: %1$s</string>
     <string name="today_left">ancora %1$s</string>
     <string name="today_next">Prossima: %1$s alle %2$s, tra %3$s</string>
-    <string name="metric_free">Libere oggi</string>
+    <string name="metric_free">Tempo libero</string>
     <string name="metric_daylight">Con la luce</string>
-    <string name="metric_paused">In pausa</string>
+    <string name="metric_paused">Notifiche in pausa</string>
     <string name="stats_average">Media al giorno</string>
     <string name="stats_ring_label">di luce</string>
     <string name="stats_total_label">Tempo libero</string>
     <string name="quick_pause_action">Stacca ora</string>
     <string name="quick_pause_title">Stacca ora</string>
-    <string name="quick_pause_text">Metti subito in pausa le notifiche di lavoro, senza aggiungere una pausa.</string>
+    <string name="quick_pause_text">Parte adesso e non si aggiunge alle pause della settimana. Le notifiche di lavoro vanno in pausa subito.</string>
     <string name="quick_pause_until">fino alle %1$s</string>
     <string name="quick_pause_until_next">Fino alla prossima pausa</string>
     <string name="quick_pause_start">Avvia</string>
@@ -261,7 +265,7 @@
     <string name="widget_preview_sub">Prossima: Pranzo alle 13:00</string>
     <string name="onboarding_step">Passo %1$d di %2$d</string>
     <string name="onboarding_apps_title">Quali app sono di lavoro?</string>
-    <string name="onboarding_apps_text">Scegli le app che ti portano lavoro. Durante le pause le loro notifiche restano fuori; il resto arriva come sempre.</string>
+    <string name="onboarding_apps_text">Scegli le app che ti portano lavoro. Durante una pausa Nook ne toglie le notifiche, e non tornano. I messaggi restano nelle app: li trovi quando le apri. Tutto il resto arriva come sempre.</string>
     <string name="onboarding_apps_more">Scegli tra tutte le app</string>
     <string name="onboarding_apps_pick">Scegli le app di lavoro</string>
     <string name="onboarding_pauses_title">Quando vuoi staccare?</string>
@@ -269,14 +273,23 @@
     <string name="onboarding_evening">Sera</string>
     <string name="onboarding_lunch">Pranzo</string>
     <string name="onboarding_weekend">Weekend</string>
-    <string name="onboarding_access_title">Un solo permesso</string>
-    <string name="onboarding_access_later">Puoi farlo anche dopo: te lo ricorda la scheda Oggi.</string>
+    <string name="onboarding_access_title">Accesso alle notifiche</string>
+    <string name="onboarding_access_text">Per mettere in pausa le app di lavoro, Nook deve vedere le notifiche che ricevi.</string>
+    <string name="onboarding_access_sees">Guarda solo quale app ha mandato ogni notifica.</string>
+    <string name="onboarding_access_reads_nothing">Non legge e non salva cosa c\'è scritto.</string>
+    <string name="onboarding_access_stays">Niente esce dal telefono.</string>
+    <string name="onboarding_access_revocable">Puoi toglierlo quando vuoi, dalle Impostazioni.</string>
+    <string name="onboarding_access_button">Consenti l\'accesso</string>
+    <string name="onboarding_access_how">Si apre una pagina di Android con l\'interruttore di Nook. Attivalo e torna qui. L\'avviso che vedrai è lo stesso per tutte le app con questo accesso: Nook fa solo quello che c\'è scritto qui sopra.</string>
+    <string name="onboarding_access_done">Accesso attivo. È tutto pronto.</string>
+    <string name="onboarding_notification_note">Quando premi Inizia, Android ti chiede se Nook può mandarti notifiche. Ne usa una sola, silenziosa, con l\'ora in cui finisce la pausa. Se dici di no, Nook funziona lo stesso.</string>
+    <string name="onboarding_skip">Lo faccio dopo</string>
     <string name="onboarding_back">Indietro</string>
     <string name="onboarding_next">Continua</string>
     <string name="onboarding_finish">Inizia</string>
     <plurals name="onboarding_hours">
-        <item quantity="one">Sono %1$d ora a settimana senza lavoro.</item>
-        <item quantity="many">Sono %1$d ore a settimana senza lavoro.</item>
-        <item quantity="other">Sono %1$d ore a settimana senza lavoro.</item>
+        <item quantity="one">Con queste pause hai %1$d ora a settimana senza notifiche di lavoro.</item>
+        <item quantity="many">Con queste pause hai %1$d ore a settimana senza notifiche di lavoro.</item>
+        <item quantity="other">Con queste pause hai %1$d ore a settimana senza notifiche di lavoro.</item>
     </plurals>
 </resources>

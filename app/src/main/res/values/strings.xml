@@ -9,10 +9,12 @@
     <string name="status_disabled">Off</string>
     <string name="status_active">Paused now</string>
     <string name="status_standby">Scheduled</string>
+    <string name="status_next_at">Break at %1$s</string>
 
     <!-- Hero Subtitles -->
     <string name="hero_subtitle_disabled">All notifications come through as usual.</string>
-    <string name="hero_subtitle_outside">Work notifications come through until your break starts.</string>
+    <string name="hero_subtitle_outside">Until then, work notifications come through as usual.</string>
+    <string name="hero_subtitle_no_next">No break coming up: work notifications come through as usual.</string>
     <string name="hero_subtitle_inside">Notifications from your work apps are paused.</string>
     <string name="status_ended">Pause ended</string>
     <string name="pause_ended_text">Work notifications come through again. Your next pause starts at %1$s.</string>
@@ -124,7 +126,7 @@
     <string name="today_card_title">Today</string>
     <string name="today_no_pauses">No breaks today</string>
     <string name="pause_default_name">Break</string>
-    <string name="pause_state_lived">Done</string>
+    <string name="pause_state_lived">Over</string>
     <string name="pause_state_now">On now</string>
     <string name="pause_state_ended">Ended early</string>
     <string name="pauses_title">Breaks</string>
@@ -144,6 +146,7 @@
     <string name="pause_end">End</string>
     <string name="pause_days">Days</string>
     <string name="pause_whole_day_hint">Same start and end means the whole day.</string>
+    <string name="pause_overnight_hint">Ends the next day at %1$s.</string>
     <string name="pause_apps_label">Apps to pause</string>
     <string name="pause_apps_all">All work apps</string>
     <plurals name="pause_apps_custom">
@@ -160,9 +163,10 @@
     <string name="stats_week">Week</string>
     <string name="stats_month">Month</string>
     <string name="stats_daylight">%1$s in daylight</string>
-    <string name="stats_tile_yours">Break time</string>
+    <string name="stats_tile_yours">Free time</string>
     <string name="stats_tile_daylight">In daylight</string>
-    <string name="stats_tile_held">Notifications paused</string>
+    <string name="stats_tile_held">Paused</string>
+    <string name="stats_empty">The free time you get from your breaks shows up here, starting with your first break.</string>
     <string name="stats_legend_break">Break</string>
     <string name="stats_legend_daylight">In daylight</string>
     <string name="stats_month_hint">A fuller circle means more free time that day.</string>
@@ -181,7 +185,7 @@
     <string name="today_now">Now: %1$s</string>
     <string name="today_left">%1$s left</string>
     <string name="today_next">Next: %1$s at %2$s, in %3$s</string>
-    <string name="metric_free">Free today</string>
+    <string name="metric_free">Free time</string>
     <string name="metric_daylight">In daylight</string>
     <string name="metric_paused">Paused</string>
     <string name="stats_average">Average a day</string>
@@ -190,7 +194,7 @@
     <string name="duration_compact" translatable="false">%1$d h %2$02d</string>
     <string name="quick_pause_action">Pause now</string>
     <string name="quick_pause_title">Pause now</string>
-    <string name="quick_pause_text">Silence work notifications right away, without adding a break.</string>
+    <string name="quick_pause_text">Starts now and isn\'t added to your weekly breaks. Work notifications are paused right away.</string>
     <string name="quick_pause_until">until %1$s</string>
     <string name="quick_pause_until_next">Until the next break</string>
     <string name="quick_pause_start">Start</string>
@@ -258,7 +262,7 @@
     <string name="widget_preview_sub">Next: Lunch at 13:00</string>
     <string name="onboarding_step">Step %1$d of %2$d</string>
     <string name="onboarding_apps_title">Which apps are work?</string>
-    <string name="onboarding_apps_text">Pick the apps that bring work. During your breaks their notifications are paused; everything else comes through as usual.</string>
+    <string name="onboarding_apps_text">Pick the apps that bring you work. During a break Nook clears their notifications, and they don\'t come back. The messages stay in the apps, so you\'ll find them when you open them. Everything else comes through as usual.</string>
     <string name="onboarding_apps_more">Choose from all apps</string>
     <string name="onboarding_apps_pick">Choose your work apps</string>
     <string name="onboarding_pauses_title">When do you switch off?</string>
@@ -266,13 +270,22 @@
     <string name="onboarding_evening">Evening</string>
     <string name="onboarding_lunch">Lunch</string>
     <string name="onboarding_weekend">Weekend</string>
-    <string name="onboarding_access_title">One permission</string>
-    <string name="onboarding_access_later">You can do it later: the Today tab will remind you.</string>
+    <string name="onboarding_access_title">Notification access</string>
+    <string name="onboarding_access_text">To pause your work apps, Nook needs to see the notifications you get.</string>
+    <string name="onboarding_access_sees">It only checks which app sent each one.</string>
+    <string name="onboarding_access_reads_nothing">It doesn\'t read or save what they say.</string>
+    <string name="onboarding_access_stays">Nothing leaves your phone.</string>
+    <string name="onboarding_access_revocable">You can turn it off anytime in Settings.</string>
+    <string name="onboarding_access_button">Allow access</string>
+    <string name="onboarding_access_how">Android opens a page with Nook\'s switch. Turn it on, then come back here. The warning you\'ll see is the same for every app with this access: Nook only does what\'s listed above.</string>
+    <string name="onboarding_access_done">Access on. You\'re all set.</string>
+    <string name="onboarding_notification_note">When you tap Start, Android asks if Nook can send you notifications. It uses just one, silent, with the time your break ends. If you say no, Nook still works.</string>
+    <string name="onboarding_skip">Do it later</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_next">Continue</string>
     <string name="onboarding_finish">Start</string>
     <plurals name="onboarding_hours">
-        <item quantity="one">That is %1$d hour a week without work.</item>
-        <item quantity="other">That is %1$d hours a week without work.</item>
+        <item quantity="one">These breaks give you %1$d hour a week without work notifications.</item>
+        <item quantity="other">These breaks give you %1$d hours a week without work notifications.</item>
     </plurals>
 </resources>

@@ -126,6 +126,17 @@ fun StatsContent(
                 }
             }
         }
+        // A new user saw only zeros and empty charts: say when they start filling up
+        if (history.values.none { it.livedMinutes > 0 }) {
+            Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.secondaryContainer) {
+                Text(
+                    text = stringResource(R.string.stats_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                )
+            }
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { anchor = PeriodStats.shift(range, anchorDate, -1).toString() }) {
                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.stats_prev))

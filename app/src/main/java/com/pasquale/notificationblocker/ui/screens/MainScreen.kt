@@ -1,12 +1,8 @@
 package com.pasquale.notificationblocker.ui.screens
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -40,13 +36,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.MainViewModel
+import com.pasquale.notificationblocker.ui.canPostNotifications
+import com.pasquale.notificationblocker.ui.hasNotificationListenerPermission
+import com.pasquale.notificationblocker.ui.openNotificationAccess
 import com.pasquale.notificationblocker.ui.components.HeroHeader
 import com.pasquale.notificationblocker.ui.components.QuickPauseSheet
 import com.pasquale.notificationblocker.ui.components.quickPauseOptions
@@ -134,9 +131,7 @@ fun MainScreen(
         },
         onDismissZenPrompt = { viewModel.onZenPermissionResult(granted = false) },
         onBlockingEnabledChanged = viewModel::setBlockingEnabled,
-        onRequestPermission = {
-            context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
-        },
+        onRequestPermission = { openNotificationAccess(context) },
         modifier = modifier,
         sceneActive = sceneActive,
         morningReport = morningReport,
@@ -249,9 +244,10 @@ fun MainScreenContent(
                     isInOffHoursNow = isInOffHoursNow,
                     onBlockingEnabledChanged = onBlockingEnabledChanged,
                     // The free-time line does not fit a pause ended early: the card says when the next one starts
-                    lifeMessage = if (isPauseEnded) null else lifeMessage,
+                    // "You switch off at 18:30" only repeats the title, which already says when the pause starts
+                    lifeMessage = if (isPauseEnded || lifeMessage is LifeMessage.EveningAfterWork) null else lifeMessage,
                     isPauseEnded = isPauseEnded,
-                    nextPauseStart = nextPauseStart ?: 0,
+                    nextPauseStart = nextPauseStart ?: -1,
                     onPauseAgain = onPauseAgain,
                     onQuickPause = onQuickPause,
                 )
@@ -353,15 +349,6 @@ fun TimePickerDialog(
         shape = MaterialTheme.shapes.large,
     )
 }
-
-private fun hasNotificationListenerPermission(context: Context): Boolean =
-    NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
-
-// Below Android 13 posting needs no runtime permission, only notifications enabled for the app
-private fun canPostNotifications(context: Context): Boolean =
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED
 
 @Preview(showBackground = true, name = "Main Screen - Light Theme")
 @Composable

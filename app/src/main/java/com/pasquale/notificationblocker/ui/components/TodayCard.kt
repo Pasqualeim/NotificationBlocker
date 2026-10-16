@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
@@ -145,19 +145,31 @@ fun TodayCard(
             }
         }
         rows.forEachIndexed { i, p ->
-            SegmentedListItem(
-                shapes = ListItemDefaults.segmentedShapes(index = i + 1, count = count),
-                colors = segmentColors(),
-                leadingContent = { PauseAvatar(pause = p.pause, index = p.colorIndex, size = 40.dp, enabled = isBlockingEnabled) },
-                supportingContent = { Text(pauseTimes(p.pause)) },
-                // With Nook off nothing is on or lived; a pause still to come needs no label
-                trailingContent = if (isBlockingEnabled && p.state != TodayPauseState.LATER) {
-                    { StateChip(p.state) }
-                } else {
-                    null
-                },
+            // A plain row in the segment's shape, not a SegmentedListItem: its minimum height left
+            // empty room under each pause, and every dp here is taken from the scene (Home fits one screen)
+            Surface(
+                shape = ListItemDefaults.segmentedShapes(index = i + 1, count = count).shape,
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                // One TalkBack stop per pause: name, times and state together
+                modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
             ) {
-                Text(text = pauseName(p.pause), maxLines = 1)
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    PauseAvatar(pause = p.pause, index = p.colorIndex, size = 36.dp, enabled = isBlockingEnabled)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = pauseName(p.pause), style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                        Text(
+                            text = pauseTimes(p.pause),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    // With Nook off nothing is on or lived; a pause still to come needs no label
+                    if (isBlockingEnabled) StateChip(p.state)
+                }
             }
         }
     }

@@ -70,7 +70,8 @@ fun HeroHeader(
     modifier: Modifier = Modifier,
     lifeMessage: LifeMessage? = null,
     isPauseEnded: Boolean = false,
-    nextPauseStart: Int = 0,
+    // Minute of the next pause start, -1 when none is coming
+    nextPauseStart: Int = -1,
     onPauseAgain: () -> Unit = {},
     ambientClock: AmbientClock? = null,
     onQuickPause: (() -> Unit)? = null,
@@ -204,8 +205,10 @@ private fun HeroHeaderContent(
                                 .background(color = animatedIconBackground, shape = expressiveShape(0)),
                             contentAlignment = Alignment.Center
                         ) {
+                            // Slashed only while work notifications are really held: a slashed bell
+                            // between pauses read as "my notifications are already blocked"
                             MutedBellIcon(
-                                muted = isBlockingEnabled,
+                                muted = status == HeroStatus.ACTIVE_INSIDE,
                                 tint = animatedIconTint,
                                 modifier = Modifier.size(26.dp)
                             )
@@ -223,14 +226,20 @@ private fun HeroHeaderContent(
                         label = "HeroStatusTitle",
                     ) { targetStatus ->
                         Text(
-                            text = stringResource(
-                                when (targetStatus) {
-                                    HeroStatus.DISABLED -> R.string.status_disabled
-                                    HeroStatus.ACTIVE_OUTSIDE -> R.string.status_standby
-                                    HeroStatus.PAUSE_ENDED -> R.string.status_ended
-                                    HeroStatus.ACTIVE_INSIDE -> R.string.status_active
-                                }
-                            ),
+                            // Between pauses the title says when the next one starts: a bare
+                            // "Scheduled" left people wondering what was scheduled
+                            text = if (targetStatus == HeroStatus.ACTIVE_OUTSIDE && nextPauseStart >= 0) {
+                                stringResource(R.string.status_next_at, OffHours.format(nextPauseStart))
+                            } else {
+                                stringResource(
+                                    when (targetStatus) {
+                                        HeroStatus.DISABLED -> R.string.status_disabled
+                                        HeroStatus.ACTIVE_OUTSIDE -> R.string.status_standby
+                                        HeroStatus.PAUSE_ENDED -> R.string.status_ended
+                                        HeroStatus.ACTIVE_INSIDE -> R.string.status_active
+                                    }
+                                )
+                            },
                             style = MaterialTheme.typography.titleLarge,
                             color = animatedContentColor,
                             maxLines = 1,
@@ -276,9 +285,10 @@ private fun HeroHeaderContent(
                         Text(
                             text = when (targetStatus) {
                                 HeroStatus.DISABLED -> stringResource(R.string.hero_subtitle_disabled)
-                                HeroStatus.ACTIVE_OUTSIDE -> stringResource(R.string.hero_subtitle_outside)
+                                // "Until then" needs a pause to come
+                                HeroStatus.ACTIVE_OUTSIDE -> stringResource(if (nextPauseStart >= 0) R.string.hero_subtitle_outside else R.string.hero_subtitle_no_next)
                                 HeroStatus.ACTIVE_INSIDE -> stringResource(R.string.hero_subtitle_inside)
-                                HeroStatus.PAUSE_ENDED -> stringResource(R.string.pause_ended_text, OffHours.format(nextPauseStart))
+                                HeroStatus.PAUSE_ENDED -> stringResource(R.string.pause_ended_text, OffHours.format(nextPauseStart.coerceAtLeast(0)))
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = animatedContentColor,
@@ -402,6 +412,20 @@ fun HeroHeaderPreviewActiveOutside() {
             onBlockingEnabledChanged = {},
             modifier = Modifier.padding(16.dp),
             lifeMessage = LifeMessage.SunAfterWork(start = 17 * 60, minutes = 205),
+            nextPauseStart = 17 * 60,
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Hero - Active, no pause coming")
+@Composable
+fun HeroHeaderPreviewNoNext() {
+    NotificationBlockerTheme {
+        HeroHeader(
+            isBlockingEnabled = true,
+            isInOffHoursNow = false,
+            onBlockingEnabledChanged = {},
+            modifier = Modifier.padding(16.dp),
         )
     }
 }

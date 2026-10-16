@@ -82,11 +82,12 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   └── ZenTileService.kt            # Quick Settings tile "Nook": toggles blocking
 └── ui/
     ├── MainViewModel.kt             # AndroidViewModel shared by all screens (StateFlows)
+    ├── Permissions.kt               # listener access / post-notifications checks, openNotificationAccess (Nook's own switch)
     ├── screens/
     │   ├── MainScreen.kt            # Today tab: own header (no TopAppBar), staggered entrance of top card, scene, TodayMetrics, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
     │   ├── PausesScreen.kt          # Breaks tab: WeekCoverageCard, grouped list of PauseRows, add/edit via PauseEditorSheet, "More" group with Days off
     │   ├── DaysOffScreen.kt         # Route.DaysOff: add/remove ranges of days off, public holidays switch (`holidays_enabled`)
-    │   ├── OnboardingScreen.kt      # Route.Onboarding, first launch: work apps, break templates (Evening, Lunch, Weekend), notification access with the four-point disclosure
+    │   ├── OnboardingScreen.kt      # Route.Onboarding, first launch: work apps, break templates (Evening, Lunch, Weekend), notification access (the four-point disclosure as icon rows, re-checked on resume with a confirmation, one filled button at a time), then the `POST_NOTIFICATIONS` prompt
     │   ├── StatsScreen.kt           # Stats tab: week / month / day ranges, charts of StatsCharts (count-up total, DaylightRing), fed by data/Stats.kt
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter; one plain list: the apps picked when it opens come first, rows never move while you pick; rows are composed once the slide is over
     ├── components/
@@ -95,7 +96,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── TodayHeader.kt               # todayGreeting, todayDate, NookBadge (mug), compactDuration and TodayMetrics (free today, daylight, paused); no header composable, the top app bar of Today shows them
     │   ├── Visuals.kt                   # PauseAvatar (time-of-day icon), expressiveShape(index) (MaterialShapes cookie/clover/burst), segmentColors() (segments on surfaceContainer), Modifier.entrance, CountUpText, MetricTile; PauseAvatar and MetricTile use the expressive shapes
     │   ├── WeekCoverageCard.kt      # top of Breaks: hours a week without work notifications + seven 24 h tracks (data/WeekCoverage.kt)
-    │   ├── TodayCard.kt                 # "Today" on Home as a segmented list (SegmentedListItem): first segment = now/next line with a LinearWavyProgressIndicator (waveSpeed = 0.dp) and the day bar, then one segment per pause with state chips (TodayPauses, unit tested), hours lived
+    │   ├── TodayCard.kt                 # "Today" on Home as a segmented list (segment shapes from `ListItemDefaults.segmentedShapes`; compact custom rows, not `SegmentedListItem`, whose minimum height ate the scene's room): first segment = now/next line with a LinearWavyProgressIndicator (waveSpeed = 0.dp) and the day bar, then one segment per pause with state chips (TodayPauses, unit tested), hours lived
     │   ├── PauseRow.kt              # PauseRow (ListItem), DayPills (editor), daysSummary, pauseColor/pauseName/pauseTimes: one pause in the Breaks list, with its PauseAvatar
     │   ├── PauseEditorSheet.kt      # ModalBottomSheet: name, start/end (TimePickerDialog), days, apps row (opens AppSelection for that pause), "Use all work apps"
     │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, DaylightRing, TotalsRow (icons, "Average a day"; Stats, a grouped list)
@@ -143,7 +144,7 @@ Apps come from `queryIntentActivities(ACTION_MAIN + CATEGORY_LAUNCHER)`, matched
 
 ### Permissions
 
-Only notification listener access is required, granted by the user in system settings (`Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS`). The Today tab (`MainScreen`) re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ `ZenNotificationCard` asks for it once, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
+Only notification listener access is required, granted by the user in system settings: `ui/Permissions.kt` (`openNotificationAccess`) opens Nook's own switch (`ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS`, Android 11+; the full list `ACTION_NOTIFICATION_LISTENER_SETTINGS` is the fallback), and holds the two permission checks. The Today tab (`MainScreen`) re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ the first-launch setup asks for it when it ends (only if the listener access was given; step 3 says so first, or the system prompt reads as a contradiction); `ZenNotificationCard` on Today asks once for whoever skipped it or updated from an older version, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
 
 ### Sprout MVP (parked, not in the code)
 

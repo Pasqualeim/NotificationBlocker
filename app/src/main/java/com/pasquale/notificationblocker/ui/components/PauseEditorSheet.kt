@@ -104,9 +104,15 @@ fun PauseEditorSheet(
                 TimeBox(R.string.pause_start, start, Modifier.weight(1f)) { picking = "start" }
                 TimeBox(R.string.pause_end, end, Modifier.weight(1f)) { picking = "end" }
             }
-            if (start == end) {
+            // 18:30-08:30 did not say it ends the next morning
+            val timesHint = when {
+                start == end -> stringResource(R.string.pause_whole_day_hint)
+                end < start -> stringResource(R.string.pause_overnight_hint, OffHours.format(end))
+                else -> null
+            }
+            if (timesHint != null) {
                 Text(
-                    text = stringResource(R.string.pause_whole_day_hint),
+                    text = timesHint,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
