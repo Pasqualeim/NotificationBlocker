@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.pasquale.notificationblocker.data.DayStats
 import com.pasquale.notificationblocker.data.MorningReport
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.DaysOff
 import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.data.QuickPause
 import com.pasquale.notificationblocker.data.PreferencesManager
@@ -54,6 +55,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _allPauses = MutableStateFlow(preferencesManager.allPauses())
     val allPauses: StateFlow<List<Pause>> = _allPauses.asStateFlow()
 
+    // Days off: the ranges the user added, and whether public holidays count
+    private val _daysOff = MutableStateFlow(DaysOff.ranges(preferencesManager.oneOffPauses).filterNot { it.last.isBefore(LocalDate.now()) })
+    val daysOff: StateFlow<List<DaysOff.Range>> = _daysOff.asStateFlow()
+
+    private val _holidaysEnabled = MutableStateFlow(preferencesManager.holidaysEnabled)
+    val holidaysEnabled: StateFlow<Boolean> = _holidaysEnabled.asStateFlow()
+
     /** Minutes to the next pause start when it is close enough for "until the next break", else null. */
     private val _minutesToNextPause = MutableStateFlow(computeMinutesToNext())
     val minutesToNextPause: StateFlow<Int?> = _minutesToNextPause.asStateFlow()
@@ -91,7 +99,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // (kept as a field, the SharedPreferences registry only holds listeners weakly)
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == PreferencesManager.KEY_BLOCKING_ENABLED || key == PreferencesManager.KEY_PAUSE_ENDED_KEYS ||
-            key == PreferencesManager.KEY_PAUSES || key == PreferencesManager.KEY_ONE_OFF_PAUSES) {
+            key == PreferencesManager.KEY_PAUSES || key == PreferencesManager.KEY_ONE_OFF_PAUSES ||
+            key == PreferencesManager.KEY_HOLIDAYS_ENABLED) {
             _isBlockingEnabled.value = preferencesManager.isBlockingEnabled
             refreshOffHoursStatus()
         }
@@ -137,6 +146,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         preferencesManager.settleHistory()
         _pauses.value = preferencesManager.pauses
         _allPauses.value = preferencesManager.allPauses()
+        _daysOff.value = DaysOff.ranges(preferencesManager.oneOffPauses).filterNot { it.last.isBefore(LocalDate.now()) }
+        _holidaysEnabled.value = preferencesManager.holidaysEnabled
         _minutesToNextPause.value = computeMinutesToNext()
         _pauseEndedKeys.value = preferencesManager.pauseEndedKeys
         _history.value = preferencesManager.history
@@ -226,6 +237,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         refreshZenNotification()
         refreshLife()
         ZenTileService.requestUpdate(getApplication())
+    }
+
+    fun addDaysOff(first: LocalDate, last: LocalDate) {
+        preferencesManager.addDaysOff(first, last)
+        onPausesChanged()
+        refreshZenNotification()
+    }
+
+    fun removeDaysOff(id: String) {
+        preferencesManager.removeDaysOff(id)
+        onPausesChanged()
+        refreshZenNotification()
+    }
+
+    fun setHolidaysEnabled(enabled: Boolean) {
+        preferencesManager.holidaysEnabled = enabled
+        onPausesChanged()
+        refreshZenNotification()
     }
 
     /** Adds [pause], or replaces the one with the same id. */

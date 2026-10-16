@@ -181,7 +181,7 @@
     <string name="pause_days_every">Tutti i giorni</string>
     <string name="pause_days_weekdays">Lun–ven</string>
     <string name="pause_days_weekend">Weekend</string>
-    <string name="pauses_section_apps">App</string>
+    <string name="pauses_section_more">Altro</string>
     <string name="week_coverage_label">Ogni settimana</string>
     <string name="week_coverage_caption">senza notifiche di lavoro</string>
     <string name="pauses_section_list">Le tue pause</string>
@@ -201,4 +201,45 @@
     <string name="quick_pause_until_next">Fino alla prossima pausa</string>
     <string name="quick_pause_start">Avvia</string>
     <string name="quick_pause_name">Pausa al volo</string>
+    <string name="days_off_title">Giorni liberi</string>
+    <string name="days_off_intro">Ferie, ponti e festivi: Nook tiene fuori il lavoro tutto il giorno, senza toccare le tue pause.</string>
+    <string name="days_off_holidays">Festivi nazionali</string>
+    <string name="days_off_holidays_text">Italia, 12 giorni l\'anno, aggiunti da soli</string>
+    <string name="days_off_holidays_next">Prossimo: %1$s, %2$s</string>
+    <string name="days_off_section">I tuoi giorni liberi</string>
+    <string name="days_off_empty">Nessun giorno libero per ora. Aggiungi le prossime ferie.</string>
+    <string name="days_off_add">Aggiungi giorni</string>
+    <string name="days_off_pick">Scegli il primo e l\'ultimo giorno</string>
+    <string name="days_off_remove">Togli questi giorni liberi</string>
+    <string name="days_off_name">Giorno libero</string>
+    <string name="days_off_row_empty">Ferie e festivi</string>
+    <string name="holiday_new_year">Capodanno</string>
+    <string name="holiday_epiphany">Epifania</string>
+    <string name="holiday_easter">Pasqua</string>
+    <string name="holiday_easter_monday">Pasquetta</string>
+    <string name="holiday_liberation">Festa della Liberazione</string>
+    <string name="holiday_labour">Festa dei Lavoratori</string>
+    <string name="holiday_republic">Festa della Repubblica</string>
+    <string name="holiday_assumption">Ferragosto</string>
+    <string name="holiday_all_saints">Ognissanti</string>
+    <string name="holiday_immaculate">Immacolata</string>
+    <string name="holiday_christmas">Natale</string>
+    <string name="holiday_st_stephen">Santo Stefano</string>
+    <string name="holiday_generic">Festivo</string>
+    <plurals name="days_off_days">
+        <item quantity="one">%1$d giorno</item>
+        <item quantity="many">%1$d giorni</item>
+        <item quantity="other">%1$d giorni</item>
+    </plurals>
+    <plurals name="days_off_row">
+        <item quantity="one">%1$d periodo di ferie</item>
+        <item quantity="many">%1$d periodi di ferie</item>
+        <item quantity="other">%1$d periodi di ferie</item>
+    </plurals>
+    <plurals name="days_off_too_long">
+        <item quantity="one">Massimo %1$d giorno</item>
+        <item quantity="many">Massimo %1$d giorni</item>
+        <item quantity="other">Massimo %1$d giorni</item>
+    </plurals>
+    <string name="days_off_row_holidays">festivi attivi</string>
 </resources>

@@ -39,11 +39,37 @@ class PreferencesManager private constructor(context: Context) {
 
     private fun SharedPreferences.Editor.putOneOffs(value: List<Pause>) {
         val yesterday = LocalDate.now().minusDays(1)
-        putString(KEY_ONE_OFF_PAUSES, PauseCodec.encode(value.filter { it.date == null || !it.date.isBefore(yesterday) }))
+        // A range of days off stays whole until its last day is past, so its dates never shrink one by one
+        val liveRanges = value.filter { DaysOff.isRange(it) && !it.date!!.isBefore(yesterday) }.mapTo(HashSet()) { it.id }
+        val kept = value.filter { it.date == null || !it.date.isBefore(yesterday) || (DaysOff.isRange(it) && it.id in liveRanges) }
+        putString(KEY_ONE_OFF_PAUSES, PauseCodec.encode(kept))
     }
 
-    /** Every pause that can be in progress: the regular ones, then the one-offs. Blocking and history use this. */
-    fun allPauses(): List<Pause> = pauses + oneOffPauses
+    /** Public holidays count as days off (off by default: not everyone has them free). */
+    var holidaysEnabled: Boolean
+        get() = prefs.getBoolean(KEY_HOLIDAYS_ENABLED, false)
+        set(value) = settleThen { putBoolean(KEY_HOLIDAYS_ENABLED, value) }
+
+    /**
+     * Every pause that can be in progress: the regular ones, the one-offs, then the public holidays from
+     * yesterday to a week ahead (as far as [PauseSchedule] looks). Blocking and history use this.
+     */
+    fun allPauses(today: LocalDate = LocalDate.now()): List<Pause> {
+        val holidays = if (holidaysEnabled) DaysOff.holidayPauses(today.minusDays(1), today.plusDays(8)) else emptyList()
+        return pauses + oneOffPauses + holidays
+    }
+
+    /** Adds a range of days off from [first] to [last]. */
+    @Synchronized
+    fun addDaysOff(first: LocalDate, last: LocalDate) {
+        val id = DaysOff.RANGE_PREFIX + System.currentTimeMillis().toString(36)
+        oneOffPauses = oneOffPauses + DaysOff.rangePauses(id, first, last)
+    }
+
+    @Synchronized
+    fun removeDaysOff(id: String) {
+        oneOffPauses = oneOffPauses.filterNot { it.id == id && DaysOff.isRange(it) }
+    }
 
     /** The quick pause ("Pause now"), if one was started and has not been replaced. */
     fun quickPause(): Pause? = oneOffPauses.firstOrNull { QuickPause.isQuick(it) }
@@ -247,6 +273,7 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_PAUSE_ENDED_KEYS = "pause_ended_keys"
         const val KEY_PAUSES = "pauses"
         const val KEY_ONE_OFF_PAUSES = "one_off_pauses"
+        const val KEY_HOLIDAYS_ENABLED = "holidays_enabled"
         private const val LEGACY_PAUSE_ID = "main"
         private const val KEY_HISTORY = "history"
         private const val KEY_HISTORY_SEEN_AT = "history_seen_at"

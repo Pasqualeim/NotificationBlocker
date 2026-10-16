@@ -43,6 +43,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.screens.AppSelectionScreen
+import com.pasquale.notificationblocker.ui.screens.DaysOffScreen
 import com.pasquale.notificationblocker.ui.screens.MainScreen
 import com.pasquale.notificationblocker.ui.screens.PausesScreen
 import com.pasquale.notificationblocker.ui.screens.StatsScreen
@@ -54,6 +55,10 @@ sealed interface Route : NavKey {
     /** The three tabs (Today, Breaks, Your time) under the bottom bar. */
     @Serializable
     data object Tabs : Route
+
+    /** Days off: ranges of dates and the public holidays. */
+    @Serializable
+    data object DaysOff : Route
 
     /** The work apps, or with [pauseId] the apps of one pause. */
     @Serializable
@@ -102,6 +107,7 @@ fun NotificationBlockerApp(
                 TabsScreen(
                     viewModel = viewModel,
                     onEditApps = { pauseId -> backStack.add(Route.AppSelection(pauseId)) },
+                    onDaysOff = { backStack.add(Route.DaysOff) },
                     // Frozen while the list slides over it: the slide is smoother without the scene
                     sceneActive = backStack.lastOrNull() == Route.Tabs,
                 )
@@ -112,6 +118,9 @@ fun NotificationBlockerApp(
                     pauseId = key.pauseId,
                     onNavigateBack = { backStack.removeLastOrNull() },
                 )
+            }
+            Route.DaysOff -> NavEntry(key) {
+                DaysOffScreen(viewModel = viewModel, onNavigateBack = { backStack.removeLastOrNull() })
             }
             else -> error("Unknown route: $key")
         }
@@ -127,6 +136,7 @@ fun NotificationBlockerApp(
 private fun TabsScreen(
     viewModel: MainViewModel,
     onEditApps: (pauseId: String?) -> Unit,
+    onDaysOff: () -> Unit,
     sceneActive: Boolean,
 ) {
     var tab by rememberSaveable { mutableStateOf(Tab.TODAY) }
@@ -162,6 +172,7 @@ private fun TabsScreen(
                 viewModel = viewModel,
                 onEditWorkApps = { onEditApps(null) },
                 onEditPauseApps = { onEditApps(it) },
+                onDaysOff = onDaysOff,
                 modifier = content,
             )
             Tab.TIME -> StatsScreen(viewModel = viewModel, modifier = content)

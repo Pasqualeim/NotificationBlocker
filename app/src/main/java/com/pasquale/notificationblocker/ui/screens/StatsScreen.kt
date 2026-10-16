@@ -168,7 +168,8 @@ fun StatsContent(
                             colorOf = { colors[it] ?: Color.Unspecified },
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                            pauses.filter { (day.byPause[it.id] ?: 0) > 0 }.forEach { p ->
+                            // One entry per pause: a range of days off or the holidays hold one pause per date
+                            pauses.distinctBy { it.id }.filter { (day.byPause[it.id] ?: 0) > 0 }.forEach { p ->
                                 LegendItem(colors[p.id] ?: MaterialTheme.colorScheme.secondary, pauseName(p))
                             }
                         }

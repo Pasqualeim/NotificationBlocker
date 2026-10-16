@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,10 +62,13 @@ fun PausesScreen(
     onEditWorkApps: () -> Unit,
     onEditPauseApps: (pauseId: String) -> Unit,
     modifier: Modifier = Modifier,
+    onDaysOff: () -> Unit = {},
 ) {
     val pauses by viewModel.pauses.collectAsStateWithLifecycle()
     val ended by viewModel.pauseEndedKeys.collectAsStateWithLifecycle()
     val workApps by viewModel.blockedAppsCount.collectAsStateWithLifecycle()
+    val daysOff by viewModel.daysOff.collectAsStateWithLifecycle()
+    val holidays by viewModel.holidaysEnabled.collectAsStateWithLifecycle()
     // The "on now" label follows the clock
     val minute by rememberCurrentMinutes()
     val onNow = remember(pauses, ended, minute) {
@@ -89,6 +94,9 @@ fun PausesScreen(
             editingIsNew = true
         },
         onEditWorkApps = onEditWorkApps,
+        onDaysOff = onDaysOff,
+        daysOffRanges = daysOff.size,
+        holidaysOn = holidays,
         modifier = modifier,
     )
 
@@ -129,6 +137,9 @@ fun PausesContent(
     onAddPause: () -> Unit,
     onEditWorkApps: () -> Unit,
     modifier: Modifier = Modifier,
+    onDaysOff: () -> Unit = {},
+    daysOffRanges: Int = 0,
+    holidaysOn: Boolean = false,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -177,29 +188,30 @@ fun PausesContent(
                 }
             }
             item(key = "apps") {
-                SectionHeader(R.string.pauses_section_apps)
+                SectionHeader(R.string.pauses_section_more)
                 Surface(
                     shape = MaterialTheme.shapes.extraLarge,
                     color = MaterialTheme.colorScheme.surfaceContainerLow,
                     modifier = Modifier.entrance(2),
                 ) {
-                    ListItem(
-                        modifier = Modifier.clickable(onClick = onEditWorkApps),
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        leadingContent = {
-                            Box(
-                                modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(Icons.Default.Notifications, contentDescription = null, modifier = Modifier.size(20.dp))
-                            }
-                        },
-                        headlineContent = { Text(text = stringResource(R.string.select_apps)) },
-                        supportingContent = { Text(text = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount)) },
-                        trailingContent = {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
-                        },
-                    )
+                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                        LinkRow(
+                            icon = Icons.Default.DateRange,
+                            title = stringResource(R.string.days_off_title),
+                            subtitle = listOfNotNull(
+                                if (daysOffRanges > 0) pluralStringResource(R.plurals.days_off_row, daysOffRanges, daysOffRanges) else null,
+                                if (holidaysOn) stringResource(R.string.days_off_row_holidays) else null,
+                            ).joinToString("  ·  ").ifEmpty { stringResource(R.string.days_off_row_empty) },
+                            onClick = onDaysOff,
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(start = 72.dp, end = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                        LinkRow(
+                            icon = Icons.Default.Notifications,
+                            title = stringResource(R.string.select_apps),
+                            subtitle = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount),
+                            onClick = onEditWorkApps,
+                        )
+                    }
                 }
             }
         }
@@ -212,6 +224,26 @@ fun PausesContent(
                 .padding(16.dp),
         )
     }
+}
+
+/** A row that opens another screen: icon in a circle, title, one line under it, chevron. */
+@Composable
+private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
+    ListItem(
+        modifier = Modifier.clickable(onClick = onClick),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        leadingContent = {
+            Box(
+                modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
+        },
+        headlineContent = { Text(text = title) },
+        supportingContent = { Text(text = subtitle) },
+        trailingContent = { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+    )
 }
 
 /** A small label above a group of rows, like the section titles of the system settings. */

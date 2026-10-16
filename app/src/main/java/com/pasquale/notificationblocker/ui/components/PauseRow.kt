@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.data.DaysOff
+import com.pasquale.notificationblocker.data.Holiday
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.QuickPause
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
@@ -47,8 +49,30 @@ fun pauseColor(index: Int): Color = when (index % 3) {
 @Composable
 fun pauseName(pause: Pause): String = when {
     QuickPause.isQuick(pause) -> stringResource(R.string.quick_pause_name)
+    DaysOff.isHoliday(pause) -> holidayName(runCatching { Holiday.valueOf(pause.name) }.getOrNull())
+    DaysOff.isRange(pause) -> stringResource(R.string.days_off_name)
     else -> pause.name.ifBlank { stringResource(R.string.pause_default_name) }
 }
+
+/** The name of a public holiday, in the phone's language. */
+@Composable
+fun holidayName(holiday: Holiday?): String = stringResource(
+    when (holiday) {
+        Holiday.NEW_YEAR -> R.string.holiday_new_year
+        Holiday.EPIPHANY -> R.string.holiday_epiphany
+        Holiday.EASTER -> R.string.holiday_easter
+        Holiday.EASTER_MONDAY -> R.string.holiday_easter_monday
+        Holiday.LIBERATION -> R.string.holiday_liberation
+        Holiday.LABOUR -> R.string.holiday_labour
+        Holiday.REPUBLIC -> R.string.holiday_republic
+        Holiday.ASSUMPTION -> R.string.holiday_assumption
+        Holiday.ALL_SAINTS -> R.string.holiday_all_saints
+        Holiday.IMMACULATE -> R.string.holiday_immaculate
+        Holiday.CHRISTMAS -> R.string.holiday_christmas
+        Holiday.ST_STEPHEN -> R.string.holiday_st_stephen
+        null -> R.string.holiday_generic
+    },
+)
 
 /** "13:00 - 14:00", or "All day". */
 @Composable

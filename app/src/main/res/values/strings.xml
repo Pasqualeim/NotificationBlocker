@@ -181,7 +181,7 @@
     <string name="pause_days_every">Every day</string>
     <string name="pause_days_weekdays">Weekdays</string>
     <string name="pause_days_weekend">Weekends</string>
-    <string name="pauses_section_apps">Apps</string>
+    <string name="pauses_section_more">More</string>
     <string name="week_coverage_label">Every week</string>
     <string name="week_coverage_caption">without work notifications</string>
     <string name="pauses_section_list">Your breaks</string>
@@ -202,4 +202,42 @@
     <string name="quick_pause_until_next">Until the next break</string>
     <string name="quick_pause_start">Start</string>
     <string name="quick_pause_name">Quick break</string>
+    <string name="days_off_title">Days off</string>
+    <string name="days_off_intro">Holidays, long weekends and public holidays: Nook keeps work out all day, without touching your breaks.</string>
+    <string name="days_off_holidays">Public holidays</string>
+    <string name="days_off_holidays_text">Italy, 12 days a year, added automatically</string>
+    <string name="days_off_holidays_next">Next: %1$s, %2$s</string>
+    <string name="days_off_section">Your days off</string>
+    <string name="days_off_empty">No days off yet. Add your next holiday.</string>
+    <string name="days_off_add">Add days</string>
+    <string name="days_off_pick">Pick the first and last day</string>
+    <string name="days_off_remove">Remove these days off</string>
+    <string name="days_off_name">Day off</string>
+    <string name="days_off_row_empty">Holidays and public holidays</string>
+    <string name="holiday_new_year">New Year\'s Day</string>
+    <string name="holiday_epiphany">Epiphany</string>
+    <string name="holiday_easter">Easter</string>
+    <string name="holiday_easter_monday">Easter Monday</string>
+    <string name="holiday_liberation">Liberation Day</string>
+    <string name="holiday_labour">Labour Day</string>
+    <string name="holiday_republic">Republic Day</string>
+    <string name="holiday_assumption">Ferragosto</string>
+    <string name="holiday_all_saints">All Saints\' Day</string>
+    <string name="holiday_immaculate">Immaculate Conception</string>
+    <string name="holiday_christmas">Christmas</string>
+    <string name="holiday_st_stephen">St Stephen\'s Day</string>
+    <string name="holiday_generic">Public holiday</string>
+    <plurals name="days_off_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="days_off_row">
+        <item quantity="one">%1$d holiday planned</item>
+        <item quantity="other">%1$d holidays planned</item>
+    </plurals>
+    <plurals name="days_off_too_long">
+        <item quantity="one">At most %1$d day</item>
+        <item quantity="other">At most %1$d days</item>
+    </plurals>
+    <string name="days_off_row_holidays">public holidays on</string>
 </resources>
