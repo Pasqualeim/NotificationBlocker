@@ -66,6 +66,20 @@
         <receiver
             android:name=".notification.ZenNotificationManager$EndPauseReceiver"
             android:exported="false" />
+        <receiver
+            android:name=".widget.NookWidgetProvider"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/nook_widget_info" />
+        </receiver>
+        <receiver
+            android:name=".widget.NookWidgetProvider$QuickPauseReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

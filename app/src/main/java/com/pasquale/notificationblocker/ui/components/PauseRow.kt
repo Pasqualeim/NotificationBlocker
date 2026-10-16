@@ -1,5 +1,7 @@
 package com.pasquale.notificationblocker.ui.components
 
+import android.content.res.Resources
+import androidx.annotation.StringRes
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,23 +58,32 @@ fun pauseName(pause: Pause): String = when {
 
 /** The name of a public holiday, in the phone's language. */
 @Composable
-fun holidayName(holiday: Holiday?): String = stringResource(
-    when (holiday) {
-        Holiday.NEW_YEAR -> R.string.holiday_new_year
-        Holiday.EPIPHANY -> R.string.holiday_epiphany
-        Holiday.EASTER -> R.string.holiday_easter
-        Holiday.EASTER_MONDAY -> R.string.holiday_easter_monday
-        Holiday.LIBERATION -> R.string.holiday_liberation
-        Holiday.LABOUR -> R.string.holiday_labour
-        Holiday.REPUBLIC -> R.string.holiday_republic
-        Holiday.ASSUMPTION -> R.string.holiday_assumption
-        Holiday.ALL_SAINTS -> R.string.holiday_all_saints
-        Holiday.IMMACULATE -> R.string.holiday_immaculate
-        Holiday.CHRISTMAS -> R.string.holiday_christmas
-        Holiday.ST_STEPHEN -> R.string.holiday_st_stephen
-        null -> R.string.holiday_generic
-    },
-)
+fun holidayName(holiday: Holiday?): String = stringResource(holidayRes(holiday))
+
+@StringRes
+fun holidayRes(holiday: Holiday?): Int = when (holiday) {
+    Holiday.NEW_YEAR -> R.string.holiday_new_year
+    Holiday.EPIPHANY -> R.string.holiday_epiphany
+    Holiday.EASTER -> R.string.holiday_easter
+    Holiday.EASTER_MONDAY -> R.string.holiday_easter_monday
+    Holiday.LIBERATION -> R.string.holiday_liberation
+    Holiday.LABOUR -> R.string.holiday_labour
+    Holiday.REPUBLIC -> R.string.holiday_republic
+    Holiday.ASSUMPTION -> R.string.holiday_assumption
+    Holiday.ALL_SAINTS -> R.string.holiday_all_saints
+    Holiday.IMMACULATE -> R.string.holiday_immaculate
+    Holiday.CHRISTMAS -> R.string.holiday_christmas
+    Holiday.ST_STEPHEN -> R.string.holiday_st_stephen
+    null -> R.string.holiday_generic
+}
+
+/** [pauseName] outside Compose (the home screen widget). */
+fun pauseLabel(resources: Resources, pause: Pause): String = when {
+    QuickPause.isQuick(pause) -> resources.getString(R.string.quick_pause_name)
+    DaysOff.isHoliday(pause) -> resources.getString(holidayRes(runCatching { Holiday.valueOf(pause.name) }.getOrNull()))
+    DaysOff.isRange(pause) -> resources.getString(R.string.days_off_name)
+    else -> pause.name.ifBlank { resources.getString(R.string.pause_default_name) }
+}
 
 /** "13:00 - 14:00", or "All day". */
 @Composable

@@ -1,4 +1,12 @@
 <resources>
     <!-- LightBackground in ui/theme/Color.kt -->
     <color name="window_background">#F8F2E9</color>
+    <!-- Home screen widget (RemoteViews cannot read the Compose theme): mirrors ui/theme/Color.kt -->
+    <color name="widget_surface">#FCF8F2</color>
+    <color name="widget_on_surface">#3A2B22</color>
+    <color name="widget_on_surface_variant">#65503F</color>
+    <color name="widget_badge">#9A4F34</color>
+    <color name="widget_on_badge">#FFFFFF</color>
+    <color name="widget_button">#D6E5D8</color>
+    <color name="widget_on_button">#16301F</color>
 </resources>

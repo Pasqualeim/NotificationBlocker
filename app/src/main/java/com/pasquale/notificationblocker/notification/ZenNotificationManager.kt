@@ -19,6 +19,7 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.PreferencesManager
 import com.pasquale.notificationblocker.tile.ZenTileService
+import com.pasquale.notificationblocker.widget.NookWidgetProvider
 import java.time.LocalDateTime
 
 /**
@@ -58,6 +59,8 @@ object ZenNotificationManager {
         val prefs = PreferencesManager.getInstance(app)
         // Runs every minute while the screen is on: the history follows the clock without alarms
         prefs.settleHistory()
+        // The home screen widget follows the same refreshes (it redraws only when its text changes)
+        NookWidgetProvider.update(app)
         val state = ZenNotificationState.resolve(
             now = LocalDateTime.now(),
             blockingEnabled = prefs.isBlockingEnabled,

@@ -246,4 +246,17 @@
         <item quantity="many">e altre %1$d app</item>
         <item quantity="other">e altre %1$d app</item>
     </plurals>
+    <string name="widget_description">Stato e prossima pausa a colpo d\'occhio, con Stacca 1 h.</string>
+    <string name="widget_title_off">Nook è spento</string>
+    <string name="widget_title_paused">In pausa</string>
+    <string name="widget_title_work">Notifiche di lavoro attive</string>
+    <string name="widget_sub_off">Le notifiche arrivano tutte.</string>
+    <string name="widget_sub_paused">%1$s, fino alle %2$s</string>
+    <string name="widget_sub_paused_all_day">%1$s, tutto il giorno</string>
+    <string name="widget_sub_next">Prossima: %1$s alle %2$s</string>
+    <string name="widget_sub_none">Nessuna pausa in arrivo</string>
+    <string name="widget_tomorrow">domani %1$s</string>
+    <string name="widget_quick">Stacca 1 h</string>
+    <!-- Sample text of the widget preview in the launcher's widget list -->
+    <string name="widget_preview_sub">Prossima: Pranzo alle 13:00</string>
 </resources>

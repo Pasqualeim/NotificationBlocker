@@ -243,4 +243,17 @@
         <item quantity="one">and %1$d more app</item>
         <item quantity="other">and %1$d more apps</item>
     </plurals>
+    <string name="widget_description">Your status and next break at a glance, with Pause 1 h.</string>
+    <string name="widget_title_off">Nook is off</string>
+    <string name="widget_title_paused">On a break</string>
+    <string name="widget_title_work">Work notifications on</string>
+    <string name="widget_sub_off">All notifications come through.</string>
+    <string name="widget_sub_paused">%1$s, until %2$s</string>
+    <string name="widget_sub_paused_all_day">%1$s, all day</string>
+    <string name="widget_sub_next">Next: %1$s at %2$s</string>
+    <string name="widget_sub_none">No breaks coming up</string>
+    <string name="widget_tomorrow">tomorrow %1$s</string>
+    <string name="widget_quick">Pause 1 h</string>
+    <!-- Sample text of the widget preview in the launcher's widget list -->
+    <string name="widget_preview_sub">Next: Lunch at 13:00</string>
 </resources>
