@@ -287,9 +287,4 @@
     <string name="onboarding_back">Indietro</string>
     <string name="onboarding_next">Continua</string>
     <string name="onboarding_finish">Inizia</string>
-    <plurals name="onboarding_hours">
-        <item quantity="one">Con queste pause hai %1$d ora a settimana senza notifiche di lavoro.</item>
-        <item quantity="many">Con queste pause hai %1$d ore a settimana senza notifiche di lavoro.</item>
-        <item quantity="other">Con queste pause hai %1$d ore a settimana senza notifiche di lavoro.</item>
-    </plurals>
 </resources>

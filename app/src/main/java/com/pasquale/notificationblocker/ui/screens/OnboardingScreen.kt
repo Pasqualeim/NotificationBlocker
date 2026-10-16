@@ -22,6 +22,7 @@ import com.pasquale.notificationblocker.ui.canPostNotifications
 import com.pasquale.notificationblocker.ui.hasNotificationListenerPermission
 import com.pasquale.notificationblocker.ui.openNotificationAccess
 import com.pasquale.notificationblocker.ui.components.PauseAvatar
+import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
 import com.pasquale.notificationblocker.ui.components.expressiveShape
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -59,7 +60,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -79,6 +79,7 @@ import com.pasquale.notificationblocker.ui.components.daysSummary
 import com.pasquale.notificationblocker.ui.components.pauseTimes
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
+import java.time.LocalDate
 
 /** Apps that usually bring work, offered first in the setup when installed. */
 private val WORK_APP_HINTS = listOf(
@@ -255,17 +256,13 @@ private fun PausesStep(picked: List<Int>, onToggle: (Int) -> Unit) {
             }
         }
     }
-    val hours = WeekCoverage.of(picked.map { TEMPLATES[it].first }).weeklyMinutes / 60
-    if (hours > 0) {
-        Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.tertiaryContainer) {
-            Text(
-                pluralStringResource(R.plurals.onboarding_hours, hours, hours),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-            )
-        }
-    }
+    // The week of the Breaks tab, redrawn as templates are ticked: it shows which hours stay free of
+    // work, and the user meets the chart they will find on that tab. All three templates go in, the
+    // unticked ones off, so each bar keeps the color of its template's avatar
+    WeekCoverageCard(
+        coverage = WeekCoverage.of(TEMPLATES.mapIndexed { i, (pause, _) -> pause.copy(enabled = i in picked) }),
+        today = LocalDate.now().dayOfWeek,
+    )
 }
 
 @Composable

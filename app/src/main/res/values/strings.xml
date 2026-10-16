@@ -284,8 +284,4 @@
     <string name="onboarding_back">Back</string>
     <string name="onboarding_next">Continue</string>
     <string name="onboarding_finish">Start</string>
-    <plurals name="onboarding_hours">
-        <item quantity="one">These breaks give you %1$d hour a week without work notifications.</item>
-        <item quantity="other">These breaks give you %1$d hours a week without work notifications.</item>
-    </plurals>
 </resources>
