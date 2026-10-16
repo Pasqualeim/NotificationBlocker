@@ -107,7 +107,7 @@ fun WeekChart(days: List<DayStats>, today: LocalDate, modifier: Modifier = Modif
                 Text(
                     text = day.date.dayOfWeek.getDisplayName(TextStyle.NARROW_STANDALONE, locale),
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = if (day.date == today) FontWeight.ExtraBold else FontWeight.Medium,
+                    fontWeight = if (day.date == today) FontWeight.Bold else FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.width(22.dp),
                     textAlign = TextAlign.Center,
@@ -168,7 +168,7 @@ fun MonthCalendar(days: List<DayStats>, today: LocalDate, modifier: Modifier = M
                                 Text(
                                     text = day.date.dayOfMonth.toString(),
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = if (fill != null) FontWeight.Bold else FontWeight.Medium,
+                                    fontWeight = if (fill != null) FontWeight.SemiBold else FontWeight.Normal,
                                     color = when {
                                         fill != null && fill > 0.55f -> MaterialTheme.colorScheme.onSecondary
                                         fill != null -> MaterialTheme.colorScheme.onSecondaryContainer
@@ -256,22 +256,25 @@ fun LegendItem(color: Color, label: String, modifier: Modifier = Modifier) {
 /** The three totals under the chart: time of your own, daylight, notifications kept out. */
 @Composable
 fun TotalsRow(livedMinutes: Int, daylightMinutes: Int, held: Int, modifier: Modifier = Modifier) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        TotalTile(MaterialTheme.colorScheme.secondary, durationText(livedMinutes), stringResource(R.string.stats_tile_yours), Modifier.weight(1f))
-        TotalTile(MaterialTheme.colorScheme.sunlight, durationText(daylightMinutes), stringResource(R.string.stats_tile_daylight), Modifier.weight(1f))
-        TotalTile(MaterialTheme.colorScheme.primary, held.toString(), stringResource(R.string.stats_tile_held), Modifier.weight(1f))
+    Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+        Column(modifier = Modifier.padding(vertical = 4.dp)) {
+            TotalLine(MaterialTheme.colorScheme.secondary, stringResource(R.string.stats_tile_yours), durationText(livedMinutes))
+            TotalLine(MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_tile_daylight), durationText(daylightMinutes))
+            TotalLine(MaterialTheme.colorScheme.primary, stringResource(R.string.stats_tile_held), held.toString())
+        }
     }
 }
 
 @Composable
-private fun TotalTile(color: Color, value: String, label: String, modifier: Modifier) {
-    Surface(modifier = modifier, shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Box(modifier = Modifier.size(8.dp).background(color, CircleShape))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, maxLines = 1)
-            Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
-        }
+private fun TotalLine(color: Color, label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.size(10.dp).background(color, CircleShape))
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Text(text = value, style = MaterialTheme.typography.titleMedium, maxLines = 1)
     }
 }
 

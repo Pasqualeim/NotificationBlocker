@@ -62,7 +62,6 @@ fun MorningReportCard(
                 Text(
                     text = stringResource(R.string.report_title),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }

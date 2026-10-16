@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.ui.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -34,10 +37,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -95,7 +98,6 @@ fun PauseEditorSheet(
             Text(
                 text = stringResource(if (isNew) R.string.pause_new_title else R.string.pause_edit_title),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
             )
             NameField(name = name, onNameChange = { name = it.take(MAX_NAME) })
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -111,8 +113,7 @@ fun PauseEditorSheet(
             }
             Text(
                 text = stringResource(R.string.pause_days),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.titleSmall,
             )
             DayPills(
                 days = days.map { DayOfWeek.entries[it] }.toSet(),
@@ -125,7 +126,7 @@ fun PauseEditorSheet(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (!isNew) {
                     TextButton(onClick = onDelete) {
-                        Text(text = stringResource(R.string.pause_delete), fontWeight = FontWeight.Bold)
+                        Text(text = stringResource(R.string.pause_delete))
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -135,7 +136,7 @@ fun PauseEditorSheet(
                     enabled = days.isNotEmpty(),
                     modifier = Modifier.defaultMinSize(minWidth = 120.dp, minHeight = 48.dp),
                 ) {
-                    Text(text = stringResource(R.string.pause_save), fontWeight = FontWeight.Bold)
+                    Text(text = stringResource(R.string.pause_save))
                 }
             }
         }
@@ -164,7 +165,6 @@ private fun NameField(name: String, onNameChange: (String) -> Unit) {
         singleLine = true,
         textStyle = MaterialTheme.typography.titleMedium.copy(
             color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
         ),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
@@ -172,7 +172,7 @@ private fun NameField(name: String, onNameChange: (String) -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceContainer, MaterialTheme.shapes.large)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                     .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
                 Text(
@@ -200,62 +200,51 @@ private fun TimeBox(label: Int, minutes: Int, modifier: Modifier, onClick: () ->
     Surface(
         onClick = onClick,
         modifier = modifier,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
             Text(
                 text = stringResource(label),
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text(text = OffHours.format(minutes), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.ExtraBold)
+            Text(text = OffHours.format(minutes), style = MaterialTheme.typography.headlineSmall)
         }
     }
 }
 
 @Composable
 private fun AppsRow(pause: Pause, enabled: Boolean, onClick: () -> Unit, onReset: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        enabled = enabled,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 10.dp, bottom = 10.dp, end = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+    val apps = pause.apps
+    Column {
+        Surface(
+            onClick = onClick,
+            enabled = enabled,
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.pause_apps_label),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                val apps = pause.apps
+        ListItem(
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            headlineContent = { Text(text = stringResource(R.string.pause_apps_label)) },
+            supportingContent = {
                 Text(
                     text = if (apps == null) {
                         stringResource(R.string.pause_apps_all)
                     } else {
                         pluralStringResource(R.plurals.pause_apps_custom, apps.size, apps.size)
                     },
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
                 )
-                if (apps != null) {
-                    TextButton(onClick = onReset, contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)) {
-                        Text(text = stringResource(R.string.pause_apps_reset))
-                    }
-                }
+            },
+            trailingContent = { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+        )
+        }
+        if (apps != null) {
+            TextButton(onClick = onReset, modifier = Modifier.padding(start = 4.dp)) {
+                Text(text = stringResource(R.string.pause_apps_reset))
             }
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }

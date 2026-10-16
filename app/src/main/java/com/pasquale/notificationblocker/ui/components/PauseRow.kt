@@ -3,20 +3,17 @@ package com.pasquale.notificationblocker.ui.components
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
@@ -59,12 +55,26 @@ fun pauseTimes(pause: Pause): String =
         stringResource(R.string.pause_times, OffHours.format(pause.start), OffHours.format(pause.end))
     }
 
+/** "Every day", "Weekdays", "Weekends", or the short names of the days ("Mon, Wed, Fri"). */
+@Composable
+fun daysSummary(days: Set<DayOfWeek>): String {
+    val locale = LocalConfiguration.current.locales[0]
+    val weekend = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+    return when {
+        days.size == 7 -> stringResource(R.string.pause_days_every)
+        days == DayOfWeek.entries.toSet() - weekend -> stringResource(R.string.pause_days_weekdays)
+        days == weekend -> stringResource(R.string.pause_days_weekend)
+        else -> DayOfWeek.entries.filter { it in days }
+            .joinToString(", ") { it.getDisplayName(TextStyle.SHORT_STANDALONE, locale).replaceFirstChar { c -> c.titlecase(locale) } }
+    }
+}
+
 /**
- * One pause in the Breaks list: a color mark, name, times and days, and its own switch. A tap anywhere
- * else opens the editor.
+ * One pause in the Breaks list, as a list row: a round mark in the pause's color with its initial, name,
+ * times and days, and its own switch. A tap anywhere else opens the editor.
  */
 @Composable
-fun PauseCard(
+fun PauseRow(
     pause: Pause,
     color: Color,
     onClick: () -> Unit,
@@ -73,56 +83,42 @@ fun PauseCard(
     isOnNow: Boolean = false,
 ) {
     val name = pauseName(pause)
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        onClick = onClick,
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    val locale = LocalConfiguration.current.locales[0]
+    ListItem(
+        modifier = modifier.clickable(onClick = onClick),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        leadingContent = {
             Box(
                 modifier = Modifier
-                    .padding(vertical = 24.dp)
-                    .width(6.dp)
-                    .height(56.dp)
-                    .background(color, CircleShape),
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 14.dp, top = 14.dp, bottom = 14.dp),
+                    .size(40.dp)
+                    .background(if (pause.enabled) color else MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
+                contentAlignment = Alignment.Center,
             ) {
-                Text(text = name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
                 Text(
-                    text = pauseTimes(pause),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = if (pause.enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                DayPills(days = pause.days)
-            }
-            Column(
-                modifier = Modifier.padding(end = 16.dp),
-                horizontalAlignment = Alignment.End,
-            ) {
-                if (isOnNow) {
-                    Text(
-                        text = stringResource(R.string.pause_state_now),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                val toggleLabel = stringResource(R.string.pause_toggle, name)
-                Switch(
-                    checked = pause.enabled,
-                    onCheckedChange = onEnabledChange,
-                    modifier = Modifier.semantics { contentDescription = toggleLabel },
+                    text = String(Character.toChars(name.codePointAt(0))).uppercase(locale),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (pause.enabled) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-    }
+        },
+        headlineContent = { Text(text = name) },
+        supportingContent = {
+            Text(text = listOfNotNull(pauseTimes(pause), daysSummary(pause.days)).joinToString("  ·  "))
+        },
+        overlineContent = if (isOnNow) {
+            { Text(text = stringResource(R.string.pause_state_now), color = MaterialTheme.colorScheme.secondary) }
+        } else {
+            null
+        },
+        trailingContent = {
+            val toggleLabel = stringResource(R.string.pause_toggle, name)
+            Switch(
+                checked = pause.enabled,
+                onCheckedChange = onEnabledChange,
+                modifier = Modifier.semantics { contentDescription = toggleLabel },
+            )
+        },
+    )
 }
 
 /** The seven days, Monday first; the chosen ones filled. Tappable when [onToggle] is given (the editor). */
@@ -162,7 +158,6 @@ fun DayPills(
                 Text(
                     text = label,
                     style = if (size > 30) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelSmall,
-                    fontWeight = if (on) FontWeight.Bold else FontWeight.Medium,
                     color = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -172,19 +167,19 @@ fun DayPills(
 
 private val lunch = Pause("lunch", "Pranzo", 13 * 60, 14 * 60, days = DayOfWeek.entries.take(5).toSet())
 
-@Preview(showBackground = true, name = "Pause card")
+@Preview(showBackground = true, name = "Pause row")
 @Composable
-fun PauseCardPreview() {
+fun PauseRowPreview() {
     NotificationBlockerTheme {
-        PauseCard(lunch, MaterialTheme.colorScheme.tertiary, onClick = {}, onEnabledChange = {}, modifier = Modifier.padding(16.dp))
+        PauseRow(lunch, MaterialTheme.colorScheme.tertiary, onClick = {}, onEnabledChange = {}, modifier = Modifier.padding(16.dp))
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Pause card - on now, whole day (dark)")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Pause row - on now, whole day (dark)")
 @Composable
-fun PauseCardDarkPreview() {
+fun PauseRowDarkPreview() {
     NotificationBlockerTheme(darkTheme = true) {
-        PauseCard(
+        PauseRow(
             Pause("weekend", "Weekend", 0, 0, days = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)),
             MaterialTheme.colorScheme.primary,
             onClick = {},

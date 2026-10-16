@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -91,15 +90,9 @@ fun StatsContent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+            .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            text = stringResource(R.string.stats_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(start = 4.dp),
-        )
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             val labels = listOf(R.string.stats_day, R.string.stats_week, R.string.stats_month)
             StatsRange.entries.forEachIndexed { i, r ->
@@ -120,7 +113,6 @@ fun StatsContent(
             Text(
                 text = periodTitle(period),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
             )
@@ -138,7 +130,6 @@ fun StatsContent(
                     Text(
                         text = stringResource(R.string.stats_total, durationText(period.livedMinutes)),
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.ExtraBold,
                     )
                     Text(
                         text = stringResource(R.string.stats_daylight, durationText(period.daylightMinutes)),
@@ -178,12 +169,14 @@ fun StatsContent(
             }
         }
         TotalsRow(livedMinutes = period.livedMinutes, daylightMinutes = period.daylightMinutes, held = period.held)
-        Text(
-            text = stringResource(if (range == StatsRange.MONTH) R.string.stats_month_hint else R.string.stats_empty_days),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 4.dp),
-        )
+        if (range == StatsRange.MONTH) {
+            Text(
+                text = stringResource(R.string.stats_month_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
         Spacer(modifier = Modifier.height(8.dp))
     }
 }

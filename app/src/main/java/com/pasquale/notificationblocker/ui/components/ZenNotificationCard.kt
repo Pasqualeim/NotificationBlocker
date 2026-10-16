@@ -58,7 +58,6 @@ fun ZenNotificationCard(
                 Text(
                     text = stringResource(R.string.zen_permission_title),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }

@@ -231,7 +231,6 @@ private fun HeroHeaderContent(
                                 }
                             ),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold,
                             color = animatedContentColor,
                             maxLines = 1,
                         )
@@ -298,7 +297,6 @@ private fun HeroHeaderContent(
                             Text(
                                 text = stringResource(greetingRes),
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
                                 color = animatedContentColor,
                             )
                         }

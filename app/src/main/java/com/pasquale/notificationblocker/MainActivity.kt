@@ -14,7 +14,18 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -66,12 +77,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/** The tabs of the bottom bar, in order. */
-enum class Tab(@StringRes val label: Int, @DrawableRes val icon: Int) {
-    TODAY(R.string.nav_today, R.drawable.ic_mug),
-    PAUSES(R.string.nav_pauses, R.drawable.ic_nav_pauses),
-    TIME(R.string.nav_time, R.drawable.ic_nav_time),
+/** The tabs of the bottom bar, in order, with the title of their top bar. [icon] null: Material "Home". */
+enum class Tab(@StringRes val label: Int, @StringRes val title: Int, @DrawableRes val icon: Int?) {
+    TODAY(R.string.nav_today, R.string.main_title, null),
+    PAUSES(R.string.nav_pauses, R.string.pauses_title, R.drawable.ic_nav_pauses),
+    TIME(R.string.nav_time, R.string.stats_title, R.drawable.ic_nav_time),
 }
+
+@Composable
+private fun Tab.painter(): Painter = icon?.let { painterResource(it) } ?: rememberVectorPainter(Icons.Filled.Home)
 
 @Composable
 fun NotificationBlockerApp(
@@ -112,6 +126,7 @@ fun NotificationBlockerApp(
  * The bottom bar and the tab it shows. Switching tabs swaps the content at once, opaque: a cross-fade
  * would draw two screens see-through (see the note on [push]).
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TabsScreen(
     viewModel: MainViewModel,
@@ -123,13 +138,32 @@ private fun TabsScreen(
     val tabStates = rememberSaveableStateHolder()
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
+        // One plain top bar for every tab, like the system apps; Today carries the brand mark
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(tab.title)) },
+                navigationIcon = {
+                    if (tab == Tab.TODAY) {
+                        Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_mug),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(28.dp),
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+            )
+        },
         bottomBar = {
             NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
                 for (t in Tab.entries) {
                     NavigationBarItem(
                         selected = tab == t,
                         onClick = { tab = t },
-                        icon = { Icon(painterResource(t.icon), contentDescription = null) },
+                        icon = { Icon(t.painter(), contentDescription = null) },
                         label = { Text(stringResource(t.label)) },
                     )
                 }

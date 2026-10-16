@@ -7,7 +7,7 @@ Linee guida visive di **Nook**. La base è **Material 3**: se una regola qui non
 1. **Calma.** L'app parla di silenzio: niente colori saturi urlati, niente badge rossi, niente allarmismi. Toni caldi e desaturati (carta crema, terracotta, cioccolato): la terracotta è il colore della "pausa in corso", la salvia quello di "programmato, tutto sotto controllo".
 2. **Stato leggibile in un secondo.** Aprendo l'app devi capire subito se le notifiche vengono bloccate *adesso*. Colore della card, icona e titolo dicono tutti la stessa cosa.
 3. **Nativo Android.** Componenti Material 3 standard (Switch, TimePicker, TopAppBar, FilterChip) prima di quelli custom. Un componente custom si giustifica solo se comunica meglio lo stato (es. i grafici di `StatsCharts`, `MutedBellIcon`).
-4. **Un tocco per l'azione principale.** Il toggle è sempre visibile senza scroll; le tre schede (Oggi, Pause, Il tempo tuo) stanno nella `NavigationBar` in basso, nella zona del pollice; le pause si creano nella scheda Pause (l'editor sceglie anche le app, di norma tutte quelle di lavoro). Fuori dall'app, il riquadro "Nook" nelle Impostazioni rapide accende e spegne la pausa.
+4. **Un tocco per l'azione principale.** Il toggle è sempre visibile senza scroll; le tre schede (Oggi, Pause, Statistiche) stanno nella `NavigationBar` in basso, nella zona del pollice; le pause si creano nella scheda Pause (l'editor sceglie anche le app, di norma tutte quelle di lavoro). Fuori dall'app, il riquadro "Nook" nelle Impostazioni rapide accende e spegne la pausa.
 5. **Staccare è vivere.** Abbiamo una vita oltre il lavoro: l'app esiste per restituirla, non per "far dormire". Il tempo libero non è "notte e sonno": è luce, tempo, vita, a qualsiasi ora finisca il lavoro. L'app valorizza le ore di sole che restano dopo il lavoro (d'estate, staccare alle 17 vuol dire ancora tre ore di sole) e segue la luce reale del giorno e della stagione.
 
 ## Icona dell'app
@@ -61,7 +61,7 @@ Riferimento visivo: [`mockups/home_active_warm.svg`](mockups/home_active_warm.sv
 | `surfaceContainerLowest` | `#FFFDF9` | `#151210` | Disco della campanella in `ACTIVE_INSIDE` e `DISABLED`, pillole degli orari |
 | `surfaceContainerLow` | `#F6EEE4` | `#241E1B` | Card dello skeleton |
 | `surfaceContainer` | `#F2E8DC` | `#2A2420` | `SceneCard`, `ZenNotificationCard`, riga app non selezionata |
-| `surfaceContainerHigh` | `#EEE2D4` | `#352E29` | `TodayCard`, `PauseCard`, barra di ricerca, dialog del `TimePicker` |
+| `surfaceContainerHigh` | `#EEE2D4` | `#352E29` | `TodayCard`, barra di ricerca, dialog del `TimePicker` |
 | `surfaceContainerHighest` | `#E9DBCB` | `#403833` | Card di stato `DISABLED` (un gradino più scura della `TodayCard`); default M3 (binario dello Switch spento, con bordo `outline`; quadrante del `TimePicker`) |
 | `outline` / `outlineVariant` | `#8C7565` / `#DDCDBD` | `#A0907F` / `#52463E` | Pause nella barra di 24 ore a blocco spento; bordo della riga app (`outlineVariant`) |
 | `inverseSurface` / `inverseOnSurface` / `inversePrimary` | `#3A2E27` / `#F7EEE5` / `#EBB396` | `#F2E7DD` / `#3A2B22` / `#9A4F34` | Solo default M3 (Snackbar, tooltip): oggi non usati |
@@ -157,17 +157,16 @@ I colori di scena e stagioni stanno in `ui/theme/ZenPalette.kt` (`Light` per ora
 
 ## Tipografia
 
-Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 completa. Pesi caricati: Normal, Medium, SemiBold, Bold, ExtraBold (usa solo questi: un peso non dichiarato in `ManropeFontFamily` ricade sul più vicino).
+Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 completa. Stili nativi M3: i componenti usano i pesi di `Type.kt` senza override in grassetto (restano solo casi puntuali, come il giorno di oggi nei grafici). Pesi caricati: Normal, Medium, SemiBold, Bold, ExtraBold (usa solo questi: un peso non dichiarato in `ManropeFontFamily` ricade sul più vicino).
 
 | Stile | Uso tipico |
 |---|---|
-| `headlineSmall` ExtraBold | Titolo della Home ("Nook") |
-| `titleLarge` ExtraBold | Stato breve nella card di stato ("In pausa ora") |
-| `titleMedium` Bold | Titoli card, testo CTA |
+| `titleLarge` SemiBold | Titolo della `TopAppBar` condivisa ("Nook", "Pause", "Statistiche") e stato breve nella card di stato ("In pausa ora") |
+| `titleMedium` Medium | Titoli card |
 | `bodyMedium` | Testi delle card della Home (sottotitolo di stato, disclosure, resoconto, messaggio "vita") |
-| `bodyLarge` SemiBold | Etichetta del toggle |
+| `bodyLarge` | Etichetta del toggle |
 | `bodySmall` | Sottotitoli e descrizioni (alpha 0.85 sul colore del contenuto) |
-| `labelMedium` Bold | Badge e contatori |
+| `labelMedium` Medium | Badge e contatori |
 | `TimeDisplayTextStyle` | Orari grandi (64sp, cifre tabulari `tnum`) |
 
 - Orari sempre in formato `HH:mm` tramite `OffHours.format()`, con cifre tabulari, così non "ballano" quando cambiano.
@@ -179,11 +178,11 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 
 | Token | Raggio | Uso |
 |---|---|---|
-| `extraSmall` | 8dp | Righe dello skeleton (`ShimmerSkeleton`) |
-| `small` | 12dp | Bottoni dentro le card (`PermissionCard`, `ZenNotificationCard`) |
-| `medium` | 20dp | Riga app, pillole degli orari |
-| `large` | 28dp | Card della Home: la card in cima (stato, permesso, invito alla notifica, resoconto), `TodayCard`; dialog del `TimePicker` |
-| `extraLarge` | 32dp | `SceneCard` |
+| `extraSmall` | 6dp | Righe dello skeleton (`ShimmerSkeleton`) |
+| `small` | 10dp | Bottoni dentro le card (`PermissionCard`, `ZenNotificationCard`) |
+| `medium` | 16dp | Riga app, pillole degli orari |
+| `large` | 20dp | Card in cima alla Home (stato, permesso, invito alla notifica, resoconto) |
+| `extraLarge` | 24dp | `SceneCard`, `TodayCard`, le superfici raggruppate (elenco delle pause, totali di Statistiche) |
 | `CircleShape` | pill | Bottone CTA, barra di ricerca, filtri, badge, contenitori icone |
 
 Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
@@ -223,7 +222,7 @@ Misurato sul codice attuale (card in scala / scena, prima con la card del permes
 | 360×720dp | 1,0 | 0,8 / 0,88 | 0,87 / intera |
 | 360×640dp | 1,0 | 0,8 / 0,6 + scorre | 0,8 / 0,71 |
 
-Misure compatte della Home (non riaumentarle senza rifare la tabella): titolo "Nook" `headlineSmall` con tazza da 40dp; card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
+Misure compatte della Home (non riaumentarle senza rifare la tabella): barra superiore condivisa (`TopAppBar`, titolo "Nook" `titleLarge`, tazza da 28dp in un riquadro da 48dp); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
 
 Come si rispetta:
 
@@ -249,15 +248,15 @@ Da provare almeno: 1080×2400 @420 font 1,1 (A32), 1080×2340 @480 font 1,0 e 1,
 
 ## Componenti
 
-Ordine della Home (come `docs/mockups/home_active_warm.svg`): titolo con la tazza (`ic_mug`, la stessa dell'icona) → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `TodayCard` (le pause di oggi); sotto, la `NavigationBar` a tre schede (Oggi, Pause, Il tempo tuo). Niente CTA né selettori d'orario sulla Home: si modificano nella scheda Pause (`PauseEditorSheet`).
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): barra superiore condivisa con la tazza (`ic_mug`, la stessa dell'icona) e il titolo "Nook" → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `TodayCard` (le pause di oggi); sotto, la `NavigationBar` a tre schede (Oggi con l'icona Material Home, Pause, Statistiche). Niente CTA né selettori d'orario sulla Home: si modificano nella scheda Pause (`PauseEditorSheet`).
 
 | Componente | File | Note |
 |---|---|---|
-| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `titleLarge` ExtraBold) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
+| Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `titleLarge`) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
 | Campanella animata | `MutedBellIcon.kt` | Stato "silenziato" = barra diagonale; vedi `MOTION.md` |
 | Oggi | `TodayCard.kt` | Le pause di oggi (`TodayPauses`) e le ore vissute; sola lettura |
-| Pause | `PausesScreen.kt`, `PauseCard.kt`, `PauseEditorSheet.kt` | Elenco di `PauseCard` (colore `pauseColor`, giorni in `DayPills`); l'editor è un `ModalBottomSheet` con nome, inizio/fine (`TimePicker` 24h in `AlertDialog`), giorni, app per pausa |
-| Il tempo tuo | `StatsScreen.kt`, `StatsCharts.kt` | `WeekChart`, `MonthCalendar`, `DayChart`; barre della luce in `sunlight` (solo grafica, mai testo) |
+| Pause | `PausesScreen.kt`, `PauseRow.kt`, `PauseEditorSheet.kt` | Righe `ListItem` (`PauseRow`: colore `pauseColor`, giorni riassunti da `daysSummary`) in una sola superficie raggruppata; l'editor è un `ModalBottomSheet` con nome, inizio/fine (`TimePicker` 24h in `AlertDialog`), giorni (`DayPills`), app per pausa |
+| Statistiche | `StatsScreen.kt`, `StatsCharts.kt` | `WeekChart`, `MonthCalendar`, `DayChart`, totali (`TotalsRow`) come elenco raggruppato; barre della luce in `sunlight` (solo grafica, mai testo) |
 | Permesso | `PermissionCard.kt` | Al posto della card di stato finché manca l'accesso (senza, l'interruttore non servirebbe a niente); porta alle impostazioni di sistema |
 | Resoconto del mattino | `MorningReportCard.kt` | Al posto della card di stato finché non tocchi "OK" |
 | Riga app | `AppItemRow.kt` | Bordo e container animati (`Motion.SHORT`) quando l'app è selezionata |

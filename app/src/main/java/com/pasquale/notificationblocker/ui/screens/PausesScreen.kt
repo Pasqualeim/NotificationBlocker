@@ -1,22 +1,21 @@
 package com.pasquale.notificationblocker.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,9 +27,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,7 +38,7 @@ import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.PauseCodec
 import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.ui.MainViewModel
-import com.pasquale.notificationblocker.ui.components.PauseCard
+import com.pasquale.notificationblocker.ui.components.PauseRow
 import com.pasquale.notificationblocker.ui.components.PauseEditorSheet
 import com.pasquale.notificationblocker.ui.components.pauseColor
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
@@ -47,7 +46,7 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
-/** The Breaks tab: every pause as a card, "Add a break", and the work apps they silence. */
+/** The Breaks tab: every pause as a row of one group, "Add a break", and the work apps they silence. */
 @Composable
 fun PausesScreen(
     viewModel: MainViewModel,
@@ -127,43 +126,56 @@ fun PausesContent(
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            item {
-                Column(modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)) {
+            if (pauses.isEmpty()) {
+                item {
                     Text(
-                        text = stringResource(R.string.pauses_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                    )
-                    Text(
-                        text = stringResource(if (pauses.isEmpty()) R.string.pauses_empty else R.string.pauses_subtitle),
+                        text = stringResource(R.string.pauses_empty),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
+            } else {
+                // One rounded group, rows split by dividers, like the system settings
+                item(key = "pauses") {
+                    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                        Column {
+                            pauses.forEachIndexed { index, pause ->
+                                if (index > 0) HorizontalDivider(modifier = Modifier.padding(start = 72.dp, end = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                                PauseRow(
+                                    pause = pause,
+                                    color = pauseColor(index),
+                                    onClick = { onPauseClick(pause) },
+                                    onEnabledChange = { onPauseEnabledChange(pause.id, it) },
+                                    isOnNow = pause.id in onNow,
+                                )
+                            }
+                        }
+                    }
+                }
             }
-            itemsIndexed(pauses, key = { _, p -> p.id }) { index, pause ->
-                PauseCard(
-                    pause = pause,
-                    color = pauseColor(index),
-                    onClick = { onPauseClick(pause) },
-                    onEnabledChange = { onPauseEnabledChange(pause.id, it) },
-                    isOnNow = pause.id in onNow,
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
-                WorkAppsRow(count = workAppsCount, onClick = onEditWorkApps)
+            item(key = "apps") {
+                SectionHeader(R.string.pauses_section_apps)
+                Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                    ListItem(
+                        modifier = Modifier.clickable(onClick = onEditWorkApps),
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        headlineContent = { Text(text = stringResource(R.string.select_apps)) },
+                        supportingContent = { Text(text = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount)) },
+                        trailingContent = {
+                            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                        },
+                    )
+                }
             }
         }
         ExtendedFloatingActionButton(
             onClick = onAddPause,
             icon = { Icon(Icons.Default.Add, contentDescription = null) },
-            text = { Text(text = stringResource(R.string.pause_add), fontWeight = FontWeight.Bold) },
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            text = { Text(text = stringResource(R.string.pause_add)) },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
@@ -171,33 +183,15 @@ fun PausesContent(
     }
 }
 
+/** A small label above a group of rows, like the section titles of the system settings. */
 @Composable
-private fun WorkAppsRow(count: Int, onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(start = 20.dp, top = 14.dp, bottom = 14.dp, end = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = stringResource(R.string.select_apps), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                Text(
-                    text = pluralStringResource(R.plurals.pauses_work_apps, count, count),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
+private fun SectionHeader(text: Int) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+    )
 }
 
 @Preview(showBackground = true, name = "Breaks")

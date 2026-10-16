@@ -52,7 +52,7 @@ COSA FA
 • Un interruttore accende e spegne tutte le pause. C'è anche un riquadro nelle Impostazioni rapide.
 • Una notifica silenziosa ti ricorda che la pausa è attiva e fino a che ora. Se ti serve, la termini da lì con un tocco. È facoltativa.
 • Quando torni, Nook ti dice quante notifiche di lavoro sono arrivate e da quali app.
-• "Il tempo tuo": quante ore di pausa hai vissuto, quante con la luce del sole e quante notifiche sono rimaste fuori, per giorno, settimana e mese. Restano sul telefono.
+• "Statistiche": quante ore di pausa hai vissuto, quante con la luce del sole e quante notifiche sono rimaste fuori, per giorno, settimana e mese. Restano sul telefono.
 • Una piccola scena animata segue la luce vera del giorno e le stagioni: una scrivania mentre lavori, un giardino quando stacchi.
 • Tema chiaro e scuro, in italiano e in inglese.
 
@@ -97,7 +97,7 @@ WHAT IT DOES
 • One switch turns all your breaks on and off. There's also a Quick Settings tile.
 • A silent notification reminds you that the break is on and when it ends. If you need to, you can end it from there with one tap. It's optional.
 • When you're back, Nook tells you how many work notifications came in and from which apps.
-• "Your time": how many hours of break you lived, how many in daylight and how many notifications were kept out, by day, week and month. It stays on your phone.
+• "Stats": how many hours of break you lived, how many in daylight and how many notifications were kept out, by day, week and month. It stays on your phone.
 • A small animated scene follows the real daylight and the seasons: a desk while you work, a garden when you're off.
 • Light and dark theme, in English and Italian.
 

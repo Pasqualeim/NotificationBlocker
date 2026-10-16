@@ -62,7 +62,6 @@ fun PermissionCard(
                 Text(
                     text = stringResource(R.string.permission_warning_title),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
             }

@@ -26,7 +26,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -106,14 +105,12 @@ fun TodayCard(
                 Text(
                     text = stringResource(R.string.today_card_title),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.weight(1f),
                 )
                 if (livedMinutes > 0) {
                     Text(
                         text = stringResource(R.string.today_lived, durationText(livedMinutes)),
                         style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.secondary,
                     )
                 }
@@ -135,16 +132,15 @@ fun TodayCard(
                     Text(
                         text = pauseName(p.pause),
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f),
                     )
-                    // With Nook off nothing is on or lived: only the times
+                    // With Nook off nothing is on or lived, and a pause still to come needs no label: only the times
                     val state = when {
                         !isBlockingEnabled -> null
                         p.state == TodayPauseState.LIVED -> stringResource(R.string.pause_state_lived)
                         p.state == TodayPauseState.NOW -> stringResource(R.string.pause_state_now)
                         p.state == TodayPauseState.ENDED -> stringResource(R.string.pause_state_ended)
-                        else -> stringResource(R.string.pause_state_at, OffHours.format(p.startMinute))
+                        else -> null
                     }
                     Text(
                         text = listOfNotNull(state, pauseTimes(p.pause)).joinToString("  ·  "),

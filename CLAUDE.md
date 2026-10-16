@@ -56,11 +56,11 @@ adb logcat -s NotificationBlocker                      # expect "Canceling notif
 
 ```
 app/src/main/java/com/pasquale/notificationblocker/
-├── MainActivity.kt                  # Activity, Route (Tabs, AppSelection(pauseId)), NavDisplay graph, TabsScreen: bottom NavigationBar with Tab enum (Today / Breaks / Your time), one SaveableStateHolder per tab
+├── MainActivity.kt                  # Activity, Route (Tabs, AppSelection(pauseId)), NavDisplay graph, TabsScreen: bottom NavigationBar with Tab enum (Today / Breaks / Stats), one shared TopAppBar ("Nook" with the mug on Today, tab title elsewhere), Material Home icon for Today, one SaveableStateHolder per tab
 ├── data/
 │   ├── Pause.kt                     # Pause (name, start, end, days, enabled, apps), Occurrence (one time it happens, key "date#id"), PauseCodec (prefs text)
 │   ├── PauseSchedule.kt             # pure: which pauses are on, the blocking rule, blockedUntil, nextStart (unit tested)
-│   ├── Stats.kt                     # pure: StatsRange, PeriodStats, DaySpans for Your time (unit tested)
+│   ├── Stats.kt                     # pure: StatsRange, PeriodStats, DaySpans for Stats (unit tested)
 │   ├── FreeTimeLedger.kt            # pure: per-day history (lived, daylight, held, minutes per pause), HistoryCodec (unit tested)
 │   ├── SunTimes.kt                  # pure: sunrise/sunset for a fixed latitude in the phone's zone (scenes and daylight in the history)
 │   ├── OffHours.kt                  # minutes helpers (format, currentMinutes) and the single-window test that `LifeCopy` still uses for the daylight messages
@@ -78,16 +78,16 @@ app/src/main/java/com/pasquale/notificationblocker/
     ├── MainViewModel.kt             # AndroidViewModel shared by all screens (StateFlows)
     ├── screens/
     │   ├── MainScreen.kt            # Today tab: staggered entrance of top card, scene, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
-    │   ├── PausesScreen.kt          # Breaks tab: list of PauseCards, add/edit via PauseEditorSheet
-    │   ├── StatsScreen.kt           # Your time tab: week / month / day ranges, charts of StatsCharts, fed by data/Stats.kt
+    │   ├── PausesScreen.kt          # Breaks tab: grouped list of PauseRows, add/edit via PauseEditorSheet
+    │   ├── StatsScreen.kt           # Stats tab: week / month / day ranges, charts of StatsCharts, fed by data/Stats.kt
     │   └── AppSelectionScreen.kt    # MediumTopAppBar, pill search, All/Selected filter; one plain list: the apps picked when it opens come first, rows never move while you pick; rows are composed once the slide is over
     ├── components/
     │   ├── HeroHeader.kt            # status card (3 HeroStatus states) + master Switch
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on
     │   ├── TodayCard.kt             # "Today" card on Home: the pauses of today (TodayPauses, unit tested), hours lived
-    │   ├── PauseCard.kt             # PauseCard, DayPills, pauseColor/pauseName/pauseTimes: one pause in the Breaks list
+    │   ├── PauseRow.kt              # PauseRow (ListItem), DayPills (editor), daysSummary, pauseColor/pauseName/pauseTimes: one pause in the Breaks list
     │   ├── PauseEditorSheet.kt      # ModalBottomSheet: name, start/end (TimePickerDialog), days, apps row (opens AppSelection for that pause), "Use all work apps"
-    │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, TotalsRow (Your time)
+    │   ├── StatsCharts.kt           # WeekChart, MonthCalendar, DayChart, LegendItem, TotalsRow (Stats, a grouped list)
     │   ├── PermissionCard.kt        # listener-permission prompt (in the top card's place until access is granted)
     │   ├── MorningReportCard.kt     # held notifications after a pause, in the top card's place until dismissed
     │   ├── HomeColumn.kt            # Home layout (homeScene() marks the scene): fits one screen, cards scale down first, then the scene; never crops the scene; anchored at the top, gaps grow into spare room

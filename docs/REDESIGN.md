@@ -81,8 +81,8 @@ Barra in basso Material 3 con tre voci, come le app di benessere digitale; trans
 | Voce | Cosa contiene |
 |---|---|
 | **Oggi** | Il riccio nella sua tana (al posto della scena, sempre 2:1, Home in una schermata), lo stato con l'interruttore generale, la pausa in corso o la prossima ("Pranzo fino alle 14:00", "Sera alle 18:30"), una frase con un fatto concreto. Tocco sul riccio: i suoi hobby |
-| **Pause** | Elenco delle pause come card (nome, orari, giorni a pillole, interruttore), "Aggiungi pausa", editor a foglio dal basso. In fondo: "App di lavoro" (la lista unica) |
-| **Il tempo tuo** | Selettore Giorno / Settimana / Mese, grafico grande, frecce o scorrimento per i periodi precedenti, sotto i totali del periodo (ore tue, ore di luce, notifiche lasciate fuori) |
+| **Pause** | Elenco delle pause come righe in una superficie raggruppata (nome, orari, giorni a pillole, interruttore), "Aggiungi pausa", editor a foglio dal basso. In fondo: "App di lavoro" (la lista unica) |
+| **Statistiche** (era "Il tempo tuo") | Selettore Giorno / Settimana / Mese, grafico grande, frecce o scorrimento per i periodi precedenti, sotto i totali del periodo (ore tue, ore di luce, notifiche lasciate fuori) |
 
 Grafici disegnati in Compose con `Canvas` (nessuna libreria nuova):
 - **Giorno:** le 24 ore orizzontali, la fascia di luce sullo sfondo, i blocchi delle pause vissute colorati per pausa.
@@ -101,7 +101,7 @@ Ogni fase finisce con test, lint, review `android-reviewer` e commit su `main`.
 
 1. **[Fatta] Pause e regola di blocco.** `Pause`, `PauseSchedule` (puro, testato), salvataggio e migrazione, servizio, notifica della pausa, riquadro, resoconto. La UI resta quella di oggi, ma mostra la prima pausa: l'app funziona a ogni passo.
 2. **[Fatta] Storico.** Registro per giorno (vissuto, luce, notifiche) e saldo; ore di sole spostate in `data/`. Test.
-3. **[Fatta] Navigazione e schermate.** Barra in basso, Pause con editor, Il tempo tuo con i tre grafici, Oggi rifatta. Prima i mockup (SVG come quelli di `docs/mockups/`), poi il codice. Controllo di Home in una schermata e dei frame sul Galaxy A32.
+3. **[Fatta] Navigazione e schermate.** Barra in basso, Pause con editor, Statistiche (prima "Il tempo tuo") con i tre grafici, Oggi rifatta; poi restyling Material 3 nativo: `TopAppBar` condivisa, icona Home, righe `ListItem`. Prima i mockup (SVG come quelli di `docs/mockups/`), poi il codice. Controllo di Home in una schermata e dei frame sul Galaxy A32.
 4. **[Da fare] Il riccio.** Catalogo degli hobby e soglie, oggetti della tana, script che importa i tuoi PNG (`tools/character/`), animazioni sull'orologio condiviso. Il kit di pixel art è stato lasciato da parte per ora: non c'è ancora niente di disegnato, e `tools/character/sketch.py` non gira senza lo stash. Fino ai disegni, un segnaposto semplice.
 5. **[Fatta per l'app] Testi e documenti.** `copywriter` per tutte le stringhe IT/EN, `docs-keeper` per `CLAUDE.md`, `MOTION.md`, `DESIGN_SYSTEM.md`, store e sito.
 
@@ -112,7 +112,7 @@ Le fasi 1 e 2 non cambiano l'aspetto dell'app; dalla 3 si vede il nuovo Nook.
 1. **Tetto:** un limite di punti al giorno (es. 12 h, così un weekend intero non vale il doppio) o nessun limite?
 2. **Peso della luce:** ×1,5 va bene, o la luce si conta solo nelle statistiche?
 3. **La scena** (scrivania e pontile sul lago): sparisce con la tana del riccio, o resta come vista dalla finestra della tana? Nella notifica della pausa resta comunque, finché non ci sono disegni del riccio.
-4. **Nomi delle tre voci** della barra: proposta "Oggi", "Pause", "Il tempo tuo"; li rivede il `copywriter`.
+4. **Nomi delle tre voci** della barra: proposta "Oggi", "Pause", "Il tempo tuo" (poi diventata "Statistiche"); li rivede il `copywriter`.
 5. **Mese:** colonne o calendario? Si decide sui mockup della fase 3.
 
 ## Verifica

@@ -14,8 +14,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,9 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -37,13 +33,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
@@ -165,14 +158,11 @@ fun MainScreenContent(
     morningReport: MorningReportUi? = null,
     onDismissMorningReport: () -> Unit = {},
 ) {
-    var animatedHeaderVisible by remember { mutableStateOf(value = false) }
     var animatedTopCardVisible by remember { mutableStateOf(value = false) }
     var animatedScheduleVisible by remember { mutableStateOf(value = false) }
     var animatedSceneVisible by remember { mutableStateOf(value = false) }
 
     LaunchedEffect(Unit) {
-        animatedHeaderVisible = true
-        delay(Motion.Stagger)
         animatedTopCardVisible = true
         delay(Motion.Stagger)
         animatedSceneVisible = true
@@ -196,33 +186,8 @@ fun MainScreenContent(
             // reaches an edge, and the stretch redraws the whole page offscreen (18 ms of GPU per frame
             // on a Galaxy A32 against 5 ms without it)
             .verticalScroll(scrollState, overscrollEffect = null)
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp),
+            .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
     ) {
-        Row(
-            modifier = Modifier.homeEntrance(animatedHeaderVisible),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(40.dp),
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_mug),
-                    contentDescription = null,
-                    modifier = Modifier.padding(6.dp),
-                )
-            }
-            Text(
-                text = stringResource(R.string.main_title),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-
         // One card at the top, the most urgent thing first: an extra card would push the page past the
         // screen and HomeColumn would shrink every text, then grow it back once the card is gone
         val topCard = when {
@@ -327,8 +292,7 @@ fun TimePickerDialog(
         title = {
             Text(
                 text = stringResource(R.string.time_picker_title),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelMedium,
             )
         },
         text = {
