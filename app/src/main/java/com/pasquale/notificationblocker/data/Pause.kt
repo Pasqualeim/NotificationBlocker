@@ -10,6 +10,8 @@ import java.time.LocalDateTime
  *
  * @param days the days on which the pause *starts*: Friday's 18:30-08:30 ends on Saturday morning
  * @param apps the apps this pause silences; null (the usual case) means all the work apps
+ * @param date set for a one-off pause ("Pause now", a day off, a public holiday): it starts on that date
+ *   only, and [days] is ignored
  */
 data class Pause(
     val id: String,
@@ -19,8 +21,12 @@ data class Pause(
     val days: Set<DayOfWeek> = ALL_DAYS,
     val enabled: Boolean = true,
     val apps: Set<String>? = null,
+    val date: LocalDate? = null,
 ) {
     val isWholeDay: Boolean get() = start == end
+
+    /** True when an occurrence of this pause starts on [day]: its date for a one-off, else its weekdays. */
+    fun startsOn(day: LocalDate): Boolean = if (date != null) day == date else day.dayOfWeek in days
 
     /** The apps this pause holds back, given the user's list of work apps. */
     fun appsOrDefault(workApps: Set<String>): Set<String> = apps ?: workApps
@@ -58,7 +64,8 @@ data class Occurrence(val pause: Pause, val startDate: LocalDate) {
 /**
  * Pauses as one line each in the preferences: plain text, no JSON library, readable by the JVM tests.
  * Fields are tab-separated: id, name, start, end, days (bit 0 = Monday), enabled (1/0), apps
- * (comma-separated, or "*" for all the work apps).
+ * (comma-separated, or "*" for all the work apps), and for a one-off pause its ISO date (older lines
+ * have seven fields and read as weekly pauses).
  */
 object PauseCodec {
 
@@ -73,7 +80,7 @@ object PauseCodec {
             p.days.sumOf { 1 shl it.ordinal }.toString(),
             if (p.enabled) "1" else "0",
             p.apps?.joinToString(",") ?: ALL_APPS,
-        ).joinToString("\t")
+        ).plus(listOfNotNull(p.date?.toString())).joinToString("\t")
     }
 
     /** Lines that cannot be read are skipped: a broken pause must not break the others. */
@@ -91,6 +98,7 @@ object PauseCodec {
             days = DayOfWeek.entries.filter { mask and (1 shl it.ordinal) != 0 }.toSet(),
             enabled = f[5] == "1",
             apps = if (f[6] == ALL_APPS) null else f[6].split(',').filter { it.isNotEmpty() }.toSet(),
+            date = f.getOrNull(7)?.let { runCatching { LocalDate.parse(it) }.getOrNull() ?: return@mapNotNull null },
         )
     }.toList()
 

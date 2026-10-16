@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.QuickPause
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 import java.time.format.TextStyle
@@ -42,9 +43,12 @@ fun pauseColor(index: Int): Color = when (index % 3) {
     else -> MaterialTheme.colorScheme.primary
 }
 
-/** The pause's name, or "Break" for one without (the pause carried over from Nook 1). */
+/** The pause's name, "Quick break" for "Pause now", or "Break" for one without (carried over from Nook 1). */
 @Composable
-fun pauseName(pause: Pause): String = pause.name.ifBlank { stringResource(R.string.pause_default_name) }
+fun pauseName(pause: Pause): String = when {
+    QuickPause.isQuick(pause) -> stringResource(R.string.quick_pause_name)
+    else -> pause.name.ifBlank { stringResource(R.string.pause_default_name) }
+}
 
 /** "13:00 - 14:00", or "All day". */
 @Composable

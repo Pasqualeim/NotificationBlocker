@@ -25,7 +25,7 @@ object PauseSchedule {
         val today = now.toLocalDate()
         // The one that started today, or an overnight one that started yesterday
         return sequenceOf(today, today.minusDays(1))
-            .filter { it.dayOfWeek in pause.days }
+            .filter { pause.startsOn(it) }
             .map { Occurrence(pause, it) }
             .firstOrNull { !now.isBefore(it.start) && now.isBefore(it.end) }
     }
@@ -101,7 +101,7 @@ object PauseSchedule {
             .flatMap { pause ->
                 (0..HORIZON_DAYS).asSequence()
                     .map { today.plusDays(it) }
-                    .filter { it.dayOfWeek in pause.days }
+                    .filter { pause.startsOn(it) }
                     .map { Occurrence(pause, it) }
             }
             .filter { it.start.isAfter(now) && it.key !in ended }

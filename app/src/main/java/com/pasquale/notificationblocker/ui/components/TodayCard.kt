@@ -69,7 +69,7 @@ object TodayPauses {
             .filter { it.second.enabled }
             .flatMap { (index, pause) ->
                 listOf(today.minusDays(1), today)
-                    .filter { it.dayOfWeek in pause.days }
+                    .filter { pause.startsOn(it) }
                     .map { Occurrence(pause, it) }
                     .filter { it.end.isAfter(dayStart) && it.start.isBefore(dayEnd) }
                     .map { o ->

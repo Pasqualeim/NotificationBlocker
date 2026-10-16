@@ -195,4 +195,11 @@
     <string name="stats_ring_label">daylight</string>
     <string name="stats_total_label">Free time</string>
     <string name="duration_compact" translatable="false">%1$d h %2$02d</string>
+    <string name="quick_pause_action">Pause now</string>
+    <string name="quick_pause_title">Pause now</string>
+    <string name="quick_pause_text">Silence work notifications right away, without adding a break.</string>
+    <string name="quick_pause_until">until %1$s</string>
+    <string name="quick_pause_until_next">Until the next break</string>
+    <string name="quick_pause_start">Start</string>
+    <string name="quick_pause_name">Quick break</string>
 </resources>

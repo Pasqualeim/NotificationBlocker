@@ -61,7 +61,7 @@ object ZenNotificationManager {
         val state = ZenNotificationState.resolve(
             now = LocalDateTime.now(),
             blockingEnabled = prefs.isBlockingEnabled,
-            pauses = prefs.pauses,
+            pauses = prefs.allPauses(),
             workApps = prefs.getBlockedApps(),
             dismissedWindow = prefs.zenDismissedWindow,
             ended = prefs.pauseEndedKeys,

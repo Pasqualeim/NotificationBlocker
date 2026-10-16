@@ -77,7 +77,7 @@ object FreeTimeLedger {
         val occurrences = config.pauses.filter { it.enabled }.flatMap { pause ->
             generateSequence(start.toLocalDate().minusDays(1)) { it.plusDays(1) }
                 .takeWhile { !it.isAfter(end.toLocalDate()) }
-                .filter { it.dayOfWeek in pause.days }
+                .filter { pause.startsOn(it) }
                 .map { Occurrence(pause, it) }
                 .toList()
         }.filter {

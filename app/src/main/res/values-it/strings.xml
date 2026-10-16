@@ -194,4 +194,11 @@
     <string name="stats_average">Media al giorno</string>
     <string name="stats_ring_label">di luce</string>
     <string name="stats_total_label">Tempo libero</string>
+    <string name="quick_pause_action">Stacca ora</string>
+    <string name="quick_pause_title">Stacca ora</string>
+    <string name="quick_pause_text">Metti subito in pausa le notifiche di lavoro, senza aggiungere una pausa.</string>
+    <string name="quick_pause_until">fino alle %1$s</string>
+    <string name="quick_pause_until_next">Fino alla prossima pausa</string>
+    <string name="quick_pause_start">Avvia</string>
+    <string name="quick_pause_name">Pausa al volo</string>
 </resources>

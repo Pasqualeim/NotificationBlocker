@@ -68,7 +68,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun StatsScreen(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     val history by viewModel.history.collectAsStateWithLifecycle()
-    val pauses by viewModel.pauses.collectAsStateWithLifecycle()
+    // One-offs too: a quick break has minutes in the history like any pause
+    val pauses by viewModel.allPauses.collectAsStateWithLifecycle()
     // Today's numbers keep up with the clock while the tab is open
     val minute by rememberCurrentMinutes()
     LaunchedEffect(minute) { viewModel.refreshOffHoursStatus() }

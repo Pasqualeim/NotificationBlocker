@@ -20,7 +20,8 @@ data class WeekCoverage(val days: Map<DayOfWeek, List<CoverageSegment>>, val wee
             val days = DayOfWeek.entries.associateWith { day ->
                 val yesterday = day.minus(1)
                 pauses.flatMapIndexed { index, p ->
-                    if (!p.enabled) return@flatMapIndexed emptyList()
+                    // One-off pauses (a day off, "Pause now") are not part of the usual week
+                    if (!p.enabled || p.date != null) return@flatMapIndexed emptyList()
                     buildList {
                         if (day in p.days) {
                             when {

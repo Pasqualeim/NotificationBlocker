@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +48,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.HeroHeader
+import com.pasquale.notificationblocker.ui.components.QuickPauseSheet
+import com.pasquale.notificationblocker.ui.components.quickPauseOptions
 import com.pasquale.notificationblocker.ui.components.TodayHeader
 import com.pasquale.notificationblocker.ui.components.TodayMetrics
 import com.pasquale.notificationblocker.ui.components.HomeColumn
@@ -77,7 +80,9 @@ fun MainScreen(
     val isBlockingEnabled by viewModel.isBlockingEnabled.collectAsStateWithLifecycle()
     val isInOffHoursNow by viewModel.isInOffHoursNow.collectAsStateWithLifecycle()
     val isPauseEnded by viewModel.isPauseEnded.collectAsStateWithLifecycle()
-    val pauses by viewModel.pauses.collectAsStateWithLifecycle()
+    val pauses by viewModel.allPauses.collectAsStateWithLifecycle()
+    val minutesToNext by viewModel.minutesToNextPause.collectAsStateWithLifecycle()
+    var showQuickPause by rememberSaveable { mutableStateOf(false) }
     val pauseEndedKeys by viewModel.pauseEndedKeys.collectAsStateWithLifecycle()
     val history by viewModel.history.collectAsStateWithLifecycle()
     val nextPauseStart by viewModel.nextPauseStart.collectAsStateWithLifecycle()
@@ -137,7 +142,20 @@ fun MainScreen(
         sceneActive = sceneActive,
         morningReport = morningReport,
         onDismissMorningReport = viewModel::onMorningReportDismissed,
+        onQuickPause = { showQuickPause = true },
     )
+
+    if (showQuickPause) {
+        QuickPauseSheet(
+            options = quickPauseOptions(minutesToNext),
+            nowMinute = currentMinutes,
+            onStart = { option ->
+                viewModel.startQuickPause(option.minutes, option.untilNext)
+                showQuickPause = false
+            },
+            onDismiss = { showQuickPause = false },
+        )
+    }
 }
 
 @Composable
@@ -163,6 +181,7 @@ fun MainScreenContent(
     onDismissMorningReport: () -> Unit = {},
     heldToday: Int = 0,
     daylightTodayMinutes: Int = 0,
+    onQuickPause: (() -> Unit)? = null,
 ) {
     var animatedHeaderVisible by remember { mutableStateOf(value = false) }
     var animatedMetricsVisible by remember { mutableStateOf(value = false) }
@@ -242,6 +261,7 @@ fun MainScreenContent(
                     isPauseEnded = isPauseEnded,
                     nextPauseStart = nextPauseStart ?: 0,
                     onPauseAgain = onPauseAgain,
+                    onQuickPause = onQuickPause,
                 )
             }
         }

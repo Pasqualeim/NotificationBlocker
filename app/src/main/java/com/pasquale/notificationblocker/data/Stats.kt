@@ -64,7 +64,7 @@ object DaySpans {
         val limit = if (now.isBefore(dayEnd)) maxOf(now, dayStart) else dayEnd
         return pauses.filter { (day.byPause[it.id] ?: 0) > 0 }.flatMap { pause ->
             listOf(day.date.minusDays(1), day.date)
-                .filter { it.dayOfWeek in pause.days }
+                .filter { pause.startsOn(it) }
                 .map { Occurrence(pause, it) }
                 .mapNotNull { o ->
                     val a = maxOf(o.start, dayStart)

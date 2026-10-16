@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -73,6 +74,7 @@ fun HeroHeader(
     nextPauseStart: Int = 0,
     onPauseAgain: () -> Unit = {},
     ambientClock: AmbientClock? = null,
+    onQuickPause: (() -> Unit)? = null,
 ) {
     val status = when {
         !isBlockingEnabled -> HeroStatus.DISABLED
@@ -89,6 +91,7 @@ fun HeroHeader(
         nextPauseStart = nextPauseStart,
         onPauseAgain = onPauseAgain,
         ambientClock = ambientClock,
+        onQuickPause = onQuickPause,
         modifier = modifier,
     )
 }
@@ -102,6 +105,7 @@ private fun HeroHeaderContent(
     nextPauseStart: Int,
     onPauseAgain: () -> Unit,
     ambientClock: AmbientClock?,
+    onQuickPause: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -289,6 +293,19 @@ private fun HeroHeaderContent(
                                 modifier = Modifier.padding(top = 8.dp),
                             ) {
                                 Text(stringResource(R.string.hero_pause_again), fontWeight = FontWeight.SemiBold)
+                            }
+                        }
+                        // Outside a pause (or with Nook off): a pause right now, without creating one
+                        if (onQuickPause != null && (targetStatus == HeroStatus.ACTIVE_OUTSIDE || targetStatus == HeroStatus.DISABLED)) {
+                            FilledTonalButton(
+                                onClick = onQuickPause,
+                                colors = ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.onSurface,
+                                ),
+                                modifier = Modifier.padding(top = 8.dp),
+                            ) {
+                                Text(stringResource(R.string.quick_pause_action))
                             }
                         }
                     }

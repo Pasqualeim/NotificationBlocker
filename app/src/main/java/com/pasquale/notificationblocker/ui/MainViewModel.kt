@@ -9,6 +9,7 @@ import com.pasquale.notificationblocker.data.DayStats
 import com.pasquale.notificationblocker.data.MorningReport
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.PauseSchedule
+import com.pasquale.notificationblocker.data.QuickPause
 import com.pasquale.notificationblocker.data.PreferencesManager
 import com.pasquale.notificationblocker.notification.ZenNotificationManager
 import com.pasquale.notificationblocker.tile.ZenTileService
@@ -49,6 +50,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _pauses = MutableStateFlow(preferencesManager.pauses)
     val pauses: StateFlow<List<Pause>> = _pauses.asStateFlow()
 
+    // Regular pauses plus the one-offs ("Pause now", days off): what Today shows
+    private val _allPauses = MutableStateFlow(preferencesManager.allPauses())
+    val allPauses: StateFlow<List<Pause>> = _allPauses.asStateFlow()
+
+    /** Minutes to the next pause start when it is close enough for "until the next break", else null. */
+    private val _minutesToNextPause = MutableStateFlow(computeMinutesToNext())
+    val minutesToNextPause: StateFlow<Int?> = _minutesToNextPause.asStateFlow()
+
     // Pauses ended early ("End the pause"), for the state shown next to each pause
     private val _pauseEndedKeys = MutableStateFlow(preferencesManager.pauseEndedKeys)
     val pauseEndedKeys: StateFlow<Set<String>> = _pauseEndedKeys.asStateFlow()
@@ -82,7 +91,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // (kept as a field, the SharedPreferences registry only holds listeners weakly)
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == PreferencesManager.KEY_BLOCKING_ENABLED || key == PreferencesManager.KEY_PAUSE_ENDED_KEYS ||
-            key == PreferencesManager.KEY_PAUSES) {
+            key == PreferencesManager.KEY_PAUSES || key == PreferencesManager.KEY_ONE_OFF_PAUSES) {
             _isBlockingEnabled.value = preferencesManager.isBlockingEnabled
             refreshOffHoursStatus()
         }
@@ -127,6 +136,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun refreshOffHoursStatus() {
         preferencesManager.settleHistory()
         _pauses.value = preferencesManager.pauses
+        _allPauses.value = preferencesManager.allPauses()
+        _minutesToNextPause.value = computeMinutesToNext()
         _pauseEndedKeys.value = preferencesManager.pauseEndedKeys
         _history.value = preferencesManager.history
         _nextPauseStart.value = computeNextPauseStart()
@@ -189,15 +200,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** The pause the free-time line talks about: the one in progress, or else the next one to start. */
     private fun focusPause(): Pause? {
         val now = LocalDateTime.now()
-        val pauses = preferencesManager.pauses
+        val pauses = preferencesManager.allPauses()
         val ended = preferencesManager.pauseEndedKeys
         PauseSchedule.activeAt(pauses, now, ended).firstOrNull()?.let { return it.pause }
         return PauseSchedule.nextOccurrence(pauses, now, ended)?.pause
     }
 
     private fun computeNextPauseStart(): Int? =
-        PauseSchedule.nextStart(preferencesManager.pauses, LocalDateTime.now(), preferencesManager.pauseEndedKeys)
+        PauseSchedule.nextStart(preferencesManager.allPauses(), LocalDateTime.now(), preferencesManager.pauseEndedKeys)
             ?.let { it.hour * 60 + it.minute }
+
+    private fun computeMinutesToNext(): Int? =
+        QuickPause.minutesToNext(preferencesManager.allPauses(), LocalDateTime.now(), preferencesManager.pauseEndedKeys)
+
+    /**
+     * "Pause now" for [minutes], or until the next break when [untilNext] (measured now, so it hands
+     * over with no gap even if the sheet stayed open). Turns Nook on; the notification and tile follow.
+     */
+    fun startQuickPause(minutes: Int, untilNext: Boolean = false) {
+        val length = if (untilNext) computeMinutesToNext() ?: minutes else minutes
+        preferencesManager.startQuickPause(length)
+        _isBlockingEnabled.value = true
+        preferencesManager.zenDismissedWindow = null
+        refreshOffHoursStatus()
+        refreshZenNotification()
+        refreshLife()
+        ZenTileService.requestUpdate(getApplication())
+    }
 
     /** Adds [pause], or replaces the one with the same id. */
     fun savePause(pause: Pause) {
