@@ -180,6 +180,10 @@
     <string name="pauses_section_more">Altro</string>
     <string name="week_coverage_label">Ogni settimana</string>
     <string name="week_coverage_caption">senza notifiche di lavoro</string>
+    <string name="week_stretch_from">dalle %1$s</string>
+    <string name="week_stretch_until">fino alle %1$s</string>
+    <string name="week_no_breaks">Ancora nessuna pausa</string>
+    <string name="week_legend_active">Le parti vuote sono le ore in cui le notifiche di lavoro arrivano.</string>
     <string name="pauses_section_list">Le tue pause</string>
     <string name="today_now">Ora: %1$s</string>
     <string name="today_left">ancora %1$s</string>

@@ -134,7 +134,8 @@ fun PauseRow(
         leadingContent = { PauseAvatar(pause = pause, index = index, enabled = pause.enabled) },
         content = { Text(text = name) },
         supportingContent = {
-            Text(text = listOfNotNull(pauseTimes(pause), daysSummary(pause.days)).joinToString("  ·  "))
+            // The days are left out when they are the name ("Weekend · Weekend")
+            Text(text = listOf(pauseTimes(pause), daysSummary(pause.days)).filter { it != name }.joinToString("  ·  "))
         },
         overlineContent = if (isOnNow) {
             { Text(text = stringResource(R.string.pause_state_now), color = MaterialTheme.colorScheme.secondary) }

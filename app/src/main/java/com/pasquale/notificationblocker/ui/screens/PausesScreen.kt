@@ -48,7 +48,6 @@ import com.pasquale.notificationblocker.ui.components.PauseRow
 import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
 import com.pasquale.notificationblocker.ui.components.entrance
 import com.pasquale.notificationblocker.data.WeekCoverage
-import java.time.LocalDate
 import com.pasquale.notificationblocker.ui.components.PauseEditorSheet
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
@@ -150,7 +149,6 @@ fun PausesContent(
             item(key = "week") {
                 WeekCoverageCard(
                     coverage = remember(pauses) { WeekCoverage.of(pauses) },
-                    today = LocalDate.now().dayOfWeek,
                     modifier = Modifier.entrance(0),
                 )
             }

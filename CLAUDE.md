@@ -62,7 +62,7 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   ├── QuickPause.kt                # pure: "Pause now", a one-off pause from this minute for the chosen time (ids "quick<HHmm>", one at a time; unit tested)
 │   ├── DaysOff.kt                   # pure: ranges of days off (whole-day dated pauses, id "off<stamp>", max 62 days) and Italian public holidays incl. Easter (id "holiday"); unit tested
 │   ├── PauseSchedule.kt             # pure: which pauses are on, the blocking rule, blockedUntil, nextStart (unit tested)
-│   ├── WeekCoverage.kt              # pure: the typical week for the Breaks tab (stretches per weekday, hours a week covered, overlaps once) (unit tested)
+│   ├── WeekCoverage.kt              # pure: the typical week for the Breaks tab (stretches per weekday, days grouped when their free times match, overlaps merged and counted once) (unit tested)
 │   ├── Stats.kt                     # pure: StatsRange, PeriodStats, DaySpans for Stats (unit tested)
 │   ├── FreeTimeLedger.kt            # pure: per-day history (lived, daylight, held, minutes per pause), HistoryCodec (unit tested)
 │   ├── SunTimes.kt                  # pure: sunrise/sunset for a fixed latitude in the phone's zone (scenes and daylight in the history)
@@ -95,7 +95,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on
     │   ├── TodayHeader.kt               # todayGreeting, todayDate, NookBadge (mug), compactDuration and TodayMetrics (free today, daylight, paused); no header composable, the top app bar of Today shows them
     │   ├── Visuals.kt                   # PauseAvatar (time-of-day icon), expressiveShape(index) (MaterialShapes cookie/clover/burst), segmentColors() (segments on surfaceContainer), Modifier.entrance, CountUpText, MetricTile; PauseAvatar and MetricTile use the expressive shapes
-    │   ├── WeekCoverageCard.kt      # top of Breaks and onboarding step 2 (redrawn as templates are ticked): hours a week without work notifications + seven 24 h tracks (data/WeekCoverage.kt)
+    │   ├── WeekCoverageCard.kt      # top of Breaks and onboarding step 2 (redrawn as templates are ticked): hours a week without work notifications, one 24 h bar per group of alike days ("Lun–ven", "Weekend") with the free times written under it ("fino alle 08:30 · 13:00–14:00 · dalle 18:30"), a one-line legend (data/WeekCoverage.kt groups/merge)
     │   ├── TodayCard.kt                 # "Today" on Home as a segmented list (segment shapes from `ListItemDefaults.segmentedShapes`; compact custom rows, not `SegmentedListItem`, whose minimum height ate the scene's room): first segment = now/next line with a LinearWavyProgressIndicator (waveSpeed = 0.dp) and the day bar, then one segment per pause with state chips (TodayPauses, unit tested), hours lived
     │   ├── PauseRow.kt              # PauseRow (ListItem), DayPills (editor), daysSummary, pauseColor/pauseName/pauseTimes: one pause in the Breaks list, with its PauseAvatar
     │   ├── PauseEditorSheet.kt      # ModalBottomSheet: name, start/end (TimePickerDialog), days, apps row (opens AppSelection for that pause), "Use all work apps"

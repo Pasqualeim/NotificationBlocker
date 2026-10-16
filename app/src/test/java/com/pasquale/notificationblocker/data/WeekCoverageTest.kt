@@ -42,6 +42,38 @@ class WeekCoverageTest {
         assertEquals(120, week.weeklyMinutes)
     }
 
+    @Test
+    fun groups_joinTheDaysThatLookTheSame() {
+        val evening = Pause("evening", "Sera", 18 * 60 + 30, 8 * 60 + 30)
+        val lunch = Pause("lunch", "Pranzo", 13 * 60, 14 * 60, days = DayOfWeek.entries.take(5).toSet())
+        val weekend = Pause("weekend", "Weekend", 0, 0, days = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
+        val groups = WeekCoverage.of(listOf(evening, lunch, weekend)).groups
+        assertEquals(2, groups.size)
+        assertEquals(DayOfWeek.entries.take(5), groups[0].days)
+        // Morning of last night's evening, lunch, tonight's evening
+        assertEquals(listOf(0 to 510, 780 to 840, 1110 to 1440), groups[0].stretches.map { it.start to it.end })
+        assertEquals(listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY), groups[1].days)
+        // The whole day swallows the evening and the morning: one stretch, in the weekend's color
+        assertEquals(listOf(0 to 1440), groups[1].stretches.map { it.start to it.end })
+        assertEquals(2, groups[1].stretches.single().pauseIndex)
+    }
+
+    @Test
+    fun merge_joinsTouchingStretches_andKeepsTheLongestPause() {
+        val merged = WeekCoverage.merge(
+            listOf(CoverageSegment(600, 780, 1), CoverageSegment(480, 600, 0), CoverageSegment(900, 960, 2)),
+        )
+        assertEquals(listOf(CoverageSegment(480, 780, 1), CoverageSegment(900, 960, 2)), merged)
+    }
+
+    @Test
+    fun noPauses_isOneGroupWithNothingFree() {
+        val groups = WeekCoverage.of(emptyList()).groups
+        assertEquals(1, groups.size)
+        assertEquals(7, groups[0].days.size)
+        assertTrue(groups[0].stretches.isEmpty())
+    }
+
     private fun unionOf(week: WeekCoverage, day: DayOfWeek): Int {
         var total = 0
         var reach = 0

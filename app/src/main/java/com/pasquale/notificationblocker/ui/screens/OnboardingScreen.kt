@@ -79,7 +79,6 @@ import com.pasquale.notificationblocker.ui.components.daysSummary
 import com.pasquale.notificationblocker.ui.components.pauseTimes
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
-import java.time.LocalDate
 
 /** Apps that usually bring work, offered first in the setup when installed. */
 private val WORK_APP_HINTS = listOf(
@@ -261,7 +260,6 @@ private fun PausesStep(picked: List<Int>, onToggle: (Int) -> Unit) {
     // unticked ones off, so each bar keeps the color of its template's avatar
     WeekCoverageCard(
         coverage = WeekCoverage.of(TEMPLATES.mapIndexed { i, (pause, _) -> pause.copy(enabled = i in picked) }),
-        today = LocalDate.now().dayOfWeek,
     )
 }
 

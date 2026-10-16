@@ -181,6 +181,10 @@
     <string name="pauses_section_more">More</string>
     <string name="week_coverage_label">Every week</string>
     <string name="week_coverage_caption">without work notifications</string>
+    <string name="week_stretch_from">from %1$s</string>
+    <string name="week_stretch_until">until %1$s</string>
+    <string name="week_no_breaks">No breaks yet</string>
+    <string name="week_legend_active">The empty parts are the hours when work notifications come through.</string>
     <string name="pauses_section_list">Your breaks</string>
     <string name="today_now">Now: %1$s</string>
     <string name="today_left">%1$s left</string>
