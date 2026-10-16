@@ -64,7 +64,7 @@ fun WeekCoverageCard(coverage: WeekCoverage, today: DayOfWeek, modifier: Modifie
     val track = MaterialTheme.colorScheme.surfaceContainerHighest
     val day = OffHours.MINUTES_PER_DAY.toFloat()
 
-    Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+    Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = stringResource(R.string.week_coverage_label),

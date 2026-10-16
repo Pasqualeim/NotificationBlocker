@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.toShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -58,14 +63,35 @@ fun pauseContainerColors(index: Int): Pair<Color, Color> = when (index % 3) {
     else -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
 }
 
-/** Round avatar of a pause: its time-of-day icon on its tinted container; muted when [enabled] is false. */
+/**
+ * The Material 3 Expressive shape of an avatar or icon badge, one per [index] like [pauseContainerColors]:
+ * the cookie, clover and burst shapes of the system apps, so the pauses of a list read apart at a glance.
+ */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun expressiveShape(index: Int): Shape = when (index % 4) {
+    0 -> MaterialShapes.Cookie9Sided
+    1 -> MaterialShapes.Clover4Leaf
+    2 -> MaterialShapes.Cookie6Sided
+    else -> MaterialShapes.SoftBurst
+}.toShape()
+
+/**
+ * Colors of a segment in Nook's segmented lists: the segments sit on [androidx.compose.material3.ColorScheme.surfaceContainer]
+ * over the page's surface, as in the system settings (the default segment color is the page's own).
+ */
+@Composable
+fun segmentColors(): ListItemColors =
+    ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+
+/** Avatar of a pause: its time-of-day icon on its tinted, shaped container; muted when [enabled] is false. */
 @Composable
 fun PauseAvatar(pause: Pause, index: Int, modifier: Modifier = Modifier, size: Dp = 40.dp, enabled: Boolean = true) {
     val (container, content) = pauseContainerColors(index)
     Box(
         modifier = modifier
             .size(size)
-            .background(if (enabled) container else MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
+            .background(if (enabled) container else MaterialTheme.colorScheme.surfaceContainerHighest, expressiveShape(index)),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -137,7 +163,10 @@ fun CountUpText(
 // Long enough to read as counting, short enough not to wait for it
 private const val COUNT_UP_MILLIS = 700
 
-/** A small figure with an icon: the tinted icon, the value, a label under it. */
+/**
+ * A small figure with an icon: the icon on its [container] in an expressive shape ([shapeIndex], see
+ * [expressiveShape]), the value, a label under it.
+ */
 @Composable
 fun MetricTile(
     icon: Painter,
@@ -145,14 +174,16 @@ fun MetricTile(
     value: @Composable () -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    container: Color = tint.copy(alpha = 0.16f),
+    shapeIndex: Int = 0,
 ) {
-    Surface(modifier = modifier, shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+    Surface(modifier = modifier, shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Box(
-                modifier = Modifier.size(32.dp).background(tint.copy(alpha = 0.16f), CircleShape),
+                modifier = Modifier.size(36.dp).background(container, expressiveShape(shapeIndex)),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(painter = icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
+                Icon(painter = icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
             }
             value()
             Text(

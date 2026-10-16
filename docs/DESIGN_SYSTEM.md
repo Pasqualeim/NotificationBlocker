@@ -6,7 +6,7 @@ Linee guida visive di **Nook**. La base è **Material 3**: se una regola qui non
 
 1. **Calma.** L'app parla di silenzio: niente colori saturi urlati, niente badge rossi, niente allarmismi. Toni caldi e desaturati (carta crema, terracotta, cioccolato): la terracotta è il colore della "pausa in corso", la salvia quello di "programmato, tutto sotto controllo".
 2. **Stato leggibile in un secondo.** Aprendo l'app devi capire subito se le notifiche vengono bloccate *adesso*. Colore della card, icona e titolo dicono tutti la stessa cosa.
-3. **Nativo Android.** Componenti Material 3 standard (Switch, TimePicker, TopAppBar, FilterChip) prima di quelli custom. Un componente custom si giustifica solo se comunica meglio lo stato (es. i grafici di `StatsCharts`, `MutedBellIcon`).
+3. **Nativo Android.** L'app ha l'aspetto di un'app di sistema Pixel: Material 3 Expressive, colori dinamici (Material You), font e forme standard. Componenti Material 3 standard (Switch, TimePicker, LargeFlexibleTopAppBar, ShortNavigationBar, FilterChip) prima di quelli custom. Un componente custom si giustifica solo se comunica meglio lo stato (es. i grafici di `StatsCharts`, `MutedBellIcon`).
 4. **Un tocco per l'azione principale.** Il toggle è sempre visibile senza scroll; le tre schede (Oggi, Pause, Statistiche) stanno nella `NavigationBar` in basso, nella zona del pollice; le pause si creano nella scheda Pause (l'editor sceglie anche le app, di norma tutte quelle di lavoro). Fuori dall'app, il riquadro "Nook" nelle Impostazioni rapide accende e spegne la pausa.
 5. **Staccare è vivere.** Abbiamo una vita oltre il lavoro: l'app esiste per restituirla, non per "far dormire". Il tempo libero non è "notte e sonno": è luce, tempo, vita, a qualsiasi ora finisca il lavoro. L'app valorizza le ore di sole che restano dopo il lavoro (d'estate, staccare alle 17 vuol dire ancora tre ore di sole) e segue la luce reale del giorno e della stagione.
 
@@ -126,7 +126,7 @@ Bianco su `primary`: 5.93 in Chai (è `onPrimary`); in Lo-fi night il testo su `
 - Indicatore "ora" (era della `Timeline24h`, rimossa con la fase 3; regola valida per un futuro indicatore sul binario): anello `onSurface` con centro `surface`, alone `onSurface` al 12%. Il centro si vede sulla fascia `primary` (5.61 / 10.25), l'anello sul binario (10.59 / 9.12). Non usare `secondary`: ha la stessa luminanza di `primary` (1:1) e sparisce sulla fascia.
 - `FilterChip` selezionati (lista app): `primaryContainer` / `onPrimaryContainer`, non il default M3 `secondaryContainer` (salvia).
 - Se cambi un esadecimale in `Color.kt`, ricalcola le tabelle qui sopra per entrambi i temi.
-- `dynamicColor` è `false` di proposito: la palette calda fa parte dell'identità. Se un giorno lo abiliti, gli stati devono restare distinguibili.
+- `dynamicColor` è `true` di default (il proprietario ha chiesto l'aspetto nativo Pixel): da Android 12 i colori seguono lo sfondo (Material You). La palette Chai / Lo-fi night di `Color.kt` resta il ripiego sotto Android 12 e la base di anteprime e `tools/palette/contrast.py`: **le tabelle di contrasto qui sopra valgono solo per quel ripiego**. Con i colori dinamici gli stati devono restare distinguibili usando solo i ruoli di `MaterialTheme.colorScheme` (mai colori fissi); la terracotta/salvia di "Mappa degli stati" è l'identità del ripiego. Splash e widget seguono lo stesso schema: `values-v31` e `values-night-v31` mappano `window_background` e `widget_*` sui token `@android:color/system_*`, `values/` replica `Color.kt` per Android < 12.
 - L'errore (`error`) si usa solo per veri errori, non per il permesso mancante (quello è un avviso: `tertiaryContainer`).
 
 ## Luce del giorno e stagioni
@@ -157,12 +157,14 @@ I colori di scena e stagioni stanno in `ui/theme/ZenPalette.kt` (`Light` per ora
 
 ## Tipografia
 
-Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 completa. Stili nativi M3: i componenti usano i pesi di `Type.kt` senza override in grassetto (restano solo casi puntuali, come il giorno di oggi nei grafici). Pesi caricati: Normal, Medium, SemiBold, Bold, ExtraBold (usa solo questi: un peso non dichiarato in `ManropeFontFamily` ricade sul più vicino).
+Il **font di sistema del telefono** (Roboto su Pixel, quello del produttore altrove): nessun font scaricato (Manrope e `ui-text-google-fonts` sono stati tolti). `ui/theme/Type.kt` parte dalla `Typography()` M3 predefinita, con titoli e `titleLarge` in Medium. I componenti usano i pesi di `Type.kt` senza override in grassetto (restano solo casi puntuali, come il giorno di oggi nei grafici).
 
 | Stile | Uso tipico |
 |---|---|
-| `titleLarge` SemiBold | Titolo della `TopAppBar` condivisa ("Nook", "Pause", "Statistiche") e stato breve nella card di stato ("In pausa ora") |
+| `titleLarge` Medium | Stato breve nella card di stato ("In pausa ora") |
+| Titolo della `LargeFlexibleTopAppBar` | Oggi: saluto (sottotitolo: la data); Pause e Statistiche: titolo grande che si riduce allo scorrere |
 | `titleMedium` Medium | Titoli card |
+| `titleSmall` in `primary` | Titoli di sezione degli elenchi segmentati |
 | `bodyMedium` | Testi delle card della Home (sottotitolo di stato, disclosure, resoconto, messaggio "vita") |
 | `bodyLarge` | Etichetta del toggle |
 | `bodySmall` | Sottotitoli e descrizioni (alpha 0.85 sul colore del contenuto) |
@@ -174,7 +176,7 @@ Font **Manrope** (Google Fonts scaricabili, `ui/theme/Type.kt`), scala M3 comple
 
 ## Forme e spaziature
 
-`ui/theme/Shape.kt`. Nei componenti usa sempre `MaterialTheme.shapes.*` (o `CircleShape`), mai `RoundedCornerShape(N.dp)`:
+`ui/theme/Shape.kt` è il `Shapes()` predefinito di Material 3 Expressive (scala 4, 8, 12, 16, 28dp più i passi "increased"), come nelle app di sistema. Nei componenti usa sempre `MaterialTheme.shapes.*` (o `CircleShape`), mai `RoundedCornerShape(N.dp)`. Le forme decorative (avatar, tessere) sono le `MaterialShapes` espressive (cookie, quadrifoglio, burst) via `expressiveShape(index)` in `Visuals.kt`; gli elenchi usano `ListItemDefaults.segmentedShapes`. **I raggi della tabella qui sotto sono quelli della vecchia scala (6/10/16/20/24dp), superata: leggi i token, non i dp.**
 
 | Token | Raggio | Uso |
 |---|---|---|
@@ -222,7 +224,7 @@ Misurato sul codice attuale (card in scala / scena, prima con la card del permes
 | 360×720dp | 1,0 | 0,8 / 0,88 | 0,87 / intera |
 | 360×640dp | 1,0 | 0,8 / 0,6 + scorre | 0,8 / 0,71 |
 
-Misure compatte della Home (non riaumentarle senza rifare la tabella): intestazione propria di Oggi (`TodayHeader`: data, saluto, tazza da 28dp in un riquadro da 48dp; niente `TopAppBar`); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
+Misure compatte della Home (non riaumentarle senza rifare la tabella): intestazione di Oggi nella `LargeFlexibleTopAppBar` (titolo = saluto, sottotitolo = data, `NookBadge` con la tazza; altezza espansa media e `pinnedScrollBehavior`, così il viewport di `HomeColumn` non cambia mai); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
 
 Come si rispetta:
 
@@ -248,17 +250,17 @@ Da provare almeno: 1080×2400 @420 font 1,1 (A32), 1080×2340 @480 font 1,0 e 1,
 
 ## Componenti
 
-Ordine della Home (come `docs/mockups/home_active_warm.svg`): intestazione `TodayHeader` (data, saluto, tazza `ic_mug`, la stessa dell'icona; niente `TopAppBar` nella scheda Oggi, le altre due ne hanno una semplice) → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `TodayMetrics` (tre cifre di oggi: tempo libero, luce, notifiche in pausa) → `TodayCard` (le pause di oggi); sotto, la `NavigationBar` a tre schede (Oggi con l'icona Material Home, Pause, Statistiche). Niente CTA né selettori d'orario sulla Home: si modificano nella scheda Pause (`PauseEditorSheet`).
+Ordine della Home (come `docs/mockups/home_active_warm.svg`): intestazione nella `LargeFlexibleTopAppBar` di Oggi (saluto, data, `NookBadge` con la tazza `ic_mug`, la stessa dell'icona; Pause e Statistiche ne hanno una con titolo grande che si comprime, `exitUntilCollapsed`, ognuna con il proprio `TopAppBarState` salvato) → card in cima (una sola: permesso, se manca; poi l'invito alla notifica della pausa; poi il resoconto del mattino; altrimenti la card di stato) → `SceneCard` → `TodayMetrics` (tre cifre di oggi: tempo libero, luce, notifiche in pausa) → `TodayCard` (le pause di oggi); sotto, la `ShortNavigationBar` a tre schede (Oggi con l'icona Material Home, Pause, Statistiche). Niente CTA né selettori d'orario sulla Home: si modificano nella scheda Pause (`PauseEditorSheet`).
 
 | Componente | File | Note |
 |---|---|---|
 | Card di stato | `HeroHeader.kt` | Una riga: campanella, stato breve ("In pausa ora" / "Programmato" / "Spento", `titleLarge`) e Switch con la spunta; sotto il sottotitolo (+ saluto in grassetto dentro la fascia) e il messaggio "vita". Colore animato per stato, testi in `AnimatedContent` |
 | Campanella animata | `MutedBellIcon.kt` | Stato "silenziato" = barra diagonale; vedi `MOTION.md` |
-| Intestazione di Oggi | `TodayHeader.kt` | `TodayHeader` (data, saluto per ora del giorno, tazza in un badge) e `TodayMetrics` (tre `MetricTile`: tempo libero, luce, notifiche in pausa; cifre con `CountUpText`) |
-| Oggi | `TodayCard.kt` | Riga "ora / dopo" con l'avanzamento della pausa in corso (sull'occorrenza intera), le pause di oggi (`TodayPauses`) con chip di stato e le ore vissute; sola lettura |
-| Elementi visivi | `Visuals.kt` | `PauseAvatar` (icona per ora d'inizio: alba, giorno, sera, notte; colore come `pauseColor`; attenuato se la pausa è spenta), `MetricTile`, `CountUpText`, `Modifier.entrance` (animazioni una tantum, vedi `MOTION.md`) |
-| Pause | `PausesScreen.kt`, `WeekCoverageCard.kt`, `PauseRow.kt`, `PauseEditorSheet.kt` | In cima `WeekCoverageCard` (ore a settimana senza notifiche di lavoro e sette tracce da 24 h, da `data/WeekCoverage.kt`); righe `ListItem` (`PauseRow` con `PauseAvatar`: colore `pauseColor`, giorni riassunti da `daysSummary`) in una sola superficie raggruppata; l'editor è un `ModalBottomSheet` con nome, inizio/fine (`TimePicker` 24h in `AlertDialog`), giorni (`DayPills`), app per pausa |
-| Statistiche | `StatsScreen.kt`, `StatsCharts.kt` | `WeekChart`, `MonthCalendar`, `DayChart`, `DaylightRing`, totale che conta (`CountUpText`), totali (`TotalsRow`, con icone e "Media al giorno") come elenco raggruppato; barre della luce in `sunlight` (solo grafica, mai testo) |
+| Intestazione di Oggi | `MainActivity.kt` (`TabsScreen`), `TodayHeader.kt` | `LargeFlexibleTopAppBar` con `todayGreeting`, `todayDate` e `NookBadge`; `TodayHeader.kt` non ha più un composable di intestazione ma anche `compactDuration` e `TodayMetrics` (tre `MetricTile`: tempo libero, luce, notifiche in pausa; cifre con `CountUpText`) |
+| Oggi | `TodayCard.kt` | Elenco segmentato (`SegmentedListItem`): primo segmento = riga "ora / dopo" con l'avanzamento della pausa in corso (sull'occorrenza intera) in un `LinearWavyProgressIndicator` con `waveSpeed = 0.dp` e la barra del giorno; poi un segmento per pausa di oggi (`TodayPauses`) con chip di stato; le ore vissute. Sola lettura |
+| Elementi visivi | `Visuals.kt` | `PauseAvatar` (icona per ora d'inizio: alba, giorno, sera, notte; colore come `pauseColor`; forma espressiva; attenuato se la pausa è spenta), `MetricTile` (forma espressiva), `expressiveShape(index)`, `segmentColors()` (segmenti su `surfaceContainer`), `CountUpText`, `Modifier.entrance` (animazioni una tantum, vedi `MOTION.md`) |
+| Pause | `PausesScreen.kt`, `WeekCoverageCard.kt`, `PauseRow.kt`, `PauseEditorSheet.kt` | In cima `WeekCoverageCard` (ore a settimana senza notifiche di lavoro e sette tracce da 24 h, da `data/WeekCoverage.kt`); righe `SegmentedListItem` (`PauseRow` riceve posizione e numero di righe; `PauseAvatar`: colore `pauseColor`, giorni riassunti da `daysSummary`) e il gruppo "Altro" con Giorni liberi, titoli di sezione `titleSmall` in `primary`; l'editor è un `ModalBottomSheet` con nome, inizio/fine (`TimePicker` 24h in `AlertDialog`), giorni (`DayPills`), app per pausa |
+| Statistiche | `StatsScreen.kt`, `StatsCharts.kt` | `WeekChart`, `MonthCalendar`, `DayChart`, `DaylightRing`, totale che conta (`CountUpText`), totali (`TotalsRow`, con icone e "Media al giorno") come elenco segmentato; selettore dell'intervallo (giorno / settimana / mese) come gruppo connesso di `ToggleButton` (`ButtonGroupDefaults.connected*ButtonShapes`, semantica radio); barre della luce in `sunlight` (solo grafica, mai testo) |
 | Permesso | `PermissionCard.kt` | Al posto della card di stato finché manca l'accesso (senza, l'interruttore non servirebbe a niente); porta alle impostazioni di sistema |
 | Resoconto del mattino | `MorningReportCard.kt` | Al posto della card di stato finché non tocchi "OK"; elenca le app con più notifiche trattenute (icona, conteggio, "Apri") e una frase con il totale, corto per lasciare la scena alla Home |
 | Pausa subito | `QuickPauseSheet.kt`, pulsante in `HeroHeader.kt` | `ModalBottomSheet` con la durata; il pulsante c'è quando Nook è spento o fra due pause |
@@ -278,7 +280,7 @@ Ordine della Home (come `docs/mockups/home_active_warm.svg`): intestazione `Toda
 |---|---|---|
 | Notifica della pausa (nel codice "zen") | `notification/ZenNotificationManager.kt`, `res/layout/notification_zen_*.xml` | Solo quando Nook trattiene davvero (acceso, dentro la fascia, almeno un'app, accesso concesso, pausa non terminata): mai mentre lavori. Titolo "Lavoro in pausa fino alle 07:00", testo "3 notifiche da Slack e Teams messe in pausa" (senza nomi a schermo bloccato; "messe in pausa", mai "ti aspettano": non tornano), espansa anche la frase del momento. Pulsante "Termina la pausa": la notifica sparisce e basta (niente seconda notifica di conferma, confondeva); in Home "Pausa finita" con "Rimetti in pausa". Silenziosa, fissa, `DecoratedCustomViewStyle`; illustrazione 40dp chiusa / 72dp espansa (il pontile della Home in miniatura, `tools/notification/zen_art.py`); testi con gli stili `TextAppearance.Compat.Notification*` così seguono tema e OEM |
 | Riquadro "Nook" | `tile/ZenTileService.kt` | Attivo = blocco acceso. Icona monocromatica per fase (foglia, sole, lanterna), etichetta sempre "Nook", sottotitolo "Fino alle 09:00" / "Dalle 17:00" / "Spento" |
-| Widget home | `widget/NookWidgetProvider.kt`, `res/layout/widget_nook.xml`, `widget_*.xml` | `RemoteViews`: stato, pausa in corso o prossima, "Pausa 1 h". Colori `widget_*` in `res/values[-night]/colors.xml`, da tenere uguali a `Color.kt` |
+| Widget home | `widget/NookWidgetProvider.kt`, `res/layout/widget_nook.xml`, `widget_*.xml` | `RemoteViews`: stato, pausa in corso o prossima, "Pausa 1 h". Colori `widget_*` in `res/values[-night]/colors.xml` (ripiego Android < 12, uguali a `Color.kt`) e in `values[-night]-v31` (token Material You `@android:color/system_*`) |
 | Icona barra di stato | `ic_notification_nook.xml` | La tazza dell'icona, bianca (generata da `tools/icon/launcher_icon.py`) |
 
 Nuovi componenti: stateless, in `ui/components/`, con `modifier` come primo parametro opzionale e una `@Preview` per stato (chiaro + scuro).

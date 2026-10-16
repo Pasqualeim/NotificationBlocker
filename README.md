@@ -20,7 +20,7 @@ Tre schede in basso: **Oggi**, **Pause**, **Il tempo tuo**.
 - **Notifica della pausa** (facoltativa, Android 13+): notifica silenziosa e fissa mentre una pausa è attiva, con l'ora in cui finisce e quante notifiche di lavoro sono state messe in pausa. Il pulsante **Termina la pausa** fa arrivare di nuovo le notifiche di lavoro fino alla prossima pausa.
 - **Riquadro "Nook"** nelle Impostazioni rapide: accende e spegne tutto dalla tendina.
 - **Dopo la pausa**: la Home mostra quante notifiche di lavoro sono arrivate e da quali app.
-- **Tema**: palette calda e desaturata, chiara ("Chai") e scura ("Lo-fi night"), font Manrope, edge-to-edge.
+- **Tema**: aspetto nativo Pixel (Material 3 Expressive): colori dinamici da Android 12 (Material You), font di sistema; la palette calda "Chai" / "Lo-fi night" resta il ripiego sotto Android 12; edge-to-edge.
 - **Lingue**: italiano e inglese.
 
 Prossimi passi: il personaggio (un riccio, non ancora disegnato), il sito con l'iscrizione al test, poi Google Play.
@@ -71,11 +71,11 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 | Area | Scelta |
 |---|---|
 | Linguaggio | Kotlin 2.4 (Kotlin integrato in AGP 9) |
-| UI | Jetpack Compose, Material 3, `material-icons-core` |
+| UI | Jetpack Compose, Material 3 Expressive (`material3` 1.5.0-beta01), `material-icons-core` |
 | Navigazione | Navigation 3 (`androidx.navigation3`) |
 | Stato | `AndroidViewModel` + `StateFlow`, `collectAsStateWithLifecycle` |
 | Persistenza | `SharedPreferences` |
-| Font | Manrope via Google Fonts scaricabili |
+| Font | Font di sistema del telefono |
 | Build | Gradle 9.8, version catalog, minSdk 28, targetSdk 37, compileSdk 37 |
 
 ### Documentazione

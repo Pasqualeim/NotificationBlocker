@@ -89,7 +89,7 @@ private fun QuickPauseContent(options: List<QuickPauseOption>, nowMinute: Int, o
                 val ends = OffHours.format((nowMinute + option.minutes) % OffHours.MINUTES_PER_DAY)
                 Surface(
                     shape = MaterialTheme.shapes.medium,
-                    color = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerLow,
+                    color = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer,
                     border = if (selected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.secondary) else null,
                     modifier = Modifier
                         .fillMaxWidth()

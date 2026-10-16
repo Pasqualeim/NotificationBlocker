@@ -17,9 +17,14 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ToggleButton
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,6 +81,7 @@ fun StatsScreen(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     StatsContent(history = history, pauses = pauses, now = LocalDateTime.now(), modifier = modifier)
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StatsContent(
     history: Map<LocalDate, DayStats>,
@@ -97,14 +103,24 @@ fun StatsContent(
             .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        // Connected button group of the Expressive system apps: the chosen range turns round
+        Row(
+            modifier = Modifier.fillMaxWidth().selectableGroup(),
+            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+        ) {
             val labels = listOf(R.string.stats_day, R.string.stats_week, R.string.stats_month)
+            val last = StatsRange.entries.lastIndex
             StatsRange.entries.forEachIndexed { i, r ->
-                SegmentedButton(
-                    selected = range == r,
-                    onClick = { range = r },
-                    shape = SegmentedButtonDefaults.itemShape(i, StatsRange.entries.size),
-                    icon = {},
+                ToggleButton(
+                    checked = range == r,
+                    onCheckedChange = { range = r },
+                    // Read out as one choice of three ("selected"), not as a checkbox
+                    modifier = Modifier.weight(1f).semantics { role = Role.RadioButton; selected = range == r },
+                    shapes = when (i) {
+                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                        last -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                    },
                 ) {
                     Text(text = stringResource(labels[i]))
                 }
@@ -130,7 +146,7 @@ fun StatsContent(
         }
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            color = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier.entrance(1),
         ) {
             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {

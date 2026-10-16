@@ -226,7 +226,7 @@ private fun AccessStep(onOpenAccess: () -> Unit) {
 private fun ChoiceRow(checked: Boolean, onToggle: () -> Unit, content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = if (checked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerLow,
+        color = if (checked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer,
         border = if (checked) BorderStroke(1.5.dp, MaterialTheme.colorScheme.secondary) else null,
         modifier = Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Checkbox, onValueChange = { onToggle() }),
     ) {

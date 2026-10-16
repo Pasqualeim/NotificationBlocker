@@ -1,6 +1,8 @@
 package com.pasquale.notificationblocker.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
@@ -37,7 +38,7 @@ fun PermissionCard(
     val privacyUrl = stringResource(R.string.privacy_policy_url)
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.extraLarge,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
             contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -53,12 +54,17 @@ fun PermissionCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.size(24.dp),
-                )
+                Box(
+                    modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.tertiary, expressiveShape(1)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
                 Text(
                     text = stringResource(R.string.permission_warning_title),
                     style = MaterialTheme.typography.titleMedium,
@@ -82,12 +88,10 @@ fun PermissionCard(
                         containerColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary,
                     ),
-                    shape = MaterialTheme.shapes.small,
                 ) {
                     Text(
                         text = stringResource(R.string.permission_warning_button),
                         style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
                     )
                 }
                 TextButton(onClick = { uriHandler.openUri(privacyUrl) }) {

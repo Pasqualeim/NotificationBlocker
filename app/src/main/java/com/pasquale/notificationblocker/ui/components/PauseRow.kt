@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -109,9 +109,11 @@ fun daysSummary(days: Set<DayOfWeek>): String {
 }
 
 /**
- * One pause in the Breaks list, as a list row: its avatar (time-of-day icon in the pause's color), name,
- * times and days, and its own switch. A tap anywhere else opens the editor.
+ * One pause in the Breaks list, as a segment of the list ([position] of [count], which rounds the outer
+ * corners of the first and last): its avatar (time-of-day icon in the pause's color), name, times and
+ * days, and its own switch. A tap anywhere else opens the editor.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PauseRow(
     pause: Pause,
@@ -120,13 +122,17 @@ fun PauseRow(
     onEnabledChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     isOnNow: Boolean = false,
+    position: Int = 0,
+    count: Int = 1,
 ) {
     val name = pauseName(pause)
-    ListItem(
-        modifier = modifier.clickable(onClick = onClick),
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+    SegmentedListItem(
+        onClick = onClick,
+        shapes = ListItemDefaults.segmentedShapes(index = position, count = count),
+        modifier = modifier,
+        colors = segmentColors(),
         leadingContent = { PauseAvatar(pause = pause, index = index, enabled = pause.enabled) },
-        headlineContent = { Text(text = name) },
+        content = { Text(text = name) },
         supportingContent = {
             Text(text = listOfNotNull(pauseTimes(pause), daysSummary(pause.days)).joinToString("  ·  "))
         },

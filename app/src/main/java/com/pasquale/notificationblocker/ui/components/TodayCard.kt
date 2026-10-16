@@ -5,16 +5,16 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LinearWavyProgressIndicator
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -102,10 +102,12 @@ object TodayPauses {
 }
 
 /**
- * "Today" on Home: the pause on now with how far it has gone (or the next one today), a 24 h bar with
- * every pause of the day in its color and a dot at the current time, then one row per pause with its
- * avatar, times and where it stands.
+ * "Today" on Home, as a segmented list like the system apps' settings: a section title, then the first
+ * segment with the pause on now and how far it has gone (or the next one today) over a 24 h bar with
+ * every pause in its color and a dot at the current time, then one segment per pause with its avatar,
+ * times and where it stands.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TodayCard(
     pauses: List<TodayPause>,
@@ -113,45 +115,56 @@ fun TodayCard(
     modifier: Modifier = Modifier,
     isBlockingEnabled: Boolean = true,
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(text = stringResource(R.string.today_card_title), style = MaterialTheme.typography.titleMedium)
-            if (isBlockingEnabled) NowLine(pauses = pauses, nowMinute = nowMinute)
-            val colors = pauses.associate { it.colorIndex to pauseColor(it.colorIndex) }
-            DayBar(pauses = pauses, colorOf = { colors[it] ?: Color.Unspecified }, nowMinute = nowMinute)
-            if (pauses.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.today_no_pauses),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            // One line per pause, even when it shows twice on the bar (last night's evening and tonight's)
-            for (p in TodayPauses.oneEach(pauses)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    PauseAvatar(pause = p.pause, index = p.colorIndex, size = 32.dp, enabled = isBlockingEnabled)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(text = pauseName(p.pause), style = MaterialTheme.typography.bodyLarge, maxLines = 1)
-                        Text(
-                            text = pauseTimes(p.pause),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    // With Nook off nothing is on or lived; a pause still to come needs no label
-                    if (isBlockingEnabled) StateChip(p.state)
+    // One line per pause, even when it shows twice on the bar (last night's evening and tonight's)
+    val rows = TodayPauses.oneEach(pauses)
+    val count = 1 + rows.size
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+        Text(
+            text = stringResource(R.string.today_card_title),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
+        )
+        val first = ListItemDefaults.segmentedShapes(index = 0, count = count)
+        Surface(
+            shape = first.shape,
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (isBlockingEnabled) NowLine(pauses = pauses, nowMinute = nowMinute)
+                val colors = pauses.associate { it.colorIndex to pauseColor(it.colorIndex) }
+                DayBar(pauses = pauses, colorOf = { colors[it] ?: Color.Unspecified }, nowMinute = nowMinute)
+                if (pauses.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.today_no_pauses),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
+            }
+        }
+        rows.forEachIndexed { i, p ->
+            SegmentedListItem(
+                shapes = ListItemDefaults.segmentedShapes(index = i + 1, count = count),
+                colors = segmentColors(),
+                leadingContent = { PauseAvatar(pause = p.pause, index = p.colorIndex, size = 40.dp, enabled = isBlockingEnabled) },
+                supportingContent = { Text(pauseTimes(p.pause)) },
+                // With Nook off nothing is on or lived; a pause still to come needs no label
+                trailingContent = if (isBlockingEnabled && p.state != TodayPauseState.LATER) {
+                    { StateChip(p.state) }
+                } else {
+                    null
+                },
+            ) {
+                Text(text = pauseName(p.pause), maxLines = 1)
             }
         }
     }
 }
 
 /** The pause on now and how much of it is gone, or the next one today; nothing when neither. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun NowLine(pauses: List<TodayPause>, nowMinute: Int) {
     // With overlapping pauses, the one that ends first: that is when work comes through again
@@ -176,12 +189,13 @@ private fun NowLine(pauses: List<TodayPause>, nowMinute: Int) {
             val target = 1f - left.toFloat() / total
             val progress = remember { Animatable(0f) }
             LaunchedEffect(target) { progress.animateTo(target, Motion.standard(Motion.SLOW)) }
-            LinearProgressIndicator(
+            // The wave stands still (waveSpeed 0): a moving one redraws the page on every frame
+            LinearWavyProgressIndicator(
                 progress = { progress.value },
-                modifier = Modifier.fillMaxWidth().height(6.dp),
+                modifier = Modifier.fillMaxWidth(),
                 color = pauseColor(now.colorIndex),
                 trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                drawStopIndicator = {},
+                waveSpeed = 0.dp,
             )
         }
         next != null -> Text(

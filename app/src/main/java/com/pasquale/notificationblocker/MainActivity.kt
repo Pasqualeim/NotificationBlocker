@@ -18,13 +18,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.ShortNavigationBar
+import androidx.compose.material3.ShortNavigationBarItem
+import androidx.compose.material3.TopAppBarState
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
+import com.pasquale.notificationblocker.ui.components.NookBadge
+import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
+import com.pasquale.notificationblocker.ui.components.todayDate
+import com.pasquale.notificationblocker.ui.components.todayGreeting
+import java.time.LocalDate
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -146,7 +155,7 @@ fun NotificationBlockerApp(
  * The bottom bar and the tab it shows. Switching tabs swaps the content at once, opaque: a cross-fade
  * would draw two screens see-through (see the note on [push]).
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TabsScreen(
     viewModel: MainViewModel,
@@ -157,19 +166,54 @@ private fun TabsScreen(
     var tab by rememberSaveable { mutableStateOf(Tab.TODAY) }
     // Each tab keeps its saved state (chart range, scroll) while another one is shown
     val tabStates = rememberSaveableStateHolder()
+    val minute by rememberCurrentMinutes()
+    // One saved bar state per tab, like their scroll: going back to a tab shows its title as it was left
+    val barStates = Tab.entries.associateWith {
+        rememberSaveable(saver = TopAppBarState.Saver) { TopAppBarState(-Float.MAX_VALUE, 0f, 0f) }
+    }
+    val barState = barStates.getValue(tab)
+    // Today's bar never collapses: HomeColumn fits the page to the space left, and a bar that shrank
+    // while scrolling would resize the cards under the finger
+    val scrollBehavior = if (tab == Tab.TODAY) {
+        TopAppBarDefaults.pinnedScrollBehavior(barState)
+    } else {
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(barState)
+    }
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = WindowInsets.safeDrawing,
-        // Today draws its own header (date and greeting); the other tabs get a plain top bar
+        // The large flexible top bar of the Expressive system apps: on Today the greeting and the
+        // date with the brand mark, elsewhere the tab title. It shrinks as the page scrolls
         topBar = {
-            if (tab != Tab.TODAY) TopAppBar(
-                title = { Text(stringResource(tab.title)) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+            LargeFlexibleTopAppBar(
+                title = {
+                    Text(if (tab == Tab.TODAY) todayGreeting(minute) else stringResource(tab.title))
+                },
+                subtitle = if (tab == Tab.TODAY) {
+                    { Text(todayDate(LocalDate.now())) }
+                } else {
+                    null
+                },
+                actions = {
+                    if (tab == Tab.TODAY) NookBadge(modifier = Modifier.padding(end = 12.dp))
+                },
+                // Today is one screen with the scene whole (HomeColumn): its bar is the medium height
+                expandedHeight = if (tab == Tab.TODAY) {
+                    TopAppBarDefaults.MediumFlexibleAppBarWithSubtitleExpandedHeight
+                } else {
+                    TopAppBarDefaults.LargeFlexibleAppBarWithoutSubtitleExpandedHeight
+                },
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                ),
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+            ShortNavigationBar {
                 for (t in Tab.entries) {
-                    NavigationBarItem(
+                    ShortNavigationBarItem(
                         selected = tab == t,
                         onClick = { tab = t },
                         icon = { Icon(t.painter(), contentDescription = null) },

@@ -50,7 +50,6 @@ import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.HeroHeader
 import com.pasquale.notificationblocker.ui.components.QuickPauseSheet
 import com.pasquale.notificationblocker.ui.components.quickPauseOptions
-import com.pasquale.notificationblocker.ui.components.TodayHeader
 import com.pasquale.notificationblocker.ui.components.TodayMetrics
 import com.pasquale.notificationblocker.ui.components.HomeColumn
 import com.pasquale.notificationblocker.ui.components.MorningReportCard
@@ -185,15 +184,12 @@ fun MainScreenContent(
     onQuickPause: (() -> Unit)? = null,
     onOpenApp: (String) -> Unit = {},
 ) {
-    var animatedHeaderVisible by remember { mutableStateOf(value = false) }
     var animatedMetricsVisible by remember { mutableStateOf(value = false) }
     var animatedTopCardVisible by remember { mutableStateOf(value = false) }
     var animatedScheduleVisible by remember { mutableStateOf(value = false) }
     var animatedSceneVisible by remember { mutableStateOf(value = false) }
 
     LaunchedEffect(Unit) {
-        animatedHeaderVisible = true
-        delay(Motion.Stagger)
         animatedTopCardVisible = true
         delay(Motion.Stagger)
         animatedSceneVisible = true
@@ -219,14 +215,8 @@ fun MainScreenContent(
             // reaches an edge, and the stretch redraws the whole page offscreen (18 ms of GPU per frame
             // on a Galaxy A32 against 5 ms without it)
             .verticalScroll(scrollState, overscrollEffect = null)
-            .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 16.dp),
+            .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
     ) {
-        TodayHeader(
-            date = LocalDateTime.now().toLocalDate(),
-            minute = currentMinutes,
-            modifier = Modifier.homeEntrance(animatedHeaderVisible),
-        )
-
         // One card at the top, the most urgent thing first: an extra card would push the page past the
         // screen and HomeColumn would shrink every text, then grow it back once the card is gone
         val topCard = when {

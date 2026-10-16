@@ -46,7 +46,7 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 | `WeekCoverageCard` | Le sette tracce da 24 h della scheda Pause | I tratti crescono da sinistra, `Animatable` 0→1 `SLOW`, una volta (`rememberSaveable`) |
 | `WeekChart` (`StatsCharts`) | Barre della settimana | Crescono dalla base, `Animatable` 0→1 `SLOW`, rifatto a ogni settimana mostrata (`remember` con la data del primo giorno, non salvato) |
 | `DaylightRing` (`StatsCharts`) | Anello della luce nella scheda Statistiche | Arco che si disegna fino alla quota, `Animatable` `SLOW` |
-| `TodayCard` (`NowLine`) | Avanzamento della pausa in corso | Barra che arriva alla quota dell'occorrenza intera (`TodayPause.totalMinutes` / `minutesLeft`), `Animatable` `SLOW` |
+| `TodayCard` (`NowLine`) | Avanzamento della pausa in corso | `LinearWavyProgressIndicator` ferma (`waveSpeed = 0.dp`) che arriva alla quota dell'occorrenza intera (`TodayPause.totalMinutes` / `minutesLeft`), `Animatable` `SLOW` |
 | `HeroHeader` | Colori della card per stato | `animateColorAsState` `LONG` |
 | `HeroHeader` | Titolo e sottotitolo che cambiano | `AnimatedContent` fade + slide `MEDIUM` / fade-out `SHORT` |
 | `HeroHeader` | Alone che respira quando blocca ora | `BreathingGlow` (composable privato composto **solo** in `ACTIVE_INSIDE`) legge `AmbientClock` nella fase di disegno: ciclo di `2 × AMBIENT` (4 s), scala 0.9→1.35, alpha 0.2→0.55, coseno. **Non** usa `rememberInfiniteTransition`: un loop proprio ridisegnava la finestra a ogni vsync (90 volte al secondo su un 90 Hz) e col telefono in pausa, lo stato principale, la GPU non reggeva più nulla. Sta fuori da `AnimatedContent`, e la campanella accanto mantiene il suo stato |
@@ -62,6 +62,8 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 
 ## Regole di implementazione
 
+- **`MotionScheme.expressive()`**: `QuietHoursTheme` è un `MaterialExpressiveTheme`, quindi i componenti Material (barre, bottoni, elenchi, sheet) si muovono con le spring espressive del tema. I token di `Motion.kt` restano per le animazioni di Nook; non duplicare nei componenti Material quello che il tema già fa.
+- **Barra ondulata di Oggi** (`LinearWavyProgressIndicator` in `TodayCard`): sempre `waveSpeed = 0.dp`. Un'onda che si muove ridisegnerebbe la finestra a ogni frame (stessa regola degli anelli infiniti qui sotto). La barra si riempie solo con l'`Animatable` `SLOW` del catalogo.
 - **Durate, easing e spring da `Motion`** (`ui/theme/Motion.kt`), mai numeri inline; le eccezioni di un singolo componente sono costanti private con nome, elencate nel catalogo.
 - **`label =`** su ogni `animate*AsState`, `Transition` e `InfiniteTransition` (servono all'Animation Inspector di Android Studio).
 - Anima in `graphicsLayer { }` (scale, rotation, alpha, translation): niente ricomposizione né nuovo layout a ogni frame. Evita di animare `padding`/`size` se basta una scala.

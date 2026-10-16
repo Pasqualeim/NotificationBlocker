@@ -1,9 +1,7 @@
 package com.pasquale.notificationblocker.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,9 +15,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.SegmentedListItem
+import com.pasquale.notificationblocker.ui.components.expressiveShape
+import com.pasquale.notificationblocker.ui.components.segmentColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -165,53 +165,51 @@ fun PausesContent(
                     )
                 }
             } else {
-                // One rounded group, rows split by dividers, like the system settings
+                // A segmented group, like the system settings: one segment per pause
                 item(key = "pauses") {
-                    Surface(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    Column(
                         modifier = Modifier.entrance(1),
+                        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
                     ) {
-                        Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                            pauses.forEachIndexed { index, pause ->
-                                if (index > 0) HorizontalDivider(modifier = Modifier.padding(start = 72.dp, end = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                                PauseRow(
-                                    pause = pause,
-                                    index = index,
-                                    onClick = { onPauseClick(pause) },
-                                    onEnabledChange = { onPauseEnabledChange(pause.id, it) },
-                                    isOnNow = pause.id in onNow,
-                                )
-                            }
+                        pauses.forEachIndexed { index, pause ->
+                            PauseRow(
+                                pause = pause,
+                                index = index,
+                                onClick = { onPauseClick(pause) },
+                                onEnabledChange = { onPauseEnabledChange(pause.id, it) },
+                                isOnNow = pause.id in onNow,
+                                position = index,
+                                count = pauses.size,
+                            )
                         }
                     }
                 }
             }
             item(key = "apps") {
                 SectionHeader(R.string.pauses_section_more)
-                Surface(
-                    shape = MaterialTheme.shapes.extraLarge,
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                Column(
                     modifier = Modifier.entrance(2),
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
                 ) {
-                    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                        LinkRow(
-                            icon = Icons.Default.DateRange,
-                            title = stringResource(R.string.days_off_title),
-                            subtitle = listOfNotNull(
-                                if (daysOffRanges > 0) pluralStringResource(R.plurals.days_off_row, daysOffRanges, daysOffRanges) else null,
-                                if (holidaysOn) stringResource(R.string.days_off_row_holidays) else null,
-                            ).joinToString("  ·  ").ifEmpty { stringResource(R.string.days_off_row_empty) },
-                            onClick = onDaysOff,
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(start = 72.dp, end = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                        LinkRow(
-                            icon = Icons.Default.Notifications,
-                            title = stringResource(R.string.select_apps),
-                            subtitle = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount),
-                            onClick = onEditWorkApps,
-                        )
-                    }
+                    LinkRow(
+                        icon = Icons.Default.DateRange,
+                        title = stringResource(R.string.days_off_title),
+                        subtitle = listOfNotNull(
+                            if (daysOffRanges > 0) pluralStringResource(R.plurals.days_off_row, daysOffRanges, daysOffRanges) else null,
+                            if (holidaysOn) stringResource(R.string.days_off_row_holidays) else null,
+                        ).joinToString("  ·  ").ifEmpty { stringResource(R.string.days_off_row_empty) },
+                        onClick = onDaysOff,
+                        position = 0,
+                        shapeIndex = 2,
+                    )
+                    LinkRow(
+                        icon = Icons.Default.Notifications,
+                        title = stringResource(R.string.select_apps),
+                        subtitle = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount),
+                        onClick = onEditWorkApps,
+                        position = 1,
+                        shapeIndex = 3,
+                    )
                 }
             }
         }
@@ -226,34 +224,37 @@ fun PausesContent(
     }
 }
 
-/** A row that opens another screen: icon in a circle, title, one line under it, chevron. */
+/** A segment of the "More" group that opens another screen: icon in an expressive shape, title, one line, chevron. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
-    ListItem(
-        modifier = Modifier.clickable(onClick = onClick),
-        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit, position: Int, shapeIndex: Int) {
+    SegmentedListItem(
+        onClick = onClick,
+        shapes = ListItemDefaults.segmentedShapes(index = position, count = 2),
+        colors = segmentColors(),
         leadingContent = {
             Box(
-                modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest, CircleShape),
+                modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.secondaryContainer, expressiveShape(shapeIndex)),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.size(20.dp))
             }
         },
-        headlineContent = { Text(text = title) },
         supportingContent = { Text(text = subtitle) },
         trailingContent = { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
-    )
+    ) {
+        Text(text = title)
+    }
 }
 
-/** A small label above a group of rows, like the section titles of the system settings. */
+/** The title above a group of segments, like the section titles of the system settings. */
 @Composable
 private fun SectionHeader(text: Int) {
     Text(
         text = stringResource(text),
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.secondary,
-        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 4.dp, top = 16.dp, bottom = 6.dp),
     )
 }
 

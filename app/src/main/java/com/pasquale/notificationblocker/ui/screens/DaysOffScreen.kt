@@ -122,7 +122,7 @@ fun DaysOffContent(
                 )
             }
             item {
-                Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainer) {
                     val next = DaysOff.nextHoliday(today)
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -159,7 +159,7 @@ fun DaysOffContent(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 } else {
-                    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
+                    Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainer) {
                         Column(modifier = Modifier.padding(vertical = 4.dp)) {
                             ranges.forEachIndexed { i, range ->
                                 if (i > 0) HorizontalDivider(modifier = Modifier.padding(start = 72.dp, end = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)

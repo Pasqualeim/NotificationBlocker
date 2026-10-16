@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
@@ -157,7 +156,7 @@ private fun HeroHeaderContent(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.extraLarge,
         colors = CardDefaults.cardColors(
             containerColor = animatedContainerColor,
             contentColor = animatedContentColor,
@@ -202,7 +201,7 @@ private fun HeroHeaderContent(
                         Box(
                             modifier = Modifier
                                 .size(48.dp)
-                                .background(color = animatedIconBackground, shape = CircleShape),
+                                .background(color = animatedIconBackground, shape = expressiveShape(0)),
                             contentAlignment = Alignment.Center
                         ) {
                             MutedBellIcon(

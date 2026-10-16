@@ -25,7 +25,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -264,38 +267,43 @@ fun LegendItem(color: Color, label: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** The totals under the chart, as a grouped list: free time, daylight, notifications paused, average a day. */
+/** The totals under the chart, as a segmented list: free time, daylight, notifications paused, average a day. */
 @Composable
 fun TotalsRow(livedMinutes: Int, daylightMinutes: Int, held: Int, modifier: Modifier = Modifier, averageMinutes: Int? = null) {
-    Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerLow) {
-        Column(modifier = Modifier.padding(vertical = 8.dp)) {
-            TotalLine(painterResource(R.drawable.ic_mug), MaterialTheme.colorScheme.secondary, stringResource(R.string.stats_tile_yours), durationText(livedMinutes))
-            TotalLine(painterResource(R.drawable.ic_tile_sun), MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_tile_daylight), durationText(daylightMinutes))
-            TotalLine(rememberVectorPainter(Icons.Filled.Notifications), MaterialTheme.colorScheme.primary, stringResource(R.string.stats_tile_held), held.toString())
-            if (averageMinutes != null) {
-                TotalLine(painterResource(R.drawable.ic_nav_time), MaterialTheme.colorScheme.tertiary, stringResource(R.string.stats_average), durationText(averageMinutes))
-            }
+    val count = if (averageMinutes != null) 4 else 3
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+        TotalLine(0, count, painterResource(R.drawable.ic_mug), stringResource(R.string.stats_tile_yours), durationText(livedMinutes))
+        TotalLine(1, count, painterResource(R.drawable.ic_tile_sun), stringResource(R.string.stats_tile_daylight), durationText(daylightMinutes), tint = MaterialTheme.colorScheme.sunlight)
+        TotalLine(2, count, rememberVectorPainter(Icons.Filled.Notifications), stringResource(R.string.stats_tile_held), held.toString())
+        if (averageMinutes != null) {
+            TotalLine(3, count, painterResource(R.drawable.ic_nav_time), stringResource(R.string.stats_average), durationText(averageMinutes))
         }
     }
 }
 
+/** One total: its icon in an expressive shape, the label, the figure at the end. [tint] null: the container's own content color. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun TotalLine(icon: androidx.compose.ui.graphics.painter.Painter, color: Color, label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+private fun TotalLine(
+    position: Int,
+    count: Int,
+    icon: androidx.compose.ui.graphics.painter.Painter,
+    label: String,
+    value: String,
+    tint: Color? = null,
+) {
+    val (container, content) = pauseContainerColors(position)
+    SegmentedListItem(
+        shapes = ListItemDefaults.segmentedShapes(index = position, count = count),
+        colors = segmentColors(),
+        leadingContent = {
+            Box(modifier = Modifier.size(40.dp).background(container, expressiveShape(position)), contentAlignment = Alignment.Center) {
+                androidx.compose.material3.Icon(painter = icon, contentDescription = null, tint = tint ?: content, modifier = Modifier.size(20.dp))
+            }
+        },
+        trailingContent = { Text(text = value, style = MaterialTheme.typography.titleMedium, maxLines = 1) },
     ) {
-        Box(modifier = Modifier.size(36.dp).background(color.copy(alpha = 0.16f), CircleShape), contentAlignment = Alignment.Center) {
-            androidx.compose.material3.Icon(
-                painter = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(20.dp),
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Text(text = value, style = MaterialTheme.typography.titleMedium, maxLines = 1)
+        Text(text = label)
     }
 }
 
