@@ -11,7 +11,7 @@ Prima di andare su Google Play, il prodotto si valida con un test indipendente. 
 | # | Voce | Chi | Note |
 |---|---|---|---|
 | 1 | Sistemare l'app: Nook 2 (`REDESIGN.md`) | Claude / Pasquale | Fasi 1-3 e revisione dei testi fatte (più pause, storico, tre schede). Resta la fase 4, il riccio (riga 1d). Il germoglio MVP è nello stash (`stash@{0}`), non nel codice |
-| 1a | Testi a una pausa sola | Claude (`copywriter`) | Fatta la revisione dei testi nuovi (fase 5). Restano alcune frasi scritte per una fascia sola (`hero_subtitle_outside`, `pause_ended_text`, `report_title`, `life_*`): rileggerle ora che le pause sono più d'una |
+| 1a | Testi a una pausa sola | Claude (`copywriter`) | Fatta la revisione dei testi nuovi (fase 5). Restano alcune frasi scritte per una fascia sola (`hero_subtitle_outside`, `pause_ended_text`, `life_*`): rileggerle ora che le pause sono più d'una |
 | 1b | `sunlight` nei controlli di contrasto | Claude | Aggiungere `LightSunlight`/`DarkSunlight` a `tools/palette/contrast.py` e alle tabelle di `DESIGN_SYSTEM.md` (oggi assente: barre non testuali, serve il rapporto col fondo) |
 | 1c | Screenshot dello store e immagini del sito da rifare | Claude / Pasquale | Quelli attuali (`docs/store/screenshots/`, `LISTING.md`, `nook-site`) mostrano la Home vecchia (orari e pulsante in basso) e non le tre schede |
 | 1d | Riccio (fase 4 di `REDESIGN.md`) | Claude / Pasquale | Scelto, ma ancora niente disegnato (il kit di pixel art è stato lasciato da parte per ora). Punteggio e hobby da progettare con lo storico che c'è già |

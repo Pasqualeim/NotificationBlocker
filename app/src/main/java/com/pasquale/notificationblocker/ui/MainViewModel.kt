@@ -15,6 +15,7 @@ import com.pasquale.notificationblocker.data.PreferencesManager
 import com.pasquale.notificationblocker.notification.ZenNotificationManager
 import com.pasquale.notificationblocker.tile.ZenTileService
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
+import com.pasquale.notificationblocker.ui.components.ReportApp
 import com.pasquale.notificationblocker.ui.zen.LifeCopy
 import com.pasquale.notificationblocker.ui.zen.LifeMessage
 import kotlinx.coroutines.Dispatchers
@@ -174,15 +175,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (shownReport == key) return
         shownReport = key
         val pm = getApplication<Application>().packageManager
-        val names = report.apps.take(REPORT_NAMED_APPS).map { app ->
-            runCatching { pm.getApplicationLabel(pm.getApplicationInfo(app.packageName, 0)).toString() }
+        val apps = report.apps.take(REPORT_NAMED_APPS).map { app ->
+            val name = runCatching { pm.getApplicationLabel(pm.getApplicationInfo(app.packageName, 0)).toString() }
                 .getOrDefault(app.packageName)
+            ReportApp(app.packageName, name, app.count)
         }
         _morningReport.value = MorningReportUi(
             total = report.total,
-            appNames = names,
-            moreApps = report.apps.size - names.size,
+            apps = apps,
+            moreApps = report.apps.size - apps.size,
         )
+    }
+
+    /** Opens [packageName] from the report: its held notifications are only there now. */
+    fun openApp(packageName: String) {
+        val app = getApplication<Application>()
+        val intent = app.packageManager.getLaunchIntentForPackage(packageName) ?: return
+        // An app updated or disabled since the report was read: nothing to open
+        runCatching { app.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
     }
 
     fun onMorningReportDismissed() {

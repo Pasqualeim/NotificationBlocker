@@ -143,6 +143,7 @@ fun MainScreen(
         morningReport = morningReport,
         onDismissMorningReport = viewModel::onMorningReportDismissed,
         onQuickPause = { showQuickPause = true },
+        onOpenApp = viewModel::openApp,
     )
 
     if (showQuickPause) {
@@ -182,6 +183,7 @@ fun MainScreenContent(
     heldToday: Int = 0,
     daylightTodayMinutes: Int = 0,
     onQuickPause: (() -> Unit)? = null,
+    onOpenApp: (String) -> Unit = {},
 ) {
     var animatedHeaderVisible by remember { mutableStateOf(value = false) }
     var animatedMetricsVisible by remember { mutableStateOf(value = false) }
@@ -250,7 +252,7 @@ fun MainScreenContent(
                     onAllow = onAllowZenNotification,
                     onDismiss = onDismissZenPrompt,
                 )
-                is TopCard.Report -> MorningReportCard(report = card.report, onDismiss = onDismissMorningReport)
+                is TopCard.Report -> MorningReportCard(report = card.report, onDismiss = onDismissMorningReport, onOpenApp = onOpenApp)
                 TopCard.Status -> HeroHeader(
                     ambientClock = ambientClock,
                     isBlockingEnabled = isBlockingEnabled,

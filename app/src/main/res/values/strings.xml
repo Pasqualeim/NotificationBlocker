@@ -111,16 +111,9 @@
     <string name="life_duration_minutes">%1$d min</string>
 
     <!-- Morning report: what waited outside during the last window -->
-    <string name="report_title">During your break</string>
     <plurals name="report_count">
-        <item quantity="one">%1$d work notification came in.</item>
-        <item quantity="other">%1$d work notifications came in.</item>
-    </plurals>
-    <string name="report_apps_one">From %1$s.</string>
-    <string name="report_apps_two">From %1$s and %2$s.</string>
-    <plurals name="report_apps_more">
-        <item quantity="one">From %1$s, %2$s and %3$d other app.</item>
-        <item quantity="other">From %1$s, %2$s and %3$d other apps.</item>
+        <item quantity="one">During your break, %1$d work notification came in.</item>
+        <item quantity="other">During your break, %1$d work notifications came in.</item>
     </plurals>
     <string name="report_nothing_lost">You can find them in their apps.</string>
     <string name="report_dismiss">OK</string>
@@ -240,4 +233,14 @@
         <item quantity="other">At most %1$d days</item>
     </plurals>
     <string name="days_off_row_holidays">public holidays on</string>
+    <string name="report_open">Open</string>
+    <string name="report_open_app">Open %1$s</string>
+    <plurals name="report_app_count">
+        <item quantity="one">%1$d notification</item>
+        <item quantity="other">%1$d notifications</item>
+    </plurals>
+    <plurals name="report_more_apps">
+        <item quantity="one">and %1$d more app</item>
+        <item quantity="other">and %1$d more apps</item>
+    </plurals>
 </resources>

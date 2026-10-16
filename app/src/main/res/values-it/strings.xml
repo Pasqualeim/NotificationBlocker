@@ -107,18 +107,10 @@
     <string name="life_duration_minutes">%1$d min</string>
 
     <!-- Rapporto del mattino: cosa ha aspettato fuori nell'ultima fascia -->
-    <string name="report_title">Durante la pausa</string>
     <plurals name="report_count">
-        <item quantity="one">È arrivata %1$d notifica di lavoro.</item>
-        <item quantity="many">Sono arrivate %1$d notifiche di lavoro.</item>
-        <item quantity="other">Sono arrivate %1$d notifiche di lavoro.</item>
-    </plurals>
-    <string name="report_apps_one">Da %1$s.</string>
-    <string name="report_apps_two">Da %1$s e %2$s.</string>
-    <plurals name="report_apps_more">
-        <item quantity="one">Da %1$s, %2$s e %3$d altra app.</item>
-        <item quantity="many">Da %1$s, %2$s e altre %3$d app.</item>
-        <item quantity="other">Da %1$s, %2$s e altre %3$d app.</item>
+        <item quantity="one">Durante la pausa è arrivata %1$d notifica di lavoro.</item>
+        <item quantity="many">Durante la pausa sono arrivate %1$d notifiche di lavoro.</item>
+        <item quantity="other">Durante la pausa sono arrivate %1$d notifiche di lavoro.</item>
     </plurals>
     <string name="report_nothing_lost">Le trovi nelle rispettive app.</string>
     <string name="report_dismiss">OK</string>
@@ -242,4 +234,16 @@
         <item quantity="other">Massimo %1$d giorni</item>
     </plurals>
     <string name="days_off_row_holidays">festivi attivi</string>
+    <string name="report_open">Apri</string>
+    <string name="report_open_app">Apri %1$s</string>
+    <plurals name="report_app_count">
+        <item quantity="one">%1$d notifica</item>
+        <item quantity="many">%1$d notifiche</item>
+        <item quantity="other">%1$d notifiche</item>
+    </plurals>
+    <plurals name="report_more_apps">
+        <item quantity="one">e %1$d altra app</item>
+        <item quantity="many">e altre %1$d app</item>
+        <item quantity="other">e altre %1$d app</item>
+    </plurals>
 </resources>
