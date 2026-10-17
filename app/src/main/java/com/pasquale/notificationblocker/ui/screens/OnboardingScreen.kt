@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.data.WeekCoverage
 import com.pasquale.notificationblocker.ui.AppInfo
 import com.pasquale.notificationblocker.ui.MainViewModel
@@ -259,7 +260,7 @@ private fun PausesStep(picked: List<Int>, onToggle: (Int) -> Unit) {
     // work, and the user meets the chart they will find on that tab. All three templates go in, the
     // unticked ones off, so each bar keeps the color of its template's avatar
     WeekCoverageCard(
-        coverage = WeekCoverage.of(TEMPLATES.mapIndexed { i, (pause, _) -> pause.copy(enabled = i in picked) }),
+        coverage = WeekCoverage.of(TEMPLATES.mapIndexed { i, (pause, _) -> pause.copy(enabled = i in picked) }, SleepWindow.DEFAULT),
     )
 }
 

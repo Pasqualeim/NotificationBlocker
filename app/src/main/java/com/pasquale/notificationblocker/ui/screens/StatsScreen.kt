@@ -48,6 +48,7 @@ import com.pasquale.notificationblocker.data.DaySpans
 import com.pasquale.notificationblocker.data.DayStats
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.PeriodStats
+import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.data.StatsRange
 import com.pasquale.notificationblocker.data.SunTimes
 import com.pasquale.notificationblocker.ui.MainViewModel
@@ -78,7 +79,8 @@ fun StatsScreen(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     // Today's numbers keep up with the clock while the tab is open
     val minute by rememberCurrentMinutes()
     LaunchedEffect(minute) { viewModel.refreshOffHoursStatus() }
-    StatsContent(history = history, pauses = pauses, now = LocalDateTime.now(), modifier = modifier)
+    val sleep by viewModel.sleepWindow.collectAsStateWithLifecycle()
+    StatsContent(history = history, pauses = pauses, now = LocalDateTime.now(), modifier = modifier, sleep = sleep)
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -88,6 +90,7 @@ fun StatsContent(
     pauses: List<Pause>,
     now: LocalDateTime,
     modifier: Modifier = Modifier,
+    sleep: SleepWindow? = null,
 ) {
     val today = now.toLocalDate()
     var range by rememberSaveable { mutableStateOf(StatsRange.WEEK) }
@@ -186,7 +189,7 @@ fun StatsContent(
                     StatsRange.DAY -> {
                         val day = period.days.first()
                         val (sunrise, sunset) = remember(day.date) { SunTimes.of(day.date) }
-                        val spans = remember(day, pauses, now) { DaySpans.of(day, pauses, now) }
+                        val spans = remember(day, pauses, now, sleep) { DaySpans.of(day, pauses, now, sleep) }
                         DayChart(
                             spans = spans,
                             sunrise = sunrise,

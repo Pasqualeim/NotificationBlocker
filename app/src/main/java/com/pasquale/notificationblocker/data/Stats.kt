@@ -52,13 +52,14 @@ data class PeriodStats(val range: StatsRange, val first: LocalDate, val days: Li
 /**
  * A stretch of one day lived on a break, for the day chart: [startMinute] and [endMinute] are minutes from
  * midnight of that day (0 to 1440). The history keeps minutes per pause, not the times, so the stretches
- * come from the pause times, only for the pauses with minutes lived that day, and today up to [now].
+ * come from the pause times, only for the pauses with minutes lived that day, and today up to [now], with
+ * the hours asleep cut out (they are not counted either).
  */
 data class DaySpan(val pause: Pause, val startMinute: Int, val endMinute: Int)
 
 object DaySpans {
 
-    fun of(day: DayStats, pauses: List<Pause>, now: LocalDateTime): List<DaySpan> {
+    fun of(day: DayStats, pauses: List<Pause>, now: LocalDateTime, sleep: SleepWindow? = null): List<DaySpan> {
         val dayStart = day.date.atStartOfDay()
         val dayEnd = dayStart.plusDays(1)
         val limit = if (now.isBefore(dayEnd)) maxOf(now, dayStart) else dayEnd
@@ -66,10 +67,13 @@ object DaySpans {
             listOf(day.date.minusDays(1), day.date)
                 .filter { pause.startsOn(it) }
                 .map { Occurrence(pause, it) }
-                .mapNotNull { o ->
+                .flatMap { o ->
                     val a = maxOf(o.start, dayStart)
                     val b = minOf(o.end, limit)
-                    if (!b.isAfter(a)) null else DaySpan(pause, minutesFrom(dayStart, a), minutesFrom(dayStart, b))
+                    if (!b.isAfter(a)) return@flatMap emptyList()
+                    val from = minutesFrom(dayStart, a)
+                    val to = minutesFrom(dayStart, b)
+                    (sleep?.awake(from, to) ?: listOf(from to to)).map { (x, y) -> DaySpan(pause, x, y) }
                 }
         }.sortedBy { it.startMinute }
     }

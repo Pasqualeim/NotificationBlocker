@@ -35,6 +35,20 @@ class WeekCoverageTest {
     }
 
     @Test
+    fun sleep_isLeftOutOfTheWeeklyHours() {
+        val pauses = listOf(
+            Pause("evening", "Sera", 18 * 60 + 30, 8 * 60 + 30),
+            Pause("lunch", "Pranzo", 13 * 60, 14 * 60, days = weekdays),
+            Pause("weekend", "Weekend", 0, 0, days = weekend),
+        )
+        val week = WeekCoverage.of(pauses, SleepWindow(23 * 60, 7 * 60))
+        // Weekdays 07:00-08:30, lunch and 18:30-23:00 (7 h); weekend days 16 h awake: 67 h, not 123
+        assertEquals(5 * 7 * 60 + 2 * 16 * 60, week.weeklyMinutes)
+        // The bars still show what is held, sleep included
+        assertEquals(1440, unionOf(week, DayOfWeek.SATURDAY))
+    }
+
+    @Test
     fun pauseEndingAtMidnight_addsNoMorningStretch() {
         val late = Pause("late", "Tardi", 22 * 60, 0, days = setOf(DayOfWeek.MONDAY))
         val week = WeekCoverage.of(listOf(late))

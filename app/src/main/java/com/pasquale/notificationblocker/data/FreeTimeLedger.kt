@@ -26,9 +26,10 @@ data class DayStats(
  * How much break time the user has lived, day by day. Pure logic (unit tested).
  *
  * A minute counts when the pause was really on: blocking enabled and a pause in progress, not ended early,
- * with apps to silence. Opening a work app during the break costs nothing (Nook does not see it); "End the
- * pause" only stops the count from that moment. A minute belongs to the calendar day it falls on, so an
- * overnight pause is split between two days; when pauses overlap it counts once, for the one that started first.
+ * with apps to silence, and the user awake (outside [Config.sleep]). Opening a work app during the break
+ * costs nothing (Nook does not see it); "End the pause" only stops the count from that moment. A minute
+ * belongs to the calendar day it falls on, so an overnight pause is split between two days; when pauses
+ * overlap it counts once, for the one that started first.
  *
  * Still no alarms: [PreferencesManager] settles the time between two looks at the clock ([settle]) before
  * every change of the settings, and whenever the app or the listener service refreshes. Between two looks
@@ -48,6 +49,8 @@ object FreeTimeLedger {
         val workApps: Set<String>,
         val pauses: List<Pause>,
         val ended: Set<String>,
+        /** Asleep minutes are left out: the pause still holds work, but sleep is not time won back. */
+        val sleep: SleepWindow? = null,
     )
 
     /**
@@ -97,6 +100,10 @@ object FreeTimeLedger {
             cuts += date.atStartOfDay()
             cuts += date.atStartOfDay().plusMinutes(sunrise.toLong())
             cuts += date.atStartOfDay().plusMinutes(sunset.toLong())
+            config.sleep?.ofDay?.forEach { (a, b) ->
+                cuts += date.atStartOfDay().plusMinutes(a.toLong())
+                cuts += date.atStartOfDay().plusMinutes(b.toLong())
+            }
             date = date.plusDays(1)
         }
 
@@ -105,11 +112,12 @@ object FreeTimeLedger {
         for ((a, b) in points.zipWithNext()) {
             // Overlapping pauses: the piece goes to the one that started first
             val pause = occurrences.firstOrNull { !a.isBefore(it.start) && a.isBefore(it.end) }?.pause ?: continue
+            val ofDay = a.hour * 60 + a.minute
+            if (config.sleep != null && ofDay in config.sleep) continue
             val minutes = Duration.between(a.atZone(zone), b.atZone(zone)).toMinutes().toInt()
             if (minutes <= 0) continue
             val day = result[a.toLocalDate()] ?: DayStats(a.toLocalDate())
             val (sunrise, sunset) = sun(day.date)
-            val ofDay = a.hour * 60 + a.minute
             result[day.date] = day.copy(
                 livedMinutes = day.livedMinutes + minutes,
                 daylightMinutes = day.daylightMinutes + if (ofDay in sunrise until sunset) minutes else 0,

@@ -202,7 +202,7 @@ private fun NameField(name: String, onNameChange: (String) -> Unit) {
 }
 
 @Composable
-private fun TimeBox(label: Int, minutes: Int, modifier: Modifier, onClick: () -> Unit) {
+internal fun TimeBox(label: Int, minutes: Int, modifier: Modifier, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         modifier = modifier,

@@ -44,6 +44,16 @@ class FreeTimeLedgerTest {
     }
 
     @Test
+    fun sleep_isHeldButNotCounted() {
+        // Evening 17:00-09:00, asleep 23:00-07:00: Friday 17-23, Saturday 07-09
+        val sleeping = FreeTimeLedger.Config(true, setOf("work"), listOf(evening), emptySet(), SleepWindow(23 * 60, 7 * 60))
+        val days = settle(fri(17), sat(9), sleeping)
+        assertEquals(6 * 60, days[friday]!!.livedMinutes)
+        assertEquals(2 * 60, days[friday.plusDays(1)]!!.livedMinutes)
+        assertEquals(mapOf("evening" to 2 * 60), days[friday.plusDays(1)]!!.byPause)
+    }
+
+    @Test
     fun overnightPause_isSplitBetweenTheTwoDays() {
         val days = settle(fri(17), sat(9))
         assertEquals(7 * 60, days[friday]!!.livedMinutes)

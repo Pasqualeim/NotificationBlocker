@@ -293,4 +293,14 @@
     <string name="onboarding_back">Indietro</string>
     <string name="onboarding_next">Continua</string>
     <string name="onboarding_finish">Inizia</string>
+    <string name="week_coverage_caption_awake">senza notifiche di lavoro, sonno escluso</string>
+    <string name="week_legend_sleep">Vuoto: arrivano le notifiche di lavoro. Sbiadito: il tuo sonno (%1$s–%2$s), in pausa ma non contato.</string>
+    <string name="sleep_row_title">Sonno</string>
+    <string name="sleep_row">%1$s–%2$s</string>
+    <string name="sleep_row_none">Non impostato</string>
+    <string name="sleep_sheet_title">Quando dormi?</string>
+    <string name="sleep_sheet_text">Mentre dormi il lavoro resta in pausa, così la mattina riparti da zero. Queste ore non contano come tempo libero, perché dormiresti comunque.</string>
+    <string name="sleep_bedtime">A letto alle</string>
+    <string name="sleep_wake">Sveglia alle</string>
+    <string name="sleep_none_hint">Con lo stesso orario due volte non togli niente e tutta la notte conta come tempo libero.</string>
 </resources>

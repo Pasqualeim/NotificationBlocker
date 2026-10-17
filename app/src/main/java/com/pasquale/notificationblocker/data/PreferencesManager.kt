@@ -64,6 +64,17 @@ class PreferencesManager private constructor(context: Context) {
         putBoolean(KEY_ONBOARDING_DONE, true)
     }
 
+    /** When the user usually sleeps: still held, but left out of the free time (see [SleepWindow]). */
+    var sleepWindow: SleepWindow
+        get() = SleepWindow(
+            prefs.getInt(KEY_SLEEP_START, SleepWindow.DEFAULT.start),
+            prefs.getInt(KEY_SLEEP_END, SleepWindow.DEFAULT.end),
+        )
+        set(value) = settleThen {
+            putInt(KEY_SLEEP_START, value.start)
+            putInt(KEY_SLEEP_END, value.end)
+        }
+
     /** Public holidays count as days off (off by default: not everyone has them free). */
     var holidaysEnabled: Boolean
         get() = prefs.getBoolean(KEY_HOLIDAYS_ENABLED, false)
@@ -182,7 +193,7 @@ class PreferencesManager private constructor(context: Context) {
         // The clock went back: wait until it passes the last look again, so no minute counts twice
         if (nowMillis <= seenAt) return
         val from = LocalDateTime.ofInstant(Instant.ofEpochMilli(seenAt), ZoneId.systemDefault())
-        val config = FreeTimeLedger.Config(isBlockingEnabled, getBlockedApps(), allPauses(), pauseEndedKeys)
+        val config = FreeTimeLedger.Config(isBlockingEnabled, getBlockedApps(), allPauses(), pauseEndedKeys, sleepWindow)
         val before = history
         val after = FreeTimeLedger.settle(before, from, now, config)
         prefs.edit {
@@ -293,6 +304,8 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_PAUSES = "pauses"
         const val KEY_ONE_OFF_PAUSES = "one_off_pauses"
         const val KEY_HOLIDAYS_ENABLED = "holidays_enabled"
+        const val KEY_SLEEP_START = "sleep_start"
+        const val KEY_SLEEP_END = "sleep_end"
         private const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val LEGACY_PAUSE_ID = "main"
         private const val KEY_HISTORY = "history"

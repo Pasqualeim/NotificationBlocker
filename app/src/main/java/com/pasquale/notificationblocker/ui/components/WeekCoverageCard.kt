@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.pasquale.notificationblocker.data.CoverageSegment
+import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.Pause
@@ -45,10 +46,11 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 
 /**
- * Top of the Breaks tab (and step 2 of the first launch): the hours a week without work
+ * Top of the Breaks tab (and step 2 of the first launch): the awake hours a week without work
  * notifications, then one 24 h bar per group of days that look the same ("Lun–ven", "Sab–dom"),
- * every pause in its color and the free times written under it, and a one-line legend for the empty part. The
- * stretches grow in from the left when the card first shows.
+ * every pause in its color, the sleep hours veiled (still paused, not counted), the free times written
+ * under it, and a short legend for the empty and the veiled parts. The stretches grow in from the left
+ * when the card first shows.
  */
 @Composable
 fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
@@ -63,6 +65,8 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
     }
     val colors = (0 until 3).map { pauseColor(it) }
     val track = MaterialTheme.colorScheme.surfaceContainerHighest
+    // The card's own color over the sleep hours: the pause shows through, faded
+    val veil = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = SLEEP_VEIL)
 
     Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -77,7 +81,9 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
                 format = { stringResource(R.string.life_duration_hours, it) },
             )
             Text(
-                text = stringResource(R.string.week_coverage_caption),
+                text = stringResource(
+                    if (coverage.sleep?.ofDay.isNullOrEmpty()) R.string.week_coverage_caption else R.string.week_coverage_caption_awake,
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -86,13 +92,16 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
             // near-identical rows and an hour axis left people guessing what the bars meant
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 for (group in coverage.groups) {
-                    DayGroupRow(group = group, colors = colors, track = track, grow = { grow.value })
+                    DayGroupRow(group = group, colors = colors, track = track, sleep = coverage.sleep, veil = veil, grow = { grow.value })
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            // The colors are the pauses, named by the dots under each bar: only the empty part needs a word
+            // The colors are the pauses, named by the dots under each bar: only the empty and the veiled
+            // parts need a word
+            val sleep = coverage.sleep?.takeIf { it.start != it.end }
             Text(
-                text = stringResource(R.string.week_legend_active),
+                text = if (sleep == null) stringResource(R.string.week_legend_active)
+                else stringResource(R.string.week_legend_sleep, OffHours.format(sleep.start), OffHours.format(sleep.end)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -100,9 +109,19 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
     }
 }
 
+/** How much of the card's color covers the sleep hours. */
+private const val SLEEP_VEIL = 0.6f
+
 /** One group of days: their name, the 24 h bar with its free stretches in their pause's color, and the times in words. */
 @Composable
-private fun DayGroupRow(group: WeekCoverage.DayGroup, colors: List<Color>, track: Color, grow: () -> Float) {
+private fun DayGroupRow(
+    group: WeekCoverage.DayGroup,
+    colors: List<Color>,
+    track: Color,
+    sleep: SleepWindow?,
+    veil: Color,
+    grow: () -> Float,
+) {
     val day = OffHours.MINUTES_PER_DAY.toFloat()
     val label = daysSummary(group.days.toSet())
     val times = group.stretches.map { stretchText(it) }
@@ -125,6 +144,9 @@ private fun DayGroupRow(group: WeekCoverage.DayGroup, colors: List<Color>, track
                     val x = minOf(size.width * s.start / day, size.width - full)
                     val w = full * grow()
                     if (w > 0f) drawRoundRect(colors[s.pauseIndex % colors.size], Offset(x, 0f), Size(w, size.height), r)
+                }
+                sleep?.ofDay?.forEach { (a, b) ->
+                    drawRect(veil, Offset(size.width * a / day, 0f), Size(size.width * (b - a) / day, size.height))
                 }
             }
         }
@@ -166,7 +188,7 @@ private val previewPauses = listOf(
 @Composable
 fun WeekCoverageCardPreview() {
     NotificationBlockerTheme {
-        WeekCoverageCard(WeekCoverage.of(previewPauses), Modifier.padding(16.dp))
+        WeekCoverageCard(WeekCoverage.of(previewPauses, SleepWindow.DEFAULT), Modifier.padding(16.dp))
     }
 }
 

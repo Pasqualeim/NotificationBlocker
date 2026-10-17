@@ -7,10 +7,14 @@ data class CoverageSegment(val start: Int, val end: Int, val pauseIndex: Int)
 
 /**
  * The typical week drawn by the Breaks tab: for each weekday, the stretches covered by the enabled
- * pauses (an overnight pause shows on the day it starts and on the morning after), and the minutes
- * of the week covered by at least one pause, overlaps counted once.
+ * pauses (an overnight pause shows on the day it starts and on the morning after), and the awake
+ * minutes of the week covered by at least one pause, overlaps counted once, [sleep] left out.
  */
-data class WeekCoverage(val days: Map<DayOfWeek, List<CoverageSegment>>, val weeklyMinutes: Int) {
+data class WeekCoverage(
+    val days: Map<DayOfWeek, List<CoverageSegment>>,
+    val weeklyMinutes: Int,
+    val sleep: SleepWindow? = null,
+) {
 
     /**
      * Weekdays that look the same, Monday first: in a typical week most of them do, so the card draws
@@ -37,7 +41,7 @@ data class WeekCoverage(val days: Map<DayOfWeek, List<CoverageSegment>>, val wee
         private const val DAY = OffHours.MINUTES_PER_DAY
 
         /** [CoverageSegment.pauseIndex] is the pause's place in [pauses], so it matches its color. */
-        fun of(pauses: List<Pause>): WeekCoverage {
+        fun of(pauses: List<Pause>, sleep: SleepWindow? = null): WeekCoverage {
             val days = DayOfWeek.entries.associateWith { day ->
                 val yesterday = day.minus(1)
                 pauses.flatMapIndexed { index, p ->
@@ -58,7 +62,12 @@ data class WeekCoverage(val days: Map<DayOfWeek, List<CoverageSegment>>, val wee
                     }
                 }.sortedBy { it.start }
             }
-            return WeekCoverage(days, days.values.sumOf { unionLength(it) })
+            val awake = days.values.sumOf { segments ->
+                merge(segments).sumOf { s ->
+                    sleep?.awake(s.start, s.end)?.sumOf { (a, b) -> b - a } ?: (s.end - s.start)
+                }
+            }
+            return WeekCoverage(days, awake, sleep)
         }
 
         /**
@@ -75,19 +84,6 @@ data class WeekCoverage(val days: Map<DayOfWeek, List<CoverageSegment>>, val wee
             return groups.map { parts ->
                 CoverageSegment(parts.first().start, parts.maxOf { it.end }, parts.maxBy { it.end - it.start }.pauseIndex)
             }
-        }
-
-        private fun unionLength(segments: List<CoverageSegment>): Int {
-            var total = 0
-            var reach = 0
-            for (s in segments.sortedBy { it.start }) {
-                val from = maxOf(s.start, reach)
-                if (s.end > from) {
-                    total += s.end - from
-                    reach = s.end
-                }
-            }
-            return total
         }
     }
 }

@@ -12,6 +12,7 @@ import com.pasquale.notificationblocker.data.DaysOff
 import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.data.QuickPause
 import com.pasquale.notificationblocker.data.PreferencesManager
+import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.notification.ZenNotificationManager
 import com.pasquale.notificationblocker.tile.ZenTileService
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
@@ -62,6 +63,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _holidaysEnabled = MutableStateFlow(preferencesManager.holidaysEnabled)
     val holidaysEnabled: StateFlow<Boolean> = _holidaysEnabled.asStateFlow()
+
+    // When the user usually sleeps: held, but not counted as free time
+    private val _sleepWindow = MutableStateFlow(preferencesManager.sleepWindow)
+    val sleepWindow: StateFlow<SleepWindow> = _sleepWindow.asStateFlow()
 
     /** Minutes to the next pause start when it is close enough for "until the next break", else null. */
     private val _minutesToNextPause = MutableStateFlow(computeMinutesToNext())
@@ -259,6 +264,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         preferencesManager.removeDaysOff(id)
         onPausesChanged()
         refreshZenNotification()
+    }
+
+    fun setSleepWindow(window: SleepWindow) {
+        preferencesManager.sleepWindow = window
+        _sleepWindow.value = window
+        _history.value = preferencesManager.history
     }
 
     fun setHolidaysEnabled(enabled: Boolean) {

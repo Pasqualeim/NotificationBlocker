@@ -290,4 +290,14 @@
     <string name="onboarding_back">Back</string>
     <string name="onboarding_next">Continue</string>
     <string name="onboarding_finish">Start</string>
+    <string name="week_coverage_caption_awake">without work notifications, sleep not counted</string>
+    <string name="week_legend_sleep">Empty: work notifications come through. Faded: your sleep (%1$s–%2$s), paused but not counted.</string>
+    <string name="sleep_row_title">Sleep</string>
+    <string name="sleep_row">%1$s–%2$s</string>
+    <string name="sleep_row_none">Not set</string>
+    <string name="sleep_sheet_title">When do you sleep?</string>
+    <string name="sleep_sheet_text">Work stays paused while you sleep, so the morning starts clean. These hours don\'t count as free time, since you\'d be asleep anyway.</string>
+    <string name="sleep_bedtime">Bedtime</string>
+    <string name="sleep_wake">Wake up</string>
+    <string name="sleep_none_hint">With the same time twice, no sleep is left out and the whole night counts as free time.</string>
 </resources>

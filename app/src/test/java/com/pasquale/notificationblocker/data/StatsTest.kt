@@ -62,5 +62,8 @@ class StatsTest {
         // Last night's evening up to 08:30, lunch, tonight's evening up to now; no weekend (nothing lived)
         assertEquals(listOf(0 to 510, 780 to 840, 1110 to 1140), spans.map { it.startMinute to it.endMinute })
         assertEquals(listOf("evening", "lunch", "evening"), spans.map { it.pause.id })
+        // Asleep 23:00-07:00: last night's evening starts at 07:00 on the chart
+        val awake = DaySpans.of(history[thursday]!!, listOf(evening, lunch, weekend), thursday.atTime(19, 0), SleepWindow(23 * 60, 7 * 60))
+        assertEquals(listOf(420 to 510, 780 to 840, 1110 to 1140), awake.map { it.startMinute to it.endMinute })
     }
 }

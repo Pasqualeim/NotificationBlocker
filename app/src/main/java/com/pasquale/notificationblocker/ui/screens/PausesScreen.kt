@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +44,9 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.PauseCodec
 import com.pasquale.notificationblocker.data.PauseSchedule
+import com.pasquale.notificationblocker.data.OffHours
+import com.pasquale.notificationblocker.data.SleepWindow
+import com.pasquale.notificationblocker.ui.components.SleepSheet
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.PauseRow
 import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
@@ -68,6 +72,8 @@ fun PausesScreen(
     val workApps by viewModel.blockedAppsCount.collectAsStateWithLifecycle()
     val daysOff by viewModel.daysOff.collectAsStateWithLifecycle()
     val holidays by viewModel.holidaysEnabled.collectAsStateWithLifecycle()
+    val sleep by viewModel.sleepWindow.collectAsStateWithLifecycle()
+    var editingSleep by rememberSaveable { mutableStateOf(false) }
     // The "on now" label follows the clock
     val minute by rememberCurrentMinutes()
     val onNow = remember(pauses, ended, minute) {
@@ -96,8 +102,21 @@ fun PausesScreen(
         onDaysOff = onDaysOff,
         daysOffRanges = daysOff.size,
         holidaysOn = holidays,
+        sleep = sleep,
+        onSleep = { editingSleep = true },
         modifier = modifier,
     )
+
+    if (editingSleep) {
+        SleepSheet(
+            window = sleep,
+            onSave = {
+                viewModel.setSleepWindow(it)
+                editingSleep = false
+            },
+            onDismiss = { editingSleep = false },
+        )
+    }
 
     if (editingPause != null) {
         // The stored pause, if any: the app choice is written straight away by the app list
@@ -139,6 +158,8 @@ fun PausesContent(
     onDaysOff: () -> Unit = {},
     daysOffRanges: Int = 0,
     holidaysOn: Boolean = false,
+    sleep: SleepWindow = SleepWindow.DEFAULT,
+    onSleep: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -148,7 +169,7 @@ fun PausesContent(
         ) {
             item(key = "week") {
                 WeekCoverageCard(
-                    coverage = remember(pauses) { WeekCoverage.of(pauses) },
+                    coverage = remember(pauses, sleep) { WeekCoverage.of(pauses, sleep) },
                     modifier = Modifier.entrance(0),
                 )
             }
@@ -201,11 +222,20 @@ fun PausesContent(
                         shapeIndex = 2,
                     )
                     LinkRow(
+                        icon = ImageVector.vectorResource(R.drawable.ic_moon),
+                        title = stringResource(R.string.sleep_row_title),
+                        subtitle = if (sleep.start == sleep.end) stringResource(R.string.sleep_row_none)
+                        else stringResource(R.string.sleep_row, OffHours.format(sleep.start), OffHours.format(sleep.end)),
+                        onClick = onSleep,
+                        position = 1,
+                        shapeIndex = 1,
+                    )
+                    LinkRow(
                         icon = Icons.Default.Notifications,
                         title = stringResource(R.string.select_apps),
                         subtitle = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount),
                         onClick = onEditWorkApps,
-                        position = 1,
+                        position = 2,
                         shapeIndex = 3,
                     )
                 }
@@ -222,13 +252,15 @@ fun PausesContent(
     }
 }
 
+private const val MORE_ROWS = 3
+
 /** A segment of the "More" group that opens another screen: icon in an expressive shape, title, one line, chevron. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit, position: Int, shapeIndex: Int) {
     SegmentedListItem(
         onClick = onClick,
-        shapes = ListItemDefaults.segmentedShapes(index = position, count = 2),
+        shapes = ListItemDefaults.segmentedShapes(index = position, count = MORE_ROWS),
         colors = segmentColors(),
         leadingContent = {
             Box(
