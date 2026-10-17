@@ -47,7 +47,7 @@ import java.time.DayOfWeek
 /**
  * Top of the Breaks tab (and step 2 of the first launch): the hours a week without work
  * notifications, then one 24 h bar per group of days that look the same ("Lun–ven", "Sab–dom"),
- * every pause in its color and the free times written under it, and a two-item legend. The
+ * every pause in its color and the free times written under it, and a one-line legend for the empty part. The
  * stretches grow in from the left when the card first shows.
  */
 @Composable
@@ -86,7 +86,7 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
             // near-identical rows and an hour axis left people guessing what the bars meant
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 for (group in coverage.groups) {
-                    DayGroupRow(group = group, colors = colors, track = track, grow = grow.value)
+                    DayGroupRow(group = group, colors = colors, track = track, grow = { grow.value })
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -102,7 +102,7 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
 
 /** One group of days: their name, the 24 h bar with its free stretches in their pause's color, and the times in words. */
 @Composable
-private fun DayGroupRow(group: WeekCoverage.DayGroup, colors: List<Color>, track: Color, grow: Float) {
+private fun DayGroupRow(group: WeekCoverage.DayGroup, colors: List<Color>, track: Color, grow: () -> Float) {
     val day = OffHours.MINUTES_PER_DAY.toFloat()
     val label = daysSummary(group.days.toSet())
     val times = group.stretches.map { stretchText(it) }
@@ -123,7 +123,7 @@ private fun DayGroupRow(group: WeekCoverage.DayGroup, colors: List<Color>, track
                 for (s in group.stretches) {
                     val full = maxOf(size.width * (s.end - s.start) / day, 4.dp.toPx())
                     val x = minOf(size.width * s.start / day, size.width - full)
-                    val w = full * grow
+                    val w = full * grow()
                     if (w > 0f) drawRoundRect(colors[s.pauseIndex % colors.size], Offset(x, 0f), Size(w, size.height), r)
                 }
             }

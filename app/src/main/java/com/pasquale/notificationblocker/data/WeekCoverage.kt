@@ -16,20 +16,22 @@ data class WeekCoverage(val days: Map<DayOfWeek, List<CoverageSegment>>, val wee
      * Weekdays that look the same, Monday first: in a typical week most of them do, so the card draws
      * one bar per group ("Mon-Fri", "Sat-Sun") instead of seven near-identical rows.
      *
-     * @param segments the pauses of the first of those days, as they cover it
-     * @param stretches the same day as the times without work notifications: overlapping or touching
-     *   stretches merged (see [merge]), each with one pause for its color
+     * @param stretches the first of those days as the times without work notifications: overlapping or
+     *   touching stretches merged (see [merge]), each with one pause for its color
      */
-    data class DayGroup(val days: List<DayOfWeek>, val segments: List<CoverageSegment>, val stretches: List<CoverageSegment>)
+    data class DayGroup(val days: List<DayOfWeek>, val stretches: List<CoverageSegment>)
 
     val groups: List<DayGroup>
         // Days that read the same (same free times) share a bar, even if different pauses make them;
         // the first of them gives the colors
-        get() = DayOfWeek.entries
-            .groupBy { day -> merge(days.getValue(day)).map { it.start to it.end } }
-            .values
-            .map { sameDays -> days.getValue(sameDays.first()).let { DayGroup(sameDays, it, merge(it)) } }
-            .sortedBy { it.days.first() }
+        get() {
+            val merged = DayOfWeek.entries.associateWith { merge(days.getValue(it)) }
+            return DayOfWeek.entries
+                .groupBy { day -> merged.getValue(day).map { it.start to it.end } }
+                .values
+                .map { sameDays -> DayGroup(sameDays, merged.getValue(sameDays.first())) }
+                .sortedBy { it.days.first() }
+        }
 
     companion object {
         private const val DAY = OffHours.MINUTES_PER_DAY
