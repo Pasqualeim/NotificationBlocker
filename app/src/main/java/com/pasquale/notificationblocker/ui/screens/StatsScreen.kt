@@ -2,6 +2,7 @@ package com.pasquale.notificationblocker.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,6 +48,7 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.DaySpans
 import com.pasquale.notificationblocker.data.DayStats
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.PeriodStats
 import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.data.StatsRange
@@ -197,11 +199,13 @@ fun StatsContent(
                             nowMinute = if (day.date == today) now.hour * 60 + now.minute else null,
                             colorOf = { colors[it] ?: Color.Unspecified },
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                            // One entry per pause: a range of days off or the holidays hold one pause per date
-                            pauses.distinctBy { it.id }.filter { (day.byPause[it.id] ?: 0) > 0 }.forEach { p ->
-                                LegendItem(colors[p.id] ?: MaterialTheme.colorScheme.secondary, pauseName(p))
+                        // The times in words under the bar, one entry per pause, then the daylight line
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            spans.groupBy { it.pause.id }.values.forEach { same ->
+                                val times = same.joinToString(", ") { OffHours.format(it.startMinute) + "–" + OffHours.format(it.endMinute) }
+                                LegendItem(colors[same.first().pause.id] ?: MaterialTheme.colorScheme.secondary, pauseName(same.first().pause) + " " + times)
                             }
+                            LegendItem(MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_day_light, OffHours.format(sunrise), OffHours.format(sunset)))
                         }
                     }
                     StatsRange.WEEK -> {

@@ -170,8 +170,7 @@
     <string name="stats_month_hint">Più il cerchio è pieno, più tempo libero hai avuto quel giorno.</string>
     <string name="stats_prev">Precedente</string>
     <string name="stats_next">Successivo</string>
-    <string name="stats_sunrise">alba %1$s</string>
-    <string name="stats_sunset">tramonto %1$s</string>
+    <string name="stats_day_light">Luce %1$s–%2$s</string>
     <string name="stats_range">%1$s–%2$s</string>
     <string name="pause_days_every">Tutti i giorni</string>
     <string name="pause_days_weekdays">Lun–ven</string>

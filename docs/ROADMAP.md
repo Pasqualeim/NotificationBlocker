@@ -85,6 +85,7 @@ Le voci più vecchie descrivono l'app com'era allora (una sola fascia, Home con 
 
 | Voce | Note |
 |---|---|
+| Grafico del giorno in Statistiche | `DayChart` è una barra orizzontale di 24 h come Oggi e Pause (tratti nei colori delle pause, linea della luce sopra, punto per adesso, orari scritti sotto). La cronologia (`history`) salva per ogni giorno anche quando sono stati vissuti i minuti (6° campo `pauseId@inizio-fine;...`, circa 40 KB l'anno); le righe a 5 campi si leggono ancora e per quei giorni il grafico stima dagli orari delle pause |
 | Scena animata (`ZenScene`) | Scrivania al lavoro / paesaggio fuori orario, luce reale e 4 stagioni, 30 fps con livelli in cache GPU |
 | Scene ridisegnate | Al lavoro: scrivania in ufficio con il codice che si scrive sul monitor, orologio sull'ora vera, vetrata sullo skyline (torri di vetro, guglia, parco di stagione). Fuori orario: pontile sul lago con barca, anatre, ramo e canne, al posto del giardino giapponese. Neve d'inverno (`isSnowing`, 6 ore in alcuni giorni) accanto alla pioggia. Prestazioni da rimisurare su release (A32) |
 | Notifica della pausa (Live Notification, nel codice "zen") | Silenziosa, fissa, animata per fase del giorno, fine fascia e contatore; niente allarmi. Vedi `MOTION.md` |

@@ -39,7 +39,13 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -200,8 +206,9 @@ fun MonthCalendar(days: List<DayStats>, today: LocalDate, modifier: Modifier = M
 }
 
 /**
- * One day from 00 at the top to 24 at the bottom: daylight as a warm band, the breaks lived as colored
- * stretches, a dashed line at the current time (today only).
+ * One day as a 24 h bar, like the bars of Today and Breaks: the breaks lived as stretches in their pause's
+ * color, a thin daylight line above the bar from sunrise to sunset, and a dot at the current time (today
+ * only). The times are written under it by the caller, in the legend.
  *
  * @param colorOf color of a pause, by id
  */
@@ -214,41 +221,43 @@ fun DayChart(
     colorOf: (String) -> Color,
     modifier: Modifier = Modifier,
 ) {
-    val band = MaterialTheme.colorScheme.sunlight.copy(alpha = 0.25f)
-    val nowColor = MaterialTheme.colorScheme.onSurface
+    val track = MaterialTheme.colorScheme.surfaceContainerHighest
+    val sun = MaterialTheme.colorScheme.sunlight
+    val dotFill = MaterialTheme.colorScheme.surface
+    val dotRing = MaterialTheme.colorScheme.onSurface
     val day = OffHours.MINUTES_PER_DAY.toFloat()
-    Row(modifier = modifier.height(200.dp)) {
-        Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
-            for (h in listOf(0, 6, 12, 18, 24)) {
-                Text(text = OffHours.format(h * 60).substring(0, 2), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(30.dp)) {
+            val line = 3.dp.toPx()
+            drawLine(
+                sun,
+                Offset(size.width * sunrise / day, line),
+                Offset(size.width * sunset / day, line),
+                line,
+                cap = StrokeCap.Round,
+            )
+            val top = 10.dp.toPx()
+            val barH = 16.dp.toPx()
+            val pill = Path().apply { addRoundRect(RoundRect(Rect(Offset(0f, top), Size(size.width, barH)), CornerRadius(barH / 2))) }
+            drawPath(pill, track)
+            // Square-ish stretches clipped to the pill, as on the Breaks card: a short break stays a block
+            clipPath(pill) {
+                for (span in spans) {
+                    val w = maxOf(4.dp.toPx(), size.width * (span.endMinute - span.startMinute) / day)
+                    val x = minOf(size.width * span.startMinute / day, size.width - w)
+                    drawRoundRect(colorOf(span.pause.id), Offset(x, top), Size(w, barH), CornerRadius(2.dp.toPx()))
+                }
+            }
+            nowMinute?.let {
+                val c = Offset(size.width * it / day, top + barH / 2)
+                drawCircle(dotFill, 6.dp.toPx(), c)
+                drawCircle(dotRing, 6.dp.toPx(), c, style = Stroke(2.dp.toPx()))
             }
         }
-        Spacer(modifier = Modifier.width(10.dp))
-        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val r = CornerRadius(8.dp.toPx())
-                drawRoundRect(band, Offset(0f, size.height * sunrise / day), Size(size.width, size.height * (sunset - sunrise) / day), r)
-                for (span in spans) {
-                    val top = size.height * span.startMinute / day
-                    val h = maxOf(4.dp.toPx(), size.height * (span.endMinute - span.startMinute) / day)
-                    drawRoundRect(colorOf(span.pause.id), Offset(8.dp.toPx(), top), Size(size.width * 0.42f, h), CornerRadius(6.dp.toPx()))
-                }
-                nowMinute?.let {
-                    val y = size.height * it / day
-                    drawLine(nowColor, Offset(0f, y), Offset(size.width, y), 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f)))
-                }
-            }
-            Column(
-                modifier = Modifier.align(Alignment.TopEnd).padding(end = 8.dp, top = 4.dp),
-                horizontalAlignment = Alignment.End,
-            ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            for (h in listOf(0, 6, 12, 18, 24)) {
                 Text(
-                    text = stringResource(R.string.stats_sunrise, OffHours.format(sunrise)),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(R.string.stats_sunset, OffHours.format(sunset)),
+                    text = OffHours.format(h * 60).substring(0, 2),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

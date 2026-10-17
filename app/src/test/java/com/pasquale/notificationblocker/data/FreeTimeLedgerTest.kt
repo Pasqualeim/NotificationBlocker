@@ -127,5 +127,21 @@ class FreeTimeLedgerTest {
         val days = settle(fri(17), sat(9)).let { FreeTimeLedger.addHeld(it, friday) }
         val decoded = HistoryCodec.decode(HistoryCodec.encode(days) + "\nnot a day")
         assertEquals(days, decoded)
+        // A line written before the times were kept still reads, with no stretches
+        val old = HistoryCodec.decode("2026-10-16\t60\t0\t0\tevening=60").getValue(friday)
+        assertEquals(60, old.livedMinutes)
+        assertTrue(old.spans.isEmpty())
+    }
+
+    @Test
+    fun spans_keepWhenTheBreakWasLived() {
+        assertEquals(listOf(LivedSpan("evening", 17 * 60, 19 * 60)), settle(fri(16), fri(19))[friday]!!.spans)
+        // Asleep 23:00-07:00: Friday 17:00-23:00, Saturday 07:00-09:00
+        val sleeping = FreeTimeLedger.Config(true, setOf("work"), listOf(evening), emptySet(), SleepWindow(23 * 60, 7 * 60))
+        val days = settle(fri(17), sat(9), sleeping)
+        assertEquals(listOf(LivedSpan("evening", 17 * 60, 23 * 60)), days[friday]!!.spans)
+        assertEquals(listOf(LivedSpan("evening", 7 * 60, 9 * 60)), days[friday.plusDays(1)]!!.spans)
+        // An evening lived to midnight ends at 1440, not at 00:00
+        assertEquals(listOf(LivedSpan("evening", 17 * 60, 1440)), settle(fri(17), sat(0, 30))[friday]!!.spans)
     }
 }

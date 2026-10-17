@@ -51,9 +51,9 @@ data class PeriodStats(val range: StatsRange, val first: LocalDate, val days: Li
 
 /**
  * A stretch of one day lived on a break, for the day chart: [startMinute] and [endMinute] are minutes from
- * midnight of that day (0 to 1440). The history keeps minutes per pause, not the times, so the stretches
- * come from the pause times, only for the pauses with minutes lived that day, and today up to [now], with
- * the hours asleep cut out (they are not counted either).
+ * midnight of that day (0 to 1440). They come from the times kept in the history ([DayStats.spans]); days
+ * recorded before those were kept only have minutes per pause, so their stretches are estimated from the
+ * pause times (pauses with minutes lived that day, today up to [now], the hours asleep cut out).
  */
 data class DaySpan(val pause: Pause, val startMinute: Int, val endMinute: Int)
 
@@ -63,6 +63,13 @@ object DaySpans {
         val dayStart = day.date.atStartOfDay()
         val dayEnd = dayStart.plusDays(1)
         val limit = if (now.isBefore(dayEnd)) maxOf(now, dayStart) else dayEnd
+        // shortcut: the day of the update has minutes from before the times were kept, so its chart shows
+        // only the part after it; once, for one day, so not worth a migration
+        if (day.spans.isNotEmpty()) {
+            // A deleted pause has no name or color left: its stretches are dropped, as in the legend
+            val byId = pauses.associateBy { it.id }
+            return day.spans.mapNotNull { s -> byId[s.pauseId]?.let { DaySpan(it, s.start, s.end) } }
+        }
         return pauses.filter { (day.byPause[it.id] ?: 0) > 0 }.flatMap { pause ->
             listOf(day.date.minusDays(1), day.date)
                 .filter { pause.startsOn(it) }

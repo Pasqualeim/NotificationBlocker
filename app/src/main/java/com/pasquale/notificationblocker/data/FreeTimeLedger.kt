@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit
  * @param daylightMinutes the part of [livedMinutes] between sunrise and sunset
  * @param held work notifications held back that day, each counted once
  * @param byPause [livedMinutes] split by pause id, for "how much of each pause you lived"
+ * @param spans when those minutes were lived, for the day chart (empty on days recorded before it was kept)
  */
 data class DayStats(
     val date: LocalDate,
@@ -20,7 +21,14 @@ data class DayStats(
     val daylightMinutes: Int = 0,
     val held: Int = 0,
     val byPause: Map<String, Int> = emptyMap(),
+    val spans: List<LivedSpan> = emptyList(),
 )
+
+/**
+ * A stretch of one day lived on a pause: minutes [start, end) of that day, wall clock. On the two daylight
+ * saving days its length differs from the real minutes counted by an hour; only the chart reads it.
+ */
+data class LivedSpan(val pauseId: String, val start: Int, val end: Int)
 
 /**
  * How much break time the user has lived, day by day. Pure logic (unit tested).
@@ -118,10 +126,19 @@ object FreeTimeLedger {
             if (minutes <= 0) continue
             val day = result[a.toLocalDate()] ?: DayStats(a.toLocalDate())
             val (sunrise, sunset) = sun(day.date)
+            // Pieces never cross midnight (it is a cut): one that ends there ends at minute 1440
+            val endOfDay = if (b.toLocalDate() == a.toLocalDate()) b.hour * 60 + b.minute else OffHours.MINUTES_PER_DAY
+            val last = day.spans.lastOrNull()
+            val spans = if (last != null && last.pauseId == pause.id && last.end == ofDay) {
+                day.spans.dropLast(1) + last.copy(end = endOfDay)
+            } else {
+                day.spans + LivedSpan(pause.id, ofDay, endOfDay)
+            }
             result[day.date] = day.copy(
                 livedMinutes = day.livedMinutes + minutes,
                 daylightMinutes = day.daylightMinutes + if (ofDay in sunrise until sunset) minutes else 0,
                 byPause = day.byPause + (pause.id to (day.byPause[pause.id] ?: 0) + minutes),
+                spans = spans,
             )
         }
         return result
@@ -135,8 +152,9 @@ object FreeTimeLedger {
 }
 
 /**
- * The history as one line per day in the preferences (about 30 KB a year): date, lived, daylight, held,
- * then "pauseId=minutes" pairs, tab-separated. Lines that cannot be read are skipped.
+ * The history as one line per day in the preferences (about 40 KB a year): date, lived, daylight, held,
+ * "pauseId=minutes" pairs, then the lived stretches as "pauseId@start-end", tab-separated. Lines that
+ * cannot be read are skipped; lines written before the stretches were kept have five fields.
  */
 object HistoryCodec {
 
@@ -147,6 +165,7 @@ object HistoryCodec {
             d.daylightMinutes.toString(),
             d.held.toString(),
             d.byPause.entries.sortedBy { it.key }.joinToString(",") { "${it.key}=${it.value}" },
+            d.spans.joinToString(";") { "${it.pauseId}@${it.start}-${it.end}" },
         ).joinToString("\t")
     }
 
@@ -164,6 +183,12 @@ object HistoryCodec {
             daylightMinutes = f[2].toIntOrNull() ?: return@mapNotNull null,
             held = f[3].toIntOrNull() ?: return@mapNotNull null,
             byPause = byPause,
+            spans = f.getOrNull(5).orEmpty().split(';').mapNotNull { span ->
+                val id = span.substringBeforeLast('@', "").ifEmpty { return@mapNotNull null }
+                val (a, b) = span.substringAfterLast('@').split('-').map { it.toIntOrNull() ?: return@mapNotNull null }
+                    .takeIf { it.size == 2 } ?: return@mapNotNull null
+                LivedSpan(id, a, b).takeIf { a in 0 until b && b <= OffHours.MINUTES_PER_DAY }
+            },
         )
     }.associateBy { it.date }
 }

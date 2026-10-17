@@ -171,8 +171,7 @@
     <string name="stats_month_hint">A fuller circle means more free time that day.</string>
     <string name="stats_prev">Previous</string>
     <string name="stats_next">Next</string>
-    <string name="stats_sunrise">sunrise %1$s</string>
-    <string name="stats_sunset">sunset %1$s</string>
+    <string name="stats_day_light">Daylight %1$s–%2$s</string>
     <string name="stats_range">%1$s–%2$s</string>
     <string name="pause_days_every">Every day</string>
     <string name="pause_days_weekdays">Weekdays</string>

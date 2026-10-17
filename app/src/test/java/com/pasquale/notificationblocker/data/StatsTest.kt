@@ -54,6 +54,14 @@ class StatsTest {
     }
 
     @Test
+    fun daySpans_useTheTimesKeptInTheHistory() {
+        val weekend = Pause("weekend", "Weekend", 0, 0)
+        val day = DayStats(thursday, livedMinutes = 34, byPause = mapOf("weekend" to 34), spans = listOf(LivedSpan("weekend", 1136, 1170)))
+        // 34 minutes from 18:56, not the whole day of the pause
+        assertEquals(listOf(1136 to 1170), DaySpans.of(day, listOf(weekend), thursday.atTime(20, 0)).map { it.startMinute to it.endMinute })
+    }
+
+    @Test
     fun daySpans_comeFromThePausesLivedThatDay_upToNow() {
         val evening = Pause("evening", "Evening", 18 * 60 + 30, 8 * 60 + 30)
         val lunch = Pause("lunch", "Lunch", 13 * 60, 14 * 60)
