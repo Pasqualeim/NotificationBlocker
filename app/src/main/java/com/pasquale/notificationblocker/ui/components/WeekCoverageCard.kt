@@ -24,12 +24,16 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.pasquale.notificationblocker.data.CoverageSegment
 import com.pasquale.notificationblocker.R
@@ -109,16 +113,19 @@ private fun DayGroupRow(group: WeekCoverage.DayGroup, colors: List<Color>, track
     ) {
         Text(text = label, style = MaterialTheme.typography.titleSmall)
         Canvas(modifier = Modifier.fillMaxWidth().height(14.dp)) {
-            val r = CornerRadius(size.height / 2)
-            drawRoundRect(track, Offset.Zero, size, r)
-            // The merged stretches, one color each: overlapping pauses drawn one over the other (the
-            // evening over a whole weekend day) read as two different things
-            for (s in group.stretches) {
-                // A short pause still shows as a dot, kept inside the track
-                val full = maxOf(size.width * (s.end - s.start) / day, size.height)
-                val x = minOf(size.width * s.start / day, size.width - full)
-                val w = full * grow
-                if (w > 0f) drawRoundRect(colors[s.pauseIndex % colors.size], Offset(x, 0f), Size(w, size.height), r)
+            val pill = RoundRect(Rect(Offset.Zero, size), CornerRadius(size.height / 2))
+            drawPath(Path().apply { addRoundRect(pill) }, track)
+            // Square-ish stretches clipped to the pill: with round ends a one-hour lunch read as a dot
+            val r = CornerRadius(2.dp.toPx())
+            clipPath(Path().apply { addRoundRect(pill) }) {
+                // The merged stretches, one color each: overlapping pauses drawn one over the other (the
+                // evening over a whole weekend day) read as two different things
+                for (s in group.stretches) {
+                    val full = maxOf(size.width * (s.end - s.start) / day, 4.dp.toPx())
+                    val x = minOf(size.width * s.start / day, size.width - full)
+                    val w = full * grow
+                    if (w > 0f) drawRoundRect(colors[s.pauseIndex % colors.size], Offset(x, 0f), Size(w, size.height), r)
+                }
             }
         }
         if (group.stretches.isEmpty()) {

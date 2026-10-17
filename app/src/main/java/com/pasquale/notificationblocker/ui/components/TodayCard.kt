@@ -27,6 +27,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +40,9 @@ import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 /** Where one of today's pauses stands. */
 enum class TodayPauseState { LIVED, NOW, ENDED, LATER }
@@ -57,6 +61,10 @@ data class TodayPause(
     val totalMinutes: Int = endMinute - startMinute,
     val minutesLeft: Int = 0,
 )
+
+/** When work notifications come back: [daysAway] from today, on [day], at [minute] (null: at the end of that day). */
+@Immutable
+data class WorkBack(val daysAway: Int, val day: LocalDate, val minute: Int?)
 
 object TodayPauses {
 
@@ -97,6 +105,21 @@ object TodayPauses {
             .map { same -> same.minBy { listOf(TodayPauseState.NOW, TodayPauseState.ENDED, TodayPauseState.LATER, TodayPauseState.LIVED).indexOf(it.state) } }
             .sortedBy { it.startMinute }
 
+    /**
+     * When work comes back ([until], from `PauseSchedule.blockedUntil`), as the "Now" line says it: the day
+     * it shows under and its minute, or a null minute for "all of that day" (a midnight end belongs to the
+     * day before, so a whole weekend reads "through Sunday", not "until Monday 00:00").
+     */
+    fun workBack(now: LocalDateTime, until: LocalDateTime): WorkBack {
+        val midnight = until.toLocalTime() == LocalTime.MIDNIGHT
+        val day = if (midnight) until.toLocalDate().minusDays(1) else until.toLocalDate()
+        return WorkBack(
+            daysAway = ChronoUnit.DAYS.between(now.toLocalDate(), day).toInt(),
+            day = day,
+            minute = if (midnight) null else until.hour * 60 + until.minute,
+        )
+    }
+
     private fun minutes(from: LocalDateTime, to: LocalDateTime) =
         java.time.Duration.between(from, to).toMinutes().toInt().coerceIn(0, OffHours.MINUTES_PER_DAY)
 }
@@ -114,6 +137,7 @@ fun TodayCard(
     nowMinute: Int,
     modifier: Modifier = Modifier,
     isBlockingEnabled: Boolean = true,
+    workBack: WorkBack? = null,
 ) {
     // One line per pause, even when it shows twice on the bar (last night's evening and tonight's)
     val rows = TodayPauses.oneEach(pauses)
@@ -132,7 +156,7 @@ fun TodayCard(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (isBlockingEnabled) NowLine(pauses = pauses, nowMinute = nowMinute)
+                if (isBlockingEnabled) NowLine(pauses = pauses, nowMinute = nowMinute, workBack = workBack)
                 val colors = pauses.associate { it.colorIndex to pauseColor(it.colorIndex) }
                 DayBar(pauses = pauses, colorOf = { colors[it] ?: Color.Unspecified }, nowMinute = nowMinute)
                 if (pauses.isEmpty()) {
@@ -175,11 +199,15 @@ fun TodayCard(
     }
 }
 
-/** The pause on now and how much of it is gone, or the next one today; nothing when neither. */
+/**
+ * The pause on now, how much of it is gone and when work comes back, or the next one today; nothing
+ * when neither.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun NowLine(pauses: List<TodayPause>, nowMinute: Int) {
-    // With overlapping pauses, the one that ends first: that is when work comes through again
+private fun NowLine(pauses: List<TodayPause>, nowMinute: Int, workBack: WorkBack?) {
+    // The bar follows the pause that ends first; the time on the right is when work really comes back,
+    // past every pause that follows on (the evening, then the weekend)
     val now = pauses.filter { it.state == TodayPauseState.NOW }.minByOrNull { it.minutesLeft }
     val next = pauses.firstOrNull { it.state == TodayPauseState.LATER && it.startMinute > nowMinute }
     when {
@@ -193,7 +221,7 @@ private fun NowLine(pauses: List<TodayPause>, nowMinute: Int) {
                     modifier = Modifier.weight(1f),
                 )
                 Text(
-                    text = stringResource(R.string.today_left, durationText(left)),
+                    text = workBackText(workBack, nowMinute) ?: stringResource(R.string.today_left, durationText(left)),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -216,6 +244,21 @@ private fun NowLine(pauses: List<TodayPause>, nowMinute: Int) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+/** "ancora 3 h", "fino a domani alle 08:30", "fino a lunedì alle 08:30", "fino a tutto domenica"; null when unknown. */
+@Composable
+private fun workBackText(back: WorkBack?, nowMinute: Int): String? {
+    back ?: return null
+    if (back.daysAway <= 0) {
+        // The minute tick can run a minute ahead of the time blockedUntil was computed at: fall back then
+        val left = (back.minute ?: OffHours.MINUTES_PER_DAY) - nowMinute
+        return if (left > 0) stringResource(R.string.today_left, durationText(left)) else null
+    }
+    val locale = LocalConfiguration.current.locales[0]
+    val day = if (back.daysAway == 1) stringResource(R.string.today_day_tomorrow) else DateTimeFormatter.ofPattern("EEEE", locale).format(back.day)
+    return if (back.minute == null) stringResource(R.string.today_through_day, day)
+    else stringResource(R.string.today_until_day, day, OffHours.format(back.minute))
 }
 
 /** Small pill with where a pause stands today; none for a pause still to come. */

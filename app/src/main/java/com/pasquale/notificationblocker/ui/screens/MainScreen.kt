@@ -40,6 +40,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.canPostNotifications
 import com.pasquale.notificationblocker.ui.hasNotificationListenerPermission
@@ -57,6 +58,7 @@ import com.pasquale.notificationblocker.ui.components.rememberAmbientClock
 import com.pasquale.notificationblocker.ui.components.TodayCard
 import com.pasquale.notificationblocker.ui.components.TodayPause
 import com.pasquale.notificationblocker.ui.components.TodayPauses
+import com.pasquale.notificationblocker.ui.components.WorkBack
 import com.pasquale.notificationblocker.ui.components.ZenNotificationCard
 import com.pasquale.notificationblocker.ui.components.homeScene
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
@@ -108,11 +110,15 @@ fun MainScreen(
 
     val now = LocalDateTime.now()
     val todayPauses = remember(pauses, pauseEndedKeys, currentMinutes) { TodayPauses.of(pauses, now, pauseEndedKeys) }
+    val workBack = remember(pauses, pauseEndedKeys, currentMinutes) {
+        PauseSchedule.blockedUntil(pauses, now, pauseEndedKeys)?.let { TodayPauses.workBack(now, it) }
+    }
 
     MainScreenContent(
         isBlockingEnabled = isBlockingEnabled,
         isInOffHoursNow = isInOffHoursNow,
         todayPauses = todayPauses,
+        workBack = workBack,
         livedTodayMinutes = history[now.toLocalDate()]?.livedMinutes ?: 0,
         heldToday = history[now.toLocalDate()]?.held ?: 0,
         daylightTodayMinutes = history[now.toLocalDate()]?.daylightMinutes ?: 0,
@@ -173,6 +179,7 @@ fun MainScreenContent(
     onAllowZenNotification: () -> Unit = {},
     onDismissZenPrompt: () -> Unit = {},
     morningReport: MorningReportUi? = null,
+    workBack: WorkBack? = null,
     onDismissMorningReport: () -> Unit = {},
     heldToday: Int = 0,
     daylightTodayMinutes: Int = 0,
@@ -271,6 +278,7 @@ fun MainScreenContent(
             pauses = todayPauses,
             nowMinute = currentMinutes,
             isBlockingEnabled = isBlockingEnabled,
+            workBack = workBack,
             modifier = Modifier.homeEntrance(animatedScheduleVisible),
         )
     }

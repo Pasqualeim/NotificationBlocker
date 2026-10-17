@@ -1,9 +1,11 @@
 package com.pasquale.notificationblocker.ui.components
 
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.PauseSchedule
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class TodayPausesTest {
@@ -53,5 +55,18 @@ class TodayPausesTest {
             .single { it.state == TodayPauseState.NOW }
         assertEquals(14 * 60, afterMidnight.totalMinutes)
         assertEquals(6 * 60 + 30, afterMidnight.minutesLeft)
+    }
+
+    @Test
+    fun workBack_followsTheWeekendThroughToMondayMorning() {
+        // Saturday 18:57 with the evening and the weekend on: work comes back on Monday at 08:30, not at midnight
+        val saturday = LocalDateTime.of(2026, 10, 17, 18, 57)
+        val until = PauseSchedule.blockedUntil(listOf(evening, lunch, weekend), saturday)!!
+        assertEquals(WorkBack(2, LocalDate.of(2026, 10, 19), 8 * 60 + 30), TodayPauses.workBack(saturday, until))
+        // The weekend alone ends at Monday 00:00, which reads as "through Sunday"
+        val weekendOnly = PauseSchedule.blockedUntil(listOf(weekend), saturday)!!
+        assertEquals(WorkBack(1, LocalDate.of(2026, 10, 18), null), TodayPauses.workBack(saturday, weekendOnly))
+        // Thursday evening: tomorrow at 08:30
+        assertEquals(1, TodayPauses.workBack(now, PauseSchedule.blockedUntil(listOf(evening), now)!!).daysAway)
     }
 }

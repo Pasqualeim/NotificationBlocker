@@ -204,7 +204,7 @@ fun StatsContent(
                     StatsRange.WEEK -> {
                         WeekChart(days = period.days, today = today)
                         Row {
-                            LegendItem(MaterialTheme.colorScheme.secondary, stringResource(R.string.stats_legend_break))
+                            LegendItem(MaterialTheme.colorScheme.secondary, stringResource(R.string.stats_total_label))
                             Spacer(modifier = Modifier.width(16.dp))
                             LegendItem(MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_legend_daylight))
                         }

@@ -167,7 +167,6 @@
     <string name="stats_tile_daylight">In daylight</string>
     <string name="stats_tile_held">Paused</string>
     <string name="stats_empty">The free time you get from your breaks shows up here, starting with your first break.</string>
-    <string name="stats_legend_break">Break</string>
     <string name="stats_legend_daylight">In daylight</string>
     <string name="stats_month_hint">A fuller circle means more free time that day.</string>
     <string name="stats_prev">Previous</string>
@@ -188,6 +187,9 @@
     <string name="pauses_section_list">Your breaks</string>
     <string name="today_now">Now: %1$s</string>
     <string name="today_left">%1$s left</string>
+    <string name="today_until_day">until %1$s %2$s</string>
+    <string name="today_through_day">through %1$s</string>
+    <string name="today_day_tomorrow">tomorrow</string>
     <string name="today_next">Next: %1$s at %2$s, in %3$s</string>
     <string name="metric_free">Free time</string>
     <string name="metric_daylight">In daylight</string>
