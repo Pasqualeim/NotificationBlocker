@@ -127,7 +127,6 @@
     <string name="pause_state_now">In corso</string>
     <string name="pause_state_ended">Finita prima</string>
     <string name="pauses_title">Pause</string>
-    <string name="pauses_empty">Nessuna pausa per ora. Aggiungine una per il pranzo, la sera o il weekend.</string>
     <string name="pause_all_day">Tutto il giorno</string>
     <string name="pause_times">%1$s–%2$s</string>
     <string name="pause_add">Aggiungi una pausa</string>
@@ -175,7 +174,7 @@
     <string name="pause_days_every">Tutti i giorni</string>
     <string name="pause_days_weekdays">Lun–ven</string>
     <string name="pause_days_weekend">Sab–dom</string>
-    <string name="pauses_section_more">Altro</string>
+    <string name="pauses_section_apps">Cosa va in pausa</string>
     <string name="week_coverage_label">Ogni settimana</string>
     <string name="week_coverage_caption">senza notifiche di lavoro</string>
     <string name="week_stretch_from">dalle %1$s</string>
@@ -290,6 +289,7 @@
     <string name="onboarding_finish">Inizia</string>
     <string name="week_coverage_caption_awake">senza notifiche di lavoro, sonno escluso</string>
     <string name="week_legend_sleep">Vuoto: arrivano le notifiche di lavoro. Sbiadito: il tuo sonno (%1$s–%2$s), in pausa ma non contato.</string>
+    <string name="stats_section_week">Settimana impostata</string>
     <string name="sleep_row_title">Sonno</string>
     <string name="sleep_row">%1$s–%2$s</string>
     <string name="sleep_row_none">Non impostato</string>

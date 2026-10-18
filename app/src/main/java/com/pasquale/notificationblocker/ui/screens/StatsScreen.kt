@@ -63,6 +63,11 @@ import com.pasquale.notificationblocker.ui.components.LegendItem
 import com.pasquale.notificationblocker.ui.components.MonthCalendar
 import com.pasquale.notificationblocker.ui.components.TotalsRow
 import com.pasquale.notificationblocker.ui.components.WeekChart
+import com.pasquale.notificationblocker.ui.components.TimeRangeSheet
+import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
+import com.pasquale.notificationblocker.data.WeekCoverage
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.pasquale.notificationblocker.ui.components.durationText
 import com.pasquale.notificationblocker.ui.components.pauseColor
 import com.pasquale.notificationblocker.ui.components.pauseName
@@ -82,7 +87,32 @@ fun StatsScreen(viewModel: MainViewModel, modifier: Modifier = Modifier) {
     val minute by rememberCurrentMinutes()
     LaunchedEffect(minute) { viewModel.refreshOffHoursStatus() }
     val sleep by viewModel.sleepWindow.collectAsStateWithLifecycle()
-    StatsContent(history = history, pauses = pauses, now = LocalDateTime.now(), modifier = modifier, sleep = sleep)
+    var editingSleep by rememberSaveable { mutableStateOf(false) }
+    StatsContent(
+        history = history,
+        pauses = pauses,
+        now = LocalDateTime.now(),
+        modifier = modifier,
+        sleep = sleep,
+        onSleep = { editingSleep = true },
+    )
+    if (editingSleep) {
+        TimeRangeSheet(
+            title = stringResource(R.string.sleep_sheet_title),
+            text = stringResource(R.string.sleep_sheet_text),
+            startLabel = R.string.sleep_bedtime,
+            endLabel = R.string.sleep_wake,
+            initialStart = sleep.start,
+            initialEnd = sleep.end,
+            onSave = { start, end ->
+                viewModel.setSleepWindow(SleepWindow(start, end))
+                editingSleep = false
+            },
+            onDismiss = { editingSleep = false },
+            // Two equal times leave no sleep out: say so, or the hours would jump up with no reason
+            hint = { start, end -> if (start == end) stringResource(R.string.sleep_none_hint) else null },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -93,6 +123,7 @@ fun StatsContent(
     now: LocalDateTime,
     modifier: Modifier = Modifier,
     sleep: SleepWindow? = null,
+    onSleep: () -> Unit = {},
 ) {
     val today = now.toLocalDate()
     var range by rememberSaveable { mutableStateOf(StatsRange.WEEK) }
@@ -239,6 +270,25 @@ fun StatsContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
+        // The usual week the pauses make (one-offs left out by WeekCoverage), and the sleep that the
+        // numbers above leave out: both explain the totals, so they live here and not in Breaks
+        SectionHeader(R.string.stats_section_week)
+        WeekCoverageCard(
+            coverage = remember(pauses, sleep) { WeekCoverage.of(pauses, sleep) },
+            modifier = Modifier.entrance(3),
+        )
+        if (sleep != null) {
+            LinkRow(
+                icon = ImageVector.vectorResource(R.drawable.ic_moon),
+                title = stringResource(R.string.sleep_row_title),
+                subtitle = if (sleep.start == sleep.end) stringResource(R.string.sleep_row_none)
+                else stringResource(R.string.sleep_row, OffHours.format(sleep.start), OffHours.format(sleep.end)),
+                onClick = onSleep,
+                position = 0,
+                count = 1,
+                shapeIndex = 1,
+            )
+        }
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
@@ -273,6 +323,6 @@ private fun sampleHistory(today: LocalDate): Map<LocalDate, DayStats> =
 fun StatsWeekPreview() {
     val now = LocalDateTime.of(2026, 10, 15, 18, 52)
     NotificationBlockerTheme {
-        StatsContent(sampleHistory(now.toLocalDate()), listOf(Pause("evening", "Sera", 18 * 60 + 30, 8 * 60 + 30)), now)
+        StatsContent(sampleHistory(now.toLocalDate()), listOf(Pause("evening", "Sera", 18 * 60 + 30, 8 * 60 + 30)), now, sleep = SleepWindow.DEFAULT)
     }
 }

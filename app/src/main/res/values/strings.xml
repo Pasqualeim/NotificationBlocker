@@ -130,7 +130,6 @@
     <string name="pause_state_now">On now</string>
     <string name="pause_state_ended">Ended early</string>
     <string name="pauses_title">Breaks</string>
-    <string name="pauses_empty">No breaks yet. Add one for lunch, the evening or the weekend.</string>
     <string name="pause_all_day">All day</string>
     <string name="pause_times">%1$s–%2$s</string>
     <string name="pause_add">Add a break</string>
@@ -176,7 +175,7 @@
     <string name="pause_days_every">Every day</string>
     <string name="pause_days_weekdays">Mon–Fri</string>
     <string name="pause_days_weekend">Sat–Sun</string>
-    <string name="pauses_section_more">More</string>
+    <string name="pauses_section_apps">What gets paused</string>
     <string name="week_coverage_label">Every week</string>
     <string name="week_coverage_caption">without work notifications</string>
     <string name="week_stretch_from">from %1$s</string>
@@ -287,6 +286,7 @@
     <string name="onboarding_finish">Start</string>
     <string name="week_coverage_caption_awake">without work notifications, sleep not counted</string>
     <string name="week_legend_sleep">Empty: work notifications come through. Faded: your sleep (%1$s–%2$s), paused but not counted.</string>
+    <string name="stats_section_week">Planned week</string>
     <string name="sleep_row_title">Sleep</string>
     <string name="sleep_row">%1$s–%2$s</string>
     <string name="sleep_row_none">Not set</string>

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SegmentedListItem
@@ -22,7 +21,6 @@ import com.pasquale.notificationblocker.ui.components.expressiveShape
 import com.pasquale.notificationblocker.ui.components.segmentColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,9 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,24 +40,19 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.PauseCodec
 import com.pasquale.notificationblocker.data.PauseSchedule
-import com.pasquale.notificationblocker.data.OffHours
-import com.pasquale.notificationblocker.data.SleepWindow
-import com.pasquale.notificationblocker.ui.components.TimeRangeSheet
 import com.pasquale.notificationblocker.ui.components.WorkHoursSheet
 import com.pasquale.notificationblocker.ui.components.WorkScheduleCard
 import com.pasquale.notificationblocker.data.WorkSchedule
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.PauseRow
-import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
 import com.pasquale.notificationblocker.ui.components.entrance
-import com.pasquale.notificationblocker.data.WeekCoverage
 import com.pasquale.notificationblocker.ui.components.PauseEditorSheet
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
-/** The Breaks tab: every pause as a row of one group, "Add a break", and the work apps they silence. */
+/** The Breaks tab: when you work, the work apps, the other pauses with the days off and "Add a break". */
 @Composable
 fun PausesScreen(
     viewModel: MainViewModel,
@@ -75,8 +66,6 @@ fun PausesScreen(
     val workApps by viewModel.blockedAppsCount.collectAsStateWithLifecycle()
     val daysOff by viewModel.daysOff.collectAsStateWithLifecycle()
     val holidays by viewModel.holidaysEnabled.collectAsStateWithLifecycle()
-    val sleep by viewModel.sleepWindow.collectAsStateWithLifecycle()
-    var editingSleep by rememberSaveable { mutableStateOf(false) }
     val work by viewModel.workSchedule.collectAsStateWithLifecycle()
     var editingHours by rememberSaveable { mutableStateOf(false) }
     // The "on now" label follows the clock
@@ -107,31 +96,12 @@ fun PausesScreen(
         onDaysOff = onDaysOff,
         daysOffRanges = daysOff.size,
         holidaysOn = holidays,
-        sleep = sleep,
-        onSleep = { editingSleep = true },
         work = work,
         onWorkChange = viewModel::setWorkSchedule,
         onWorkHours = { editingHours = true },
         modifier = modifier,
     )
 
-    if (editingSleep) {
-        TimeRangeSheet(
-            title = stringResource(R.string.sleep_sheet_title),
-            text = stringResource(R.string.sleep_sheet_text),
-            startLabel = R.string.sleep_bedtime,
-            endLabel = R.string.sleep_wake,
-            initialStart = sleep.start,
-            initialEnd = sleep.end,
-            onSave = { start, end ->
-                viewModel.setSleepWindow(SleepWindow(start, end))
-                editingSleep = false
-            },
-            onDismiss = { editingSleep = false },
-            // Two equal times leave no sleep out: say so, or the hours would jump up with no reason
-            hint = { start, end -> if (start == end) stringResource(R.string.sleep_none_hint) else null },
-        )
-    }
     if (editingHours) {
         WorkHoursSheet(
             schedule = work ?: WorkSchedule.DEFAULT,
@@ -183,127 +153,110 @@ fun PausesContent(
     onDaysOff: () -> Unit = {},
     daysOffRanges: Int = 0,
     holidaysOn: Boolean = false,
-    sleep: SleepWindow = SleepWindow.DEFAULT,
-    onSleep: () -> Unit = {},
     work: WorkSchedule? = WorkSchedule.DEFAULT,
     onWorkChange: (WorkSchedule) -> Unit = {},
     onWorkHours: () -> Unit = {},
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            item(key = "work") {
-                SectionHeader(R.string.work_section)
-                // Without a schedule yet (Nook updated from a version with pauses only) the usual one is
-                // shown, and saved at the first change
-                val shown = work ?: WorkSchedule.DEFAULT
-                WorkScheduleCard(
-                    schedule = shown,
-                    onDaysChange = { onWorkChange(shown.copy(days = it)) },
-                    onHoursClick = onWorkHours,
-                    active = work != null,
-                    modifier = Modifier.entrance(0),
+    // Controls only, the most important first: when (work), what (apps), then the extra pauses.
+    // The week chart and sleep live in Stats: they explain the numbers, they decide nothing here
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        item(key = "work") {
+            SectionHeader(R.string.work_section)
+            // Without a schedule yet (Nook updated from a version with pauses only) the usual one is
+            // shown, and saved at the first change
+            val shown = work ?: WorkSchedule.DEFAULT
+            WorkScheduleCard(
+                schedule = shown,
+                onDaysChange = { onWorkChange(shown.copy(days = it)) },
+                onHoursClick = onWorkHours,
+                active = work != null,
+                modifier = Modifier.entrance(0),
+            )
+        }
+        item(key = "apps") {
+            SectionHeader(R.string.pauses_section_apps)
+            LinkRow(
+                icon = Icons.Default.Notifications,
+                title = stringResource(R.string.select_apps),
+                subtitle = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount),
+                onClick = onEditWorkApps,
+                position = 0,
+                count = 1,
+                shapeIndex = 3,
+                modifier = Modifier.entrance(1),
+            )
+        }
+        // A segmented group, like the system settings: one segment per pause, the days off, then "Add"
+        item(key = "pauses") {
+            SectionHeader(R.string.pauses_section_list)
+            val count = pauses.size + 2
+            Column(
+                modifier = Modifier.entrance(2),
+                verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
+            ) {
+                pauses.forEachIndexed { index, pause ->
+                    PauseRow(
+                        pause = pause,
+                        // Slot 0 is the time outside work: the other pauses start at 1, as on Today
+                        index = index + 1,
+                        onClick = { onPauseClick(pause) },
+                        onEnabledChange = { onPauseEnabledChange(pause.id, it) },
+                        isOnNow = pause.id in onNow,
+                        position = index,
+                        count = count,
+                    )
+                }
+                LinkRow(
+                    icon = Icons.Default.DateRange,
+                    title = stringResource(R.string.days_off_title),
+                    subtitle = listOfNotNull(
+                        if (daysOffRanges > 0) pluralStringResource(R.plurals.days_off_row, daysOffRanges, daysOffRanges) else null,
+                        if (holidaysOn) stringResource(R.string.days_off_row_holidays) else null,
+                    ).joinToString("  ·  ").ifEmpty { stringResource(R.string.days_off_row_empty) },
+                    onClick = onDaysOff,
+                    position = count - 2,
+                    count = count,
+                    shapeIndex = 2,
                 )
-            }
-            item(key = "week") {
-                WeekCoverageCard(
-                    coverage = remember(pauses, sleep, work) { WeekCoverage.of(work?.offWorkPauses().orEmpty() + pauses, sleep) },
-                    modifier = Modifier.padding(top = 8.dp).entrance(1),
+                LinkRow(
+                    icon = Icons.Default.Add,
+                    title = stringResource(R.string.pause_add),
+                    subtitle = null,
+                    onClick = onAddPause,
+                    position = count - 1,
+                    count = count,
+                    shapeIndex = 1,
                 )
-            }
-            if (pauses.isNotEmpty()) item(key = "pausesHeader") { SectionHeader(R.string.pauses_section_list) }
-            if (pauses.isEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.pauses_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    )
-                }
-            } else {
-                // A segmented group, like the system settings: one segment per pause
-                item(key = "pauses") {
-                    Column(
-                        modifier = Modifier.entrance(2),
-                        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
-                    ) {
-                        pauses.forEachIndexed { index, pause ->
-                            PauseRow(
-                                pause = pause,
-                                // Slot 0 is the time outside work: the other pauses start at 1, as on Today
-                                index = index + 1,
-                                onClick = { onPauseClick(pause) },
-                                onEnabledChange = { onPauseEnabledChange(pause.id, it) },
-                                isOnNow = pause.id in onNow,
-                                position = index,
-                                count = pauses.size,
-                            )
-                        }
-                    }
-                }
-            }
-            item(key = "apps") {
-                SectionHeader(R.string.pauses_section_more)
-                Column(
-                    modifier = Modifier.entrance(3),
-                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
-                ) {
-                    LinkRow(
-                        icon = Icons.Default.DateRange,
-                        title = stringResource(R.string.days_off_title),
-                        subtitle = listOfNotNull(
-                            if (daysOffRanges > 0) pluralStringResource(R.plurals.days_off_row, daysOffRanges, daysOffRanges) else null,
-                            if (holidaysOn) stringResource(R.string.days_off_row_holidays) else null,
-                        ).joinToString("  ·  ").ifEmpty { stringResource(R.string.days_off_row_empty) },
-                        onClick = onDaysOff,
-                        position = 0,
-                        shapeIndex = 2,
-                    )
-                    LinkRow(
-                        icon = ImageVector.vectorResource(R.drawable.ic_moon),
-                        title = stringResource(R.string.sleep_row_title),
-                        subtitle = if (sleep.start == sleep.end) stringResource(R.string.sleep_row_none)
-                        else stringResource(R.string.sleep_row, OffHours.format(sleep.start), OffHours.format(sleep.end)),
-                        onClick = onSleep,
-                        position = 1,
-                        shapeIndex = 1,
-                    )
-                    LinkRow(
-                        icon = Icons.Default.Notifications,
-                        title = stringResource(R.string.select_apps),
-                        subtitle = pluralStringResource(R.plurals.pauses_work_apps, workAppsCount, workAppsCount),
-                        onClick = onEditWorkApps,
-                        position = 2,
-                        shapeIndex = 3,
-                    )
-                }
             }
         }
-        ExtendedFloatingActionButton(
-            onClick = onAddPause,
-            icon = { Icon(Icons.Default.Add, contentDescription = null) },
-            text = { Text(text = stringResource(R.string.pause_add)) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-        )
     }
 }
 
-private const val MORE_ROWS = 3
-
-/** A segment of the "More" group that opens another screen: icon in an expressive shape, title, one line, chevron. */
+/**
+ * A segment that opens a screen or a sheet: icon in an expressive shape, title, an optional line,
+ * a chevron when it opens something (not on "Add a break"). Also used by Stats for the sleep row.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit, position: Int, shapeIndex: Int) {
+internal fun LinkRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String?,
+    onClick: () -> Unit,
+    position: Int,
+    count: Int,
+    shapeIndex: Int,
+    modifier: Modifier = Modifier,
+) {
     SegmentedListItem(
         onClick = onClick,
-        shapes = ListItemDefaults.segmentedShapes(index = position, count = MORE_ROWS),
+        shapes = ListItemDefaults.segmentedShapes(index = position, count = count),
         colors = segmentColors(),
+        modifier = modifier,
         leadingContent = {
             Box(
                 modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.secondaryContainer, expressiveShape(shapeIndex)),
@@ -312,8 +265,10 @@ private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick:
                 Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.size(20.dp))
             }
         },
-        supportingContent = { Text(text = subtitle) },
-        trailingContent = { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+        supportingContent = subtitle?.let { { Text(text = it) } },
+        trailingContent = if (subtitle != null) {
+            { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) }
+        } else null,
     ) {
         Text(text = title)
     }
@@ -321,7 +276,7 @@ private fun LinkRow(icon: ImageVector, title: String, subtitle: String, onClick:
 
 /** The title above a group of segments, like the section titles of the system settings. */
 @Composable
-private fun SectionHeader(text: Int) {
+internal fun SectionHeader(text: Int) {
     Text(
         text = stringResource(text),
         style = MaterialTheme.typography.titleSmall,
