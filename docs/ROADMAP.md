@@ -10,13 +10,13 @@ Prima di andare su Google Play, il prodotto si valida con un test indipendente. 
 
 | # | Voce | Chi | Note |
 |---|---|---|---|
-| 1 | Sistemare l'app: Nook 2 (`REDESIGN.md`) | Claude / Pasquale | Fasi 1-3 e revisione dei testi fatte (più pause, storico, tre schede). Restano i testi (1a) e le immagini dello store (1c). Ogni novità si misura su `IDEA.md` |
+| 1 | Sistemare l'app: Nook 2 (`REDESIGN.md`) | Claude / Pasquale | Fasi 1-3 e revisione dei testi fatte (più pause, storico, tre schede). Restano i testi (1a). Ogni novità si misura su `IDEA.md` |
 | 1a | Testi a una pausa sola | Claude (`copywriter`) | Fatta la revisione dei testi nuovi (fase 5). Restano alcune frasi scritte per una fascia sola (`hero_subtitle_outside`, `pause_ended_text`, `life_*`): rileggerle ora che le pause sono più d'una |
 | 1b | `sunlight` nei controlli di contrasto | Claude | Aggiungere `LightSunlight`/`DarkSunlight` a `tools/palette/contrast.py` e alle tabelle di `DESIGN_SYSTEM.md` (oggi assente: barre non testuali, serve il rapporto col fondo) |
-| 1c | Screenshot dello store e feature graphic da rifare | Claude / Pasquale | Immagini del sito fatte (19/10/2026: `home`, `apps`, `breaks`, `stats`, `dark`, `report` da Nook 2) e `tools/store/capture_screenshots.sh` riscritto per Nook 2 (dati demo in `tools/store/demo_prefs.py`; scrive `1_break`…`7_stats`). Restano `tools/store/compose_screenshots.py` (nomi e didascalie ancora quelli vecchi), `docs/store/screenshots/`, `docs/store/feature-graphic-*.png` e `LISTING.md`: mostrano ancora la Home vecchia (orari e pulsante in basso), non le tre schede e non il nuovo aspetto Material 3 Expressive (font Manrope, forme e palette fissa) |
-| 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Fatto per la home (19/10/2026: schermate di Nook 2, sezioni `#tempo` ed `#extra`, privacy aggiornata; `~/Documents/Developer/nook-site`). Da rivedere dopo ogni cambio visibile dell'app e quando arrivano i nuovi screenshot dello store |
+| 1c | Screenshot dell'app per il sito | Claude | Fatto il 19/10/2026: `home`, `apps`, `breaks`, `stats`, `dark`, `report` da Nook 2 con `tools/store/capture_screenshots.sh` (dati demo in `tools/store/demo_prefs.py`). Da rifare a ogni cambio visibile dell'app |
+| 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Fatto per la home (19/10/2026: schermate di Nook 2, sezioni `#tempo` ed `#extra`, privacy aggiornata; `~/Documents/Developer/nook-site`). Da rivedere dopo ogni cambio visibile dell'app |
 | 3 | Iscrizione al sito con email | Claude / Pasquale | Già nel sito: tabella D1 `signups` (email, `community` telegram o email). Chi si iscrive riceve il link per scaricare l'APK e l'invito al canale Telegram (novità, consigli) |
-| 3a | Deploy del sito | Pasquale | Non ancora online: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio (e `privacy_policy_url`, `LISTING.md`) |
+| 3a | Deploy del sito | Pasquale | Non ancora online: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio |
 | 3b | Invio del link all'APK | Pasquale | Per email a chi si iscrive; serve un APK firmato da distribuire |
 | 3c | Canale Telegram | Pasquale | Aggiornamenti e consigli; i feedback dei tester entrano nel punto 1 |
 
@@ -61,7 +61,7 @@ Si fa alla fine, dopo la fase di test indipendente (sezione 0). Guida passo pass
 | Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
 | Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
 | Sito (deploy e dominio) | Claude / Pasquale | Nella fase di test (sezione 0). Pronto in locale (`~/Documents/Developer/nook-site`, IT/EN, provato su iPhone). Mancano: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio. Con il dominio: spostare lì l'informativa (`privacy_policy_url`, `LISTING.md`) |
-| Scheda dello store | Testi pronti; immagini da rifare | Testi IT/EN pronti. Icona, feature graphic e 5 screenshot IT/EN sono del 02-05/10/2026 (telefono con cornice) e mostrano la Home vecchia: da rifare, vedi riga 1c e `LISTING.md`, "Grafica" |
+| Scheda dello store | Testi pronti; immagini da rifare | Testi IT/EN pronti. Icona, feature graphic e 5 screenshot IT/EN sono del 02-05/10/2026 (telefono con cornice) e mostrano la Home vecchia: da rifare solo quando si prepara la pubblicazione (`compose_screenshots.py` ha ancora i nomi e le didascalie vecchie; le catture nuove le scrive già `capture_screenshots.sh`), vedi `LISTING.md`, "Grafica" |
 | Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
 
 ## Dipendenze da valutare
