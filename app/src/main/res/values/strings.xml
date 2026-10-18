@@ -174,8 +174,8 @@
     <string name="stats_day_light">Daylight %1$s–%2$s</string>
     <string name="stats_range">%1$s–%2$s</string>
     <string name="pause_days_every">Every day</string>
-    <string name="pause_days_weekdays">Weekdays</string>
-    <string name="pause_days_weekend">Weekends</string>
+    <string name="pause_days_weekdays">Mon–Fri</string>
+    <string name="pause_days_weekend">Sat–Sun</string>
     <string name="pauses_section_more">More</string>
     <string name="week_coverage_label">Every week</string>
     <string name="week_coverage_caption">without work notifications</string>

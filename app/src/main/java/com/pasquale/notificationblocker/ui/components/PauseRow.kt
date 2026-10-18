@@ -94,7 +94,7 @@ fun pauseTimes(pause: Pause): String =
         stringResource(R.string.pause_times, OffHours.format(pause.start), OffHours.format(pause.end))
     }
 
-/** "Every day", "Weekdays", "Weekends", or the short names of the days ("Mon, Wed, Fri"). */
+/** "Every day", "Mon–Fri", "Sat–Sun" (never "Weekend", the name of a preset pause), or the short names of the days ("Mon, Wed, Fri"). */
 @Composable
 fun daysSummary(days: Set<DayOfWeek>): String {
     val locale = LocalConfiguration.current.locales[0]

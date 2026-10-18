@@ -174,7 +174,7 @@
     <string name="stats_range">%1$s–%2$s</string>
     <string name="pause_days_every">Tutti i giorni</string>
     <string name="pause_days_weekdays">Lun–ven</string>
-    <string name="pause_days_weekend">Weekend</string>
+    <string name="pause_days_weekend">Sab–dom</string>
     <string name="pauses_section_more">Altro</string>
     <string name="week_coverage_label">Ogni settimana</string>
     <string name="week_coverage_caption">senza notifiche di lavoro</string>
