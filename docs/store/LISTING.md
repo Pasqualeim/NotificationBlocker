@@ -128,7 +128,7 @@ Tutti i file sono già nelle dimensioni richieste da Play.
 | Feature graphic | `feature-graphic-it.png`, `feature-graphic-en.png` | 1024×500, PNG a 24 bit senza trasparenza. Obbligatoria |
 | Screenshot telefono | `screenshots/it/*.png`, `screenshots/en/*.png` | 1080×1920 (9:16), da 2 a 8. Caricali in ordine di nome. Didascalia in alto e telefono con cornice che esce dal bordo basso |
 
-Gli screenshot, nell'ordine:
+Gli screenshot, nell'ordine (elenco del 05/10/2026: `capture_screenshots.sh` ora scrive i file di Nook 2, ma `compose_screenshots.py` e questa tabella vanno ancora aggiornati):
 
 | File | Didascalia IT | Didascalia EN |
 |---|---|---|
@@ -142,7 +142,7 @@ Come rifarli (dopo un cambio di interfaccia o delle scene):
 
 ```bash
 ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk
-tools/store/capture_screenshots.sh /tmp/nook-raw          # emulatore acceso, testo e tema di default
+tools/store/capture_screenshots.sh /tmp/nook-raw          # emulatore acceso, testo e tema di default; LANGS=it-IT per una lingua sola. Scrive 1_break, 2_shade, 3_apps, 4_report, 5_dark, 6_breaks, 7_stats (dati demo: tools/store/demo_prefs.py)
 python3 tools/store/compose_screenshots.py /tmp/nook-raw path/to/Manrope.ttf
 ./gradlew testDebugUnitTest --tests '*ZenSceneTest*'     # scene per la feature graphic
 python3 tools/store/feature_graphic.py path/to/Manrope.ttf
@@ -152,7 +152,7 @@ python3 tools/icon/launcher_icon.py                     # icona 512
 Cose da sapere sulla cattura (`capture_screenshots.sh`, ~4 minuti):
 
 - Serve un emulatore con le app Google (Gmail, Calendar, Drive): sono le tre "app di lavoro" delle schermate. Il lancio si ferma se Nook non arriva in Home.
-- La scena e l'arte della notifica seguono l'ora vera: gira nel pomeriggio (luce piena o ora dorata). A cavallo del passaggio giorno/tramonto le due lingue potrebbero avere notifiche diverse: aspetta qualche minuto e rilancia.
+- L'orologio dell'emulatore viene spostato (`cmd alarm set-time`, ora automatica spenta) a un giorno feriale alle 18:15 e a un lunedì alle 09:40: la scena non dipende dall'ora in cui lanci lo script. Rimetti l'ora automatica dopo.
 - Cambia da solo la lingua di Nook e di `com.android.systemui` (data nella tendina) e le rimette a "predefinita" alla fine. "Silent" e "Mobile data" nella tendina restano in inglese anche nel set italiano: le stringhe non sono tradotte nell'immagine dell'emulatore.
 - Scrive le preferenze solo a processo fermo e con il listener spento: un processo Nook vivo le riscrive con i valori vecchi.
 
@@ -196,7 +196,7 @@ Nook only reads the package name of each notification to decide whether to remov
 ### Sicurezza dei dati (Data safety)
 - L'app raccoglie o condivide uno dei tipi di dati utente richiesti? **No.**
   - Motivo: Nook legge il nome del pacchetto delle notifiche e lo usa solo sul telefono, senza inviarlo a nessuno. Google non considera "raccolti" i dati trattati solo sul dispositivo.
-  - Il backup automatico di Android salva le impostazioni nell'account Google dell'utente, gestito dal sistema: lo sviluppatore non riceve niente.
+  - Il backup automatico di Android salva le impostazioni e lo storico del tempo libero nell'account Google dell'utente, gestito dal sistema: lo sviluppatore non riceve niente.
 - Con "No" il modulo salta le domande sulla crittografia e sulla cancellazione dei dati.
 - Cancellazione account: non applicabile, l'app non ha account.
 
