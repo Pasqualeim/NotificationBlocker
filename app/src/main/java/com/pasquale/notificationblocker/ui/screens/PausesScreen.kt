@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SegmentedListItem
 import com.pasquale.notificationblocker.ui.components.expressiveShape
@@ -52,7 +53,7 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
-/** The Breaks tab: when you work, the work apps, the other pauses with the days off and "Add a break". */
+/** The Breaks tab: when you work, the work apps, the other pauses with the days off; "Add a break" floats bottom right. */
 @Composable
 fun PausesScreen(
     viewModel: MainViewModel,
@@ -159,9 +160,11 @@ fun PausesContent(
 ) {
     // Controls only, the most important first: when (work), what (apps), then the extra pauses.
     // The week chart and sleep live in Stats: they explain the numbers, they decide nothing here
+    Box(modifier = modifier.fillMaxSize()) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+        modifier = Modifier.fillMaxSize(),
+        // Room under the last row for the "Add a break" button
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item(key = "work") {
@@ -190,10 +193,10 @@ fun PausesContent(
                 modifier = Modifier.entrance(1),
             )
         }
-        // A segmented group, like the system settings: one segment per pause, the days off, then "Add"
+        // A segmented group, like the system settings: one segment per pause, then the days off
         item(key = "pauses") {
             SectionHeader(R.string.pauses_section_list)
-            val count = pauses.size + 2
+            val count = pauses.size + 1
             Column(
                 modifier = Modifier.entrance(2),
                 verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
@@ -218,34 +221,34 @@ fun PausesContent(
                         if (holidaysOn) stringResource(R.string.days_off_row_holidays) else null,
                     ).joinToString("  ·  ").ifEmpty { stringResource(R.string.days_off_row_empty) },
                     onClick = onDaysOff,
-                    position = count - 2,
-                    count = count,
-                    shapeIndex = 2,
-                )
-                LinkRow(
-                    icon = Icons.Default.Add,
-                    title = stringResource(R.string.pause_add),
-                    subtitle = null,
-                    onClick = onAddPause,
                     position = count - 1,
                     count = count,
-                    shapeIndex = 1,
+                    shapeIndex = 2,
                 )
             }
         }
     }
+    ExtendedFloatingActionButton(
+        onClick = onAddPause,
+        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+        text = { Text(text = stringResource(R.string.pause_add)) },
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(16.dp),
+    )
+    }
 }
 
 /**
- * A segment that opens a screen or a sheet: icon in an expressive shape, title, an optional line,
- * a chevron when it opens something (not on "Add a break"). Also used by Stats for the sleep row.
+ * A segment that opens a screen or a sheet: icon in an expressive shape, title, one line, chevron.
+ * Also used by Stats for the sleep row.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun LinkRow(
     icon: ImageVector,
     title: String,
-    subtitle: String?,
+    subtitle: String,
     onClick: () -> Unit,
     position: Int,
     count: Int,
@@ -265,10 +268,8 @@ internal fun LinkRow(
                 Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.size(20.dp))
             }
         },
-        supportingContent = subtitle?.let { { Text(text = it) } },
-        trailingContent = if (subtitle != null) {
-            { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) }
-        } else null,
+        supportingContent = { Text(text = subtitle) },
+        trailingContent = { Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
     ) {
         Text(text = title)
     }
