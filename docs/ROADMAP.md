@@ -10,12 +10,11 @@ Prima di andare su Google Play, il prodotto si valida con un test indipendente. 
 
 | # | Voce | Chi | Note |
 |---|---|---|---|
-| 1 | Sistemare l'app: Nook 2 (`REDESIGN.md`) | Claude / Pasquale | Fasi 1-3 e revisione dei testi fatte (più pause, storico, tre schede). Resta la fase 4, il riccio (riga 1d). Il germoglio MVP è nello stash (`stash@{0}`), non nel codice |
+| 1 | Sistemare l'app: Nook 2 (`REDESIGN.md`) | Claude / Pasquale | Fasi 1-3 e revisione dei testi fatte (più pause, storico, tre schede). Restano i testi (1a) e le immagini (1c). Ogni novità si misura su `IDEA.md` |
 | 1a | Testi a una pausa sola | Claude (`copywriter`) | Fatta la revisione dei testi nuovi (fase 5). Restano alcune frasi scritte per una fascia sola (`hero_subtitle_outside`, `pause_ended_text`, `life_*`): rileggerle ora che le pause sono più d'una |
 | 1b | `sunlight` nei controlli di contrasto | Claude | Aggiungere `LightSunlight`/`DarkSunlight` a `tools/palette/contrast.py` e alle tabelle di `DESIGN_SYSTEM.md` (oggi assente: barre non testuali, serve il rapporto col fondo) |
 | 1c | Screenshot dello store, feature graphic e immagini del sito da rifare | Claude / Pasquale | Quelli attuali (`docs/store/screenshots/`, `docs/store/feature-graphic-*.png`, `LISTING.md`, `nook-site`) mostrano la Home vecchia (orari e pulsante in basso), non le tre schede e non il nuovo aspetto Material 3 Expressive (font Manrope, forme e palette fissa al posto di colori dinamici e font di sistema) |
-| 1d | Riccio (fase 4 di `REDESIGN.md`) | Claude / Pasquale | Scelto, ma ancora niente disegnato (il kit di pixel art è stato lasciato da parte per ora). Punteggio e hobby da progettare con lo storico che c'è già |
-| 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Dopo il punto 1: schermate, scene e personaggio veri (`~/Documents/Developer/nook-site`) |
+| 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Dopo il punto 1: schermate e scene vere (`~/Documents/Developer/nook-site`) |
 | 3 | Iscrizione al sito con email | Claude / Pasquale | Già nel sito: tabella D1 `signups` (email, `community` telegram o email). Chi si iscrive riceve il link per scaricare l'APK e l'invito al canale Telegram (novità, consigli) |
 | 3a | Deploy del sito | Pasquale | Non ancora online: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio (e `privacy_policy_url`, `LISTING.md`) |
 | 3b | Invio del link all'APK | Pasquale | Per email a chi si iscrive; serve un APK firmato da distribuire |
@@ -41,7 +40,6 @@ Nessuna voce aperta: Kotlin, `targetSdk`, Gradle, firma e CI sono a posto (vedi 
 |---|---|---|
 | Contatore nella card di stato | S | Il contatore per pausa esiste già (`filtered_count`, deduplicato per notifica, mostrato nella notifica della pausa e, per giorno, in "Statistiche"): mostrarlo anche nella `HeroHeader` |
 | Scelta "notifica della pausa sì/no" nell'app | S | Oggi si spegne dal canale di sistema o negando il permesso: un interruttore in app è più chiaro |
-| Personaggio: il riccio | L | Concept scelto (`CHARACTER.md`): pixel art (~48x48) disegnata dal proprietario, animazione di Claude. Punteggio e hobby sul `FreeTimeLedger` per giorno (piano in `REDESIGN.md`, sezione 3); il germoglio MVP resta nello stash. Parte della fase di test, punto 1 |
 | Pulire le notifiche già visibili all'inizio di una pausa | L | Richiede di agire al confine della fascia (allarme o job): vedi il vincolo "niente allarmi" in `CLAUDE.md` e valutare con attenzione |
 
 ## 4. Qualità

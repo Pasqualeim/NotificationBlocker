@@ -4,7 +4,9 @@
 
 App Android che mette in pausa le notifiche delle app di lavoro quando non stai lavorando.
 
-L'idea: abbiamo una vita oltre il lavoro. Non si tratta di dormire tranquilli, ma di riprendersi il tempo che resta (un pomeriggio di sole, una cena, un weekend) senza che il lavoro bussi dal telefono.
+La domanda da cui nasce: perché esistono app che ti premiano e ti mostrano statistiche solo per quanto tempo ti concentri e lavori, mentre non esiste niente per il tempo libero e la salute personale? Nook conta il tempo che ti riprendi (vedi [`docs/IDEA.md`](docs/IDEA.md)).
+
+Abbiamo una vita oltre il lavoro. Non si tratta di dormire tranquilli, ma di riprendersi il tempo che resta (un pomeriggio di sole, una cena, un weekend) senza che il lavoro bussi dal telefono.
 
 Scegli le app di lavoro (Gmail, Teams, Slack…), dici quando lavori (giorni e orari) e accendi l'interruttore: tutto il resto è pausa, e durante una pausa le notifiche di quelle app vengono tolte appena arrivano, tutte le altre restano. Se vuoi, aggiungi altre pause (il pranzo) con nome, orari, giorni e app diverse.
 
@@ -28,7 +30,7 @@ Tre schede in basso: **Oggi**, **Pause**, **Statistiche**.
 - **Tema**: aspetto nativo Pixel (Material 3 Expressive) nei colori di Nook, palette calda "Chai" / "Lo-fi night" (niente colori dallo sfondo), font di sistema; edge-to-edge.
 - **Lingue**: italiano e inglese.
 
-Prossimi passi: il personaggio (un riccio, non ancora disegnato), il sito con l'iscrizione al test, poi Google Play.
+Prossimi passi: il sito con l'iscrizione al test, poi Google Play.
 
 ## Requisiti
 
@@ -89,8 +91,8 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 | [`CLAUDE.md`](CLAUDE.md) | Architettura, regole e convenzioni (anche per assistenti AI) |
 | [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Stile visivo: colori, tipografia, forme, componenti, tono dei testi |
 | [`docs/MOTION.md`](docs/MOTION.md) | Linee guida sulle animazioni |
-| [`docs/REDESIGN.md`](docs/REDESIGN.md) | Piano di Nook 2 (pause, storico, tre schede; il riccio è la fase 4) |
-| [`docs/CHARACTER.md`](docs/CHARACTER.md) | Studio del personaggio: scelto il riccio, ancora da disegnare |
+| [`docs/IDEA.md`](docs/IDEA.md) | La domanda da cui nasce Nook, le quattro regole e la checklist anti-stress |
+| [`docs/REDESIGN.md`](docs/REDESIGN.md) | Piano di Nook 2 (pause, storico, tre schede) |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Stato del progetto: fase di test, miglioramenti, pubblicazione, cosa è fatto |
 | [`docs/PUBLISHING.md`](docs/PUBLISHING.md) | Guida passo passo per pubblicare su Google Play (riutilizzabile per altre app) |
 | [`docs/store/LISTING.md`](docs/store/LISTING.md) | Scheda dello store: testi IT/EN, screenshot, risposte ai moduli di Play Console |

@@ -6,6 +6,8 @@ Guidance for Claude Code when working in this repository.
 
 **Nook** (formerly NotificationBlocker): Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps when the user is not working: the user sets WHEN THEY WORK (days and hours, default Mon-Fri 09:00-18:00) and everything outside it is a pause; extra pauses (lunch...) have name, days and optionally their own apps.
 
+The question behind the app (`docs/IDEA.md`): why do apps reward you and show statistics only for the time you focus and work, while nothing exists for free time and personal health? Nook counts the time you get back.
+
 Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`. `applicationId` is `com.pasquale.nook` (fixed forever once published); the Kotlin namespace stays `com.pasquale.notificationblocker`, so class names in `adb` commands need the full path. Naming and color rationale: `docs/DESIGN_SYSTEM.md`.
 
 - minSdk 28, targetSdk 37, compileSdk 37
@@ -18,8 +20,8 @@ Related docs (read before UI work):
 - `docs/DESIGN_SYSTEM.md`: colors, type, shapes, components, copy tone
 - `docs/MOTION.md`: animation tokens and rules
 - `docs/ROADMAP.md`: project status (publishing, open items, done); update it when you ship or drop an item
-- `docs/REDESIGN.md`: the Nook 2 plan (phases 1-3 done: pauses, history, three tabs; phase 4, the hedgehog, is next)
-- `docs/CHARACTER.md`: character study (rules, anti-stress checklist). The hedgehog is chosen but nothing is drawn or in the app; the pixel-art kit was dropped for now, `tools/character/sketch.py` and the A/B/C drafts are history (the script needs `SproutArt.kt`, only in the stash, so it cannot run). Read before touching the character
+- `docs/IDEA.md`: the question behind Nook, the four rules and the anti-stress checklist every new idea (statistics, rewards, copy) must pass. Read before designing anything that counts or rewards free time
+- `docs/REDESIGN.md`: the Nook 2 plan (done: pauses, history, three tabs)
 - `docs/PUBLISHING.md`: the owner's step-by-step Google Play checklist (manual steps: accounts, testing, forms)
 - `docs/store/LISTING.md`: store texts IT/EN, screenshots in `docs/store/screenshots/`, Play Console form answers. Keep it in sync with the app (a new permission, data flow or feature changes the Data safety answers)
 
@@ -151,7 +153,7 @@ Only notification listener access is required, granted by the user in system set
 
 ### Sprout MVP (parked, not in the code)
 
-A pixel-art sprout that grew with the break time (`SproutCard`, `SproutArt`, an older `FreeTimeLedger`, prefs `growth_*`, `settleGrowth`) was never committed. It is parked in `git stash` (`stash@{0}`, "germoglio MVP (messo da parte per il riccio)"). The committed app has no sprout, no growth logic and no `growth_*` keys: Home shows the scene (`SceneCard`/`ZenScene`). The character is now a hedgehog (`docs/CHARACTER.md`) and the growth/score logic will be redesigned from scratch around it (not designed yet). Do not restore the stash as is.
+A pixel-art sprout that grew with the break time (`SproutCard`, `SproutArt`, an older `FreeTimeLedger`, prefs `growth_*`, `settleGrowth`) was never committed. It is parked in `git stash` (`stash@{0}`). The committed app has no sprout, no character, no growth logic and no `growth_*` keys: Home shows the scene (`SceneCard`/`ZenScene`). There is no character planned for now; any reward for free time is to be designed from scratch against `docs/IDEA.md`. Do not restore the stash as is.
 
 ### Zen status notification
 
@@ -189,16 +191,16 @@ See `docs/ROADMAP.md` for the full list. Most relevant:
 
 The owner wants to be told when a request is not the most useful thing to do now. Before starting anything bigger than a quick answer, compare it with what is still open:
 
-1. `docs/ROADMAP.md`, section "0. Fase di test (prima del Play Store)", in the owner's order: (1) fix the app: redo the score logic and the related logic, plus the hedgehog; (2) the site advertises the final product; (3) site email sign-up (D1 `signups`, `community` telegram|email): sign-ups get the APK link by email and an invitation to a Telegram channel (updates, tips) to validate the product before Play. The site is not deployed yet.
+1. `docs/ROADMAP.md`, section "0. Fase di test (prima del Play Store)", in the owner's order: (1) fix the app (`docs/IDEA.md` is the yardstick); (2) the site advertises the final product; (3) site email sign-up (D1 `signups`, `community` telegram|email): sign-ups get the APK link by email and an invitation to a Telegram channel (updates, tips) to validate the product before Play. The site is not deployed yet.
 2. Uncommitted or half-finished work in the tree (`git status`): finish, commit or drop it before opening a new front.
 3. Then the rest of the roadmap, in order: foundations, look & feel, features, quality.
 4. Last: Google Play publishing (`docs/ROADMAP.md`, "Pubblicazione": trademark check, Play Console, closed test with 12 testers for 14 days, store listing). It comes after the independent testing phase.
 
-If the request sits clearly below an open item above (e.g. polishing the character, new scenes, nice-to-have features while the testing phase is still open), say so **before** doing it, in two or three lines: what it is, why it can wait, what should come first. Then do what the owner decides; it is a warning, never a refusal. Do not warn on quick questions, bug fixes, things that unblock the testing phase, or when the owner already said they want to do it anyway in this conversation. Warn once per topic, not at every turn.
+If the request sits clearly below an open item above (e.g. new scenes, nice-to-have features while the testing phase is still open), say so **before** doing it, in two or three lines: what it is, why it can wait, what should come first. Then do what the owner decides; it is a warning, never a refusal. Do not warn on quick questions, bug fixes, things that unblock the testing phase, or when the owner already said they want to do it anyway in this conversation. Warn once per topic, not at every turn.
 
 ### Antigravity for side work
 
-To save Claude's tokens, suggest doing **side tasks that do not touch the code** in Antigravity: sprites and pixel art drafts, image generation (Gemini), moodboards, store graphic drafts, web research. When suggesting it, give a ready-to-paste prompt for Antigravity with the constraints from the docs (palette, `docs/CHARACTER.md` rules, sizes). Claude keeps everything that ends up in the repo as code or project docs: Kotlin, scripts in `tools/`, importing and converting assets, tests, docs, commits.
+To save Claude's tokens, suggest doing **side tasks that do not touch the code** in Antigravity: image generation (Gemini), moodboards, store graphic drafts, web research. When suggesting it, give a ready-to-paste prompt for Antigravity with the constraints from the docs (palette, `docs/IDEA.md` rules, sizes). Claude keeps everything that ends up in the repo as code or project docs: Kotlin, scripts in `tools/`, importing and converting assets, tests, docs, commits.
 
 ## Agents
 

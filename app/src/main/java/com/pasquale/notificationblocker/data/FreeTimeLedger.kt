@@ -7,7 +7,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 /**
- * One calendar day of the history: the base of the statistics and of the hedgehog's score.
+ * One calendar day of the history: the base of the statistics.
  *
  * @param livedMinutes minutes the pause was really on (see [FreeTimeLedger])
  * @param daylightMinutes the part of [livedMinutes] between sunrise and sunset
