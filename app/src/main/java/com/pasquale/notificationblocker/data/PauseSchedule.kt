@@ -23,8 +23,8 @@ object PauseSchedule {
     fun occurrenceAt(pause: Pause, now: LocalDateTime): Occurrence? {
         if (!pause.enabled || pause.days.isEmpty()) return null
         val today = now.toLocalDate()
-        // The one that started today, or an overnight one that started yesterday
-        return sequenceOf(today, today.minusDays(1))
+        // The one that started today, or one that started up to its number of nights ago
+        return (0..pause.nights).asSequence().map { today.minusDays(it.toLong()) }
             .filter { pause.startsOn(it) }
             .map { Occurrence(pause, it) }
             .firstOrNull { !now.isBefore(it.start) && now.isBefore(it.end) }

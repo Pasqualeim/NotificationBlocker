@@ -48,7 +48,7 @@ Abbiamo una vita oltre il lavoro: un pomeriggio libero, una cena, un weekend. No
 
 COSA FA
 • Scegli quali app sono di lavoro. Le altre non vengono toccate.
-• Crei quante pause vuoi (pranzo, sera, weekend), ognuna con il suo nome, gli orari e i giorni, anche a cavallo della mezzanotte o per tutto il giorno. Se serve, una pausa può avere app sue.
+• Dici quando lavori (giorni e orari): fuori da lì Nook mette in pausa le app di lavoro, sera e weekend compresi. Se vuoi, aggiungi altre pause (il pranzo) con nome, orari e giorni; una pausa può avere app sue.
 • "Pausa subito" per staccare adesso, per il tempo che scegli, senza creare una pausa.
 • Giorni liberi: ferie o ponti con le date, e i festivi italiani in automatico, se vuoi.
 • Un interruttore accende e spegne tutte le pause. C'è anche un riquadro nelle Impostazioni rapide e un widget per la schermata Home.
@@ -95,7 +95,7 @@ We have a life beyond work: a free afternoon, a dinner, a weekend. Nook keeps wo
 
 WHAT IT DOES
 • You choose which apps are work apps. The others are left alone.
-• You create as many breaks as you like (lunch, evening, weekend), each with its own name, hours and days, even across midnight or for the whole day. If you need to, a break can have its own apps.
+• You set when you work (days and hours): outside it Nook pauses your work apps, evenings and weekends included. If you like, add other breaks (lunch) with their own name, hours and days; a break can have its own apps.
 • "Pause now" to switch off right away, for as long as you choose, without creating a break.
 • Days off: holidays or long weekends by date, and Italian public holidays automatically, if you want.
 • One switch turns all your breaks on and off. There's also a Quick Settings tile and a home screen widget.

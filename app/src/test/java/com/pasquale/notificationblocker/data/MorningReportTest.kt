@@ -63,5 +63,8 @@ class MorningReportTest {
         // A daytime window that ended earlier today
         assertTrue(MorningReport.shouldShow(MorningReport("2026-09-29", 2, emptyList()), today, null, null))
         assertFalse(MorningReport.shouldShow(null, today, null, null))
+        // The weekend off work started on Friday: its report shows on Monday
+        val weekend = MorningReport("2026-09-26#work_off3", 9, emptyList())
+        assertTrue(MorningReport.shouldShow(weekend, today, null, null))
     }
 }

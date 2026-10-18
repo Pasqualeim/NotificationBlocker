@@ -71,7 +71,7 @@ object DaySpans {
             return day.spans.mapNotNull { s -> byId[s.pauseId]?.let { DaySpan(it, s.start, s.end) } }
         }
         return pauses.filter { (day.byPause[it.id] ?: 0) > 0 }.flatMap { pause ->
-            listOf(day.date.minusDays(1), day.date)
+            (pause.nights downTo 0).map { day.date.minusDays(it.toLong()) }
                 .filter { pause.startsOn(it) }
                 .map { Occurrence(pause, it) }
                 .flatMap { o ->

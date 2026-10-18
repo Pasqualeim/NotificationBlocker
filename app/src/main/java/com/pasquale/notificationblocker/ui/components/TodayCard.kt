@@ -36,6 +36,7 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.Occurrence
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.Pause
+import com.pasquale.notificationblocker.data.WorkSchedule
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.LocalDate
@@ -72,10 +73,11 @@ object TodayPauses {
         val today: LocalDate = now.toLocalDate()
         val dayStart = today.atStartOfDay()
         val dayEnd = dayStart.plusDays(1)
-        return pauses.mapIndexed { index, pause -> index to pause }
+        val slots = WorkSchedule.colorSlots(pauses)
+        return pauses.map { pause -> slots.getValue(pause.id) to pause }
             .filter { it.second.enabled }
             .flatMap { (index, pause) ->
-                listOf(today.minusDays(1), today)
+                (pause.nights downTo 0).map { today.minusDays(it.toLong()) }
                     .filter { pause.startsOn(it) }
                     .map { Occurrence(pause, it) }
                     .filter { it.end.isAfter(dayStart) && it.start.isBefore(dayEnd) }
@@ -100,7 +102,8 @@ object TodayPauses {
 
     /** The stretch that matters most for each pause: on now, then ended early, then later today, then lived. */
     fun oneEach(pauses: List<TodayPause>): List<TodayPause> =
-        pauses.groupBy { it.pause.id }.values
+        // The time off work is one line, though last night's stretch and tonight's have different ids
+        pauses.groupBy { if (WorkSchedule.isOffWork(it.pause)) WorkSchedule.OFF_WORK else it.pause.id }.values
             .map { same -> same.minBy { listOf(TodayPauseState.NOW, TodayPauseState.ENDED, TodayPauseState.LATER, TodayPauseState.LIVED).indexOf(it.state) } }
             .sortedBy { it.startMinute }
 

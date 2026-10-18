@@ -2,6 +2,8 @@
 
 Piano del rifacimento (fase di test, punto 1 della roadmap). Stato: **fasi 1-3 e revisione dei testi fatte** (più pause, storico, tre schede); **fase 4 (il riccio) e il sito sono i prossimi passi**; Google Play per ultimo, dopo il test via Telegram/email.
 
+> **Aggiornamento (ottobre 2026):** il modello sotto è quello di partenza. Oggi l'utente imposta **quando lavora** (`work_schedule`, `data/WorkSchedule.kt`) e le pause fuori dal lavoro (sera, giorni liberi) sono generate; le pause create a mano restano per il resto (pranzo). Vedi `CLAUDE.md`.
+
 ## Perché
 
 Prima di Nook 2 c'era una sola fascia al giorno, nessuno storico e un personaggio (il germoglio, nello stash) messo da parte. Il proprietario vuole:

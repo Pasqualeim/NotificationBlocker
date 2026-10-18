@@ -86,7 +86,7 @@ object FreeTimeLedger {
 
         // Occurrences that hold something and touch the stretch, earliest start first
         val occurrences = config.pauses.filter { it.enabled }.flatMap { pause ->
-            generateSequence(start.toLocalDate().minusDays(1)) { it.plusDays(1) }
+            generateSequence(start.toLocalDate().minusDays(pause.nights.toLong())) { it.plusDays(1) }
                 .takeWhile { !it.isAfter(end.toLocalDate()) }
                 .filter { pause.startsOn(it) }
                 .map { Occurrence(pause, it) }

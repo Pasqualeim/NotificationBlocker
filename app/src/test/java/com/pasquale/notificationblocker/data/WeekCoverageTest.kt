@@ -14,8 +14,8 @@ class WeekCoverageTest {
     fun overnightPause_splitsAcrossTwoDays() {
         val evening = Pause("evening", "Sera", 18 * 60 + 30, 8 * 60 + 30, days = setOf(DayOfWeek.FRIDAY))
         val week = WeekCoverage.of(listOf(evening))
-        assertEquals(listOf(CoverageSegment(1110, 1440, 0)), week.days[DayOfWeek.FRIDAY])
-        assertEquals(listOf(CoverageSegment(0, 510, 0)), week.days[DayOfWeek.SATURDAY])
+        assertEquals(listOf(CoverageSegment(1110, 1440, 1)), week.days[DayOfWeek.FRIDAY])
+        assertEquals(listOf(CoverageSegment(0, 510, 1)), week.days[DayOfWeek.SATURDAY])
         assertEquals(330 + 510, week.weeklyMinutes)
     }
 
@@ -29,7 +29,7 @@ class WeekCoverageTest {
         val week = WeekCoverage.of(pauses)
         // Saturday: the whole day, Friday night's morning and Saturday evening all inside it
         assertEquals(1440, unionOf(week, DayOfWeek.SATURDAY))
-        assertTrue(week.days.getValue(DayOfWeek.MONDAY).none { it.pauseIndex == 2 })
+        assertTrue(week.days.getValue(DayOfWeek.MONDAY).none { it.pauseIndex == 3 })
         // 5 weekdays of 14 h, plus 2 whole days
         assertEquals(5 * 14 * 60 + 2 * 1440, week.weeklyMinutes)
     }
@@ -69,7 +69,7 @@ class WeekCoverageTest {
         assertEquals(listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY), groups[1].days)
         // The whole day swallows the evening and the morning: one stretch, in the weekend's color
         assertEquals(listOf(0 to 1440), groups[1].stretches.map { it.start to it.end })
-        assertEquals(2, groups[1].stretches.single().pauseIndex)
+        assertEquals(3, groups[1].stretches.single().pauseIndex)
     }
 
     @Test

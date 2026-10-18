@@ -73,10 +73,12 @@ import com.pasquale.notificationblocker.R
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.data.WeekCoverage
+import com.pasquale.notificationblocker.data.WorkSchedule
+import com.pasquale.notificationblocker.ui.components.WorkHoursSheet
+import com.pasquale.notificationblocker.ui.components.WorkScheduleCard
 import com.pasquale.notificationblocker.ui.AppInfo
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.AppIconImage
-import com.pasquale.notificationblocker.ui.components.daysSummary
 import com.pasquale.notificationblocker.ui.components.pauseTimes
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
@@ -88,25 +90,21 @@ private val WORK_APP_HINTS = listOf(
     "com.linkedin.android", "com.asana.app", "com.trello", "com.atlassian.android.jira.core", "notion.id",
 )
 
-/** The break templates of step 2, with which ones start ticked. */
-private val TEMPLATES = listOf(
-    Pause("evening", "", 18 * 60 + 30, 8 * 60 + 30) to true,
-    Pause("lunch", "", 13 * 60, 14 * 60, days = DayOfWeek.entries.take(5).toSet()) to true,
-    Pause("weekend", "", 0, 0, days = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)) to false,
-)
+/** The lunch break offered in step 2, on the work days; ticked to start with. */
+private fun lunchBreak(schedule: WorkSchedule, name: String) = Pause("lunch", name, 13 * 60, 14 * 60, days = schedule.days)
 
 private const val STEPS = 3
 
 /**
- * First launch, three steps: which apps are work, when to switch off (from templates), and the
- * notification access. Ends on Today with Nook on. Each step can be changed later in the app.
+ * First launch, three steps: which apps are work, when you work (the rest is paused, plus an optional
+ * lunch break), and the notification access. Ends on Today with Nook on. Each step can be changed later in the app.
  */
 @Composable
 fun OnboardingScreen(viewModel: MainViewModel, onEditAllApps: () -> Unit, onDone: () -> Unit) {
     val apps by viewModel.installedApps.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.loadInstalledApps() }
     val context = LocalContext.current
-    val templateNames = listOf(stringResource(R.string.onboarding_evening), stringResource(R.string.onboarding_lunch), stringResource(R.string.onboarding_weekend))
+    val lunchName = stringResource(R.string.onboarding_lunch)
     // Checked again when the user comes back from the system page, so step 3 can say it worked
     var hasAccess by remember { mutableStateOf(hasNotificationListenerPermission(context)) }
     // Android asks for the break notification when the setup ends (see onFinish): step 3 says so first
@@ -115,11 +113,14 @@ fun OnboardingScreen(viewModel: MainViewModel, onEditAllApps: () -> Unit, onDone
         hasAccess = hasNotificationListenerPermission(context)
         willAskNotification = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !canPostNotifications(context)
     }
-    // The picked templates while the system dialog is up: saved, so a recreation behind the dialog
-    // still completes the setup; cleared once used, so it completes exactly once
-    var finishing by rememberSaveable { mutableStateOf<List<Int>?>(null) }
-    val complete = { picked: List<Int> ->
-        viewModel.completeOnboarding(picked.map { i -> TEMPLATES[i].first.copy(name = templateNames[i]) })
+    // The choices while the system dialog is up, as text ("schedule#lunch"): saved, so a recreation
+    // behind the dialog still completes the setup; cleared once used, so it completes exactly once
+    var finishing by rememberSaveable { mutableStateOf<String?>(null) }
+    val complete = { choice: String ->
+        val schedule = WorkSchedule.decode(choice.substringBefore('#')) ?: WorkSchedule.DEFAULT
+        val lunch = choice.substringAfter('#') == "1"
+        // A lunch break with no work day would never happen: not saved
+        viewModel.completeOnboarding(schedule, if (lunch && schedule.days.isNotEmpty()) listOf(lunchBreak(schedule, lunchName)) else emptyList())
         onDone()
     }
     // The break notification is asked for here, at the end of the setup, where the user is still
@@ -135,14 +136,15 @@ fun OnboardingScreen(viewModel: MainViewModel, onEditAllApps: () -> Unit, onDone
         onOpenAccess = { openNotificationAccess(context) },
         hasAccess = hasAccess,
         willAskNotification = willAskNotification,
-        onFinish = onFinish@{ picked ->
+        onFinish = onFinish@{ schedule, lunch ->
             // A second tap while the dialog is up would finish twice
             if (finishing != null) return@onFinish
+            val choice = WorkSchedule.encode(schedule) + "#" + (if (lunch) "1" else "0")
             if (hasAccess && willAskNotification && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                finishing = picked
+                finishing = choice
                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                complete(picked)
+                complete(choice)
             }
         },
     )
@@ -154,14 +156,17 @@ fun OnboardingContent(
     onToggleApp: (String, Boolean) -> Unit,
     onEditAllApps: () -> Unit,
     onOpenAccess: () -> Unit,
-    onFinish: (picked: List<Int>) -> Unit,
+    onFinish: (schedule: WorkSchedule, lunch: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     hasAccess: Boolean = false,
     willAskNotification: Boolean = false,
     initialStep: Int = 0,
 ) {
     var step by rememberSaveable { mutableIntStateOf(initialStep) }
-    var picked by rememberSaveable { mutableStateOf(TEMPLATES.indices.filter { TEMPLATES[it].second }) }
+    var scheduleText by rememberSaveable { mutableStateOf(WorkSchedule.encode(WorkSchedule.DEFAULT)) }
+    val schedule = WorkSchedule.decode(scheduleText) ?: WorkSchedule.DEFAULT
+    var lunch by rememberSaveable { mutableStateOf(true) }
+    var editingHours by rememberSaveable { mutableStateOf(false) }
     // System back steps back like the Back button; on the first step it leaves the app
     BackHandler(enabled = step > 0) { step-- }
 
@@ -190,7 +195,13 @@ fun OnboardingContent(
         ) {
             when (step) {
                 0 -> AppsStep(suggestions, onToggleApp, onEditAllApps)
-                1 -> PausesStep(picked) { i -> picked = if (i in picked) picked - i else (picked + i).sorted() }
+                1 -> WorkStep(
+                    schedule = schedule,
+                    onDaysChange = { scheduleText = WorkSchedule.encode(schedule.copy(days = it)) },
+                    onHoursClick = { editingHours = true },
+                    lunch = lunch,
+                    onLunchChange = { lunch = it },
+                )
                 else -> AccessStep(onOpenAccess, hasAccess, willAskNotification)
             }
         }
@@ -200,16 +211,26 @@ fun OnboardingContent(
             // One filled button at a time: on the last step, before the access is given, the
             // filled one is "Allow access" above and this one only skips it
             if (step == STEPS - 1 && !hasAccess) {
-                TextButton(onClick = { onFinish(picked) }, modifier = Modifier.height(48.dp)) {
+                TextButton(onClick = { onFinish(schedule, lunch) }, modifier = Modifier.height(48.dp)) {
                     Text(stringResource(R.string.onboarding_skip))
                 }
             } else {
-                Button(onClick = { if (step < STEPS - 1) step++ else onFinish(picked) }, modifier = Modifier.height(48.dp)) {
+                Button(onClick = { if (step < STEPS - 1) step++ else onFinish(schedule, lunch) }, modifier = Modifier.height(48.dp)) {
                     Text(stringResource(if (step < STEPS - 1) R.string.onboarding_next else R.string.onboarding_finish))
                 }
             }
         }
     }
+    }
+    if (editingHours) {
+        WorkHoursSheet(
+            schedule = schedule,
+            onSave = {
+                scheduleText = WorkSchedule.encode(it)
+                editingHours = false
+            },
+            onDismiss = { editingHours = false },
+        )
     }
 }
 
@@ -233,34 +254,35 @@ private fun AppsStep(suggestions: List<AppInfo>, onToggleApp: (String, Boolean) 
 }
 
 @Composable
-private fun PausesStep(picked: List<Int>, onToggle: (Int) -> Unit) {
-    val names = listOf(R.string.onboarding_evening, R.string.onboarding_lunch, R.string.onboarding_weekend)
-    Text(stringResource(R.string.onboarding_pauses_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
+private fun WorkStep(
+    schedule: WorkSchedule,
+    onDaysChange: (Set<DayOfWeek>) -> Unit,
+    onHoursClick: () -> Unit,
+    lunch: Boolean,
+    onLunchChange: (Boolean) -> Unit,
+) {
+    Text(stringResource(R.string.onboarding_work_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
     Text(
-        stringResource(R.string.onboarding_pauses_text),
+        stringResource(R.string.onboarding_work_text),
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    TEMPLATES.forEachIndexed { i, (pause, _) ->
-        ChoiceRow(checked = i in picked, onToggle = { onToggle(i) }) {
-            PauseAvatar(pause = pause, index = i)
-            Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
-                val name = stringResource(names[i])
-                Text(name, style = MaterialTheme.typography.titleMedium)
-                // "Weekend · Weekend" said the same thing twice: the days are left out when they are the name
-                Text(
-                    listOf(pauseTimes(pause), daysSummary(pause.days)).filter { it != name }.joinToString("  ·  "),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+    WorkScheduleCard(schedule = schedule, onDaysChange = onDaysChange, onHoursClick = onHoursClick)
+    val lunchPause = lunchBreak(schedule, stringResource(R.string.onboarding_lunch))
+    ChoiceRow(checked = lunch, onToggle = { onLunchChange(!lunch) }) {
+        PauseAvatar(pause = lunchPause, index = 1)
+        Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
+            Text(lunchPause.name, style = MaterialTheme.typography.titleMedium)
+            Text(
+                pauseTimes(lunchPause),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
-    // The week of the Breaks tab, redrawn as templates are ticked: it shows which hours stay free of
-    // work, and the user meets the chart they will find on that tab. All three templates go in, the
-    // unticked ones off, so each bar keeps the color of its template's avatar
+    // The week of the Breaks tab, redrawn as the choices change: it shows which hours stay free of work
     WeekCoverageCard(
-        coverage = WeekCoverage.of(TEMPLATES.mapIndexed { i, (pause, _) -> pause.copy(enabled = i in picked) }, SleepWindow.DEFAULT),
+        coverage = WeekCoverage.of(schedule.offWorkPauses() + lunchPause.copy(enabled = lunch), SleepWindow.DEFAULT),
     )
 }
 
@@ -361,7 +383,7 @@ fun OnboardingPreview() {
             onToggleApp = { _, _ -> },
             onEditAllApps = {},
             onOpenAccess = {},
-            onFinish = {},
+            onFinish = { _, _ -> },
         )
     }
 }
@@ -375,7 +397,7 @@ fun OnboardingAccessDonePreview() {
             onToggleApp = { _, _ -> },
             onEditAllApps = {},
             onOpenAccess = {},
-            onFinish = {},
+            onFinish = { _, _ -> },
             hasAccess = true,
             willAskNotification = true,
             initialStep = 2,
@@ -392,7 +414,7 @@ fun OnboardingAccessPreview() {
             onToggleApp = { _, _ -> },
             onEditAllApps = {},
             onOpenAccess = {},
-            onFinish = {},
+            onFinish = { _, _ -> },
             initialStep = 2,
         )
     }

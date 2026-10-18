@@ -12,6 +12,10 @@ import java.time.LocalDateTime
  * @param apps the apps this pause silences; null (the usual case) means all the work apps
  * @param date set for a one-off pause ("Pause now", a day off, a public holiday): it starts on that date
  *   only, and [days] is ignored
+ * @param nights for a pause that crosses midnight ([start] > [end]), how many midnights: the time off
+ *   work from Friday 18:00 to Monday 09:00 is one pause of 3 nights, so ending it early or counting what
+ *   it held covers the whole weekend. Only those generated pauses ([WorkSchedule]) use more than 1, and
+ *   they are never saved, so [PauseCodec] does not store it
  */
 data class Pause(
     val id: String,
@@ -22,6 +26,7 @@ data class Pause(
     val enabled: Boolean = true,
     val apps: Set<String>? = null,
     val date: LocalDate? = null,
+    val nights: Int = 1,
 ) {
     val isWholeDay: Boolean get() = start == end
 
@@ -33,6 +38,9 @@ data class Pause(
 
     companion object {
         val ALL_DAYS: Set<DayOfWeek> = DayOfWeek.entries.toSet()
+
+        /** The longest a pause can last: a week ([nights]). How far back an occurrence in progress can start. */
+        const val MAX_NIGHTS = 7
     }
 }
 
@@ -52,7 +60,7 @@ data class Occurrence(val pause: Pause, val startDate: LocalDate) {
         get() = when {
             pause.isWholeDay -> startDate.plusDays(1).atStartOfDay()
             pause.start < pause.end -> startDate.atTime(pause.end / 60, pause.end % 60)
-            else -> startDate.plusDays(1).atTime(pause.end / 60, pause.end % 60)
+            else -> startDate.plusDays(pause.nights.toLong()).atTime(pause.end / 60, pause.end % 60)
         }
 
     companion object {

@@ -13,6 +13,7 @@ import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.data.QuickPause
 import com.pasquale.notificationblocker.data.PreferencesManager
 import com.pasquale.notificationblocker.data.SleepWindow
+import com.pasquale.notificationblocker.data.WorkSchedule
 import com.pasquale.notificationblocker.notification.ZenNotificationManager
 import com.pasquale.notificationblocker.tile.ZenTileService
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
@@ -64,6 +65,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _holidaysEnabled = MutableStateFlow(preferencesManager.holidaysEnabled)
     val holidaysEnabled: StateFlow<Boolean> = _holidaysEnabled.asStateFlow()
 
+    // When the user works: the rest is paused (null: never set, the extra pauses alone apply)
+    private val _workSchedule = MutableStateFlow(preferencesManager.workSchedule)
+    val workSchedule: StateFlow<WorkSchedule?> = _workSchedule.asStateFlow()
+
+    fun setWorkSchedule(schedule: WorkSchedule) {
+        preferencesManager.workSchedule = schedule
+        _workSchedule.value = schedule
+        onPausesChanged()
+        refreshZenNotification()
+    }
+
     // When the user usually sleeps: held, but not counted as free time
     private val _sleepWindow = MutableStateFlow(preferencesManager.sleepWindow)
     val sleepWindow: StateFlow<SleepWindow> = _sleepWindow.asStateFlow()
@@ -106,7 +118,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == PreferencesManager.KEY_BLOCKING_ENABLED || key == PreferencesManager.KEY_PAUSE_ENDED_KEYS ||
             key == PreferencesManager.KEY_PAUSES || key == PreferencesManager.KEY_ONE_OFF_PAUSES ||
-            key == PreferencesManager.KEY_HOLIDAYS_ENABLED) {
+            key == PreferencesManager.KEY_HOLIDAYS_ENABLED || key == PreferencesManager.KEY_WORK_SCHEDULE) {
             _isBlockingEnabled.value = preferencesManager.isBlockingEnabled
             refreshOffHoursStatus()
         }
@@ -151,6 +163,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun refreshOffHoursStatus() {
         preferencesManager.settleHistory()
         _pauses.value = preferencesManager.pauses
+        _workSchedule.value = preferencesManager.workSchedule
         _allPauses.value = preferencesManager.allPauses()
         _daysOff.value = DaysOff.ranges(preferencesManager.oneOffPauses).filterNot { it.last.isBefore(LocalDate.now()) }
         _holidaysEnabled.value = preferencesManager.holidaysEnabled
@@ -282,8 +295,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val needsOnboarding: Boolean = preferencesManager.needsOnboarding
 
     /** Saves the breaks picked in the first-launch setup and turns Nook on. */
-    fun completeOnboarding(pauses: List<Pause>) {
-        preferencesManager.completeOnboarding(pauses)
+    fun completeOnboarding(schedule: WorkSchedule, pauses: List<Pause>) {
+        preferencesManager.completeOnboarding(schedule, pauses)
         _isBlockingEnabled.value = true
         onPausesChanged()
         refreshZenNotification()

@@ -46,7 +46,10 @@ import com.pasquale.notificationblocker.data.PauseCodec
 import com.pasquale.notificationblocker.data.PauseSchedule
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.SleepWindow
-import com.pasquale.notificationblocker.ui.components.SleepSheet
+import com.pasquale.notificationblocker.ui.components.TimeRangeSheet
+import com.pasquale.notificationblocker.ui.components.WorkHoursSheet
+import com.pasquale.notificationblocker.ui.components.WorkScheduleCard
+import com.pasquale.notificationblocker.data.WorkSchedule
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.PauseRow
 import com.pasquale.notificationblocker.ui.components.WeekCoverageCard
@@ -74,6 +77,8 @@ fun PausesScreen(
     val holidays by viewModel.holidaysEnabled.collectAsStateWithLifecycle()
     val sleep by viewModel.sleepWindow.collectAsStateWithLifecycle()
     var editingSleep by rememberSaveable { mutableStateOf(false) }
+    val work by viewModel.workSchedule.collectAsStateWithLifecycle()
+    var editingHours by rememberSaveable { mutableStateOf(false) }
     // The "on now" label follows the clock
     val minute by rememberCurrentMinutes()
     val onNow = remember(pauses, ended, minute) {
@@ -104,17 +109,37 @@ fun PausesScreen(
         holidaysOn = holidays,
         sleep = sleep,
         onSleep = { editingSleep = true },
+        work = work,
+        onWorkChange = viewModel::setWorkSchedule,
+        onWorkHours = { editingHours = true },
         modifier = modifier,
     )
 
     if (editingSleep) {
-        SleepSheet(
-            window = sleep,
-            onSave = {
-                viewModel.setSleepWindow(it)
+        TimeRangeSheet(
+            title = stringResource(R.string.sleep_sheet_title),
+            text = stringResource(R.string.sleep_sheet_text),
+            startLabel = R.string.sleep_bedtime,
+            endLabel = R.string.sleep_wake,
+            initialStart = sleep.start,
+            initialEnd = sleep.end,
+            onSave = { start, end ->
+                viewModel.setSleepWindow(SleepWindow(start, end))
                 editingSleep = false
             },
             onDismiss = { editingSleep = false },
+            // Two equal times leave no sleep out: say so, or the hours would jump up with no reason
+            hint = { start, end -> if (start == end) stringResource(R.string.sleep_none_hint) else null },
+        )
+    }
+    if (editingHours) {
+        WorkHoursSheet(
+            schedule = work ?: WorkSchedule.DEFAULT,
+            onSave = {
+                viewModel.setWorkSchedule(it)
+                editingHours = false
+            },
+            onDismiss = { editingHours = false },
         )
     }
 
@@ -160,6 +185,9 @@ fun PausesContent(
     holidaysOn: Boolean = false,
     sleep: SleepWindow = SleepWindow.DEFAULT,
     onSleep: () -> Unit = {},
+    work: WorkSchedule? = WorkSchedule.DEFAULT,
+    onWorkChange: (WorkSchedule) -> Unit = {},
+    onWorkHours: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -167,10 +195,23 @@ fun PausesContent(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            item(key = "work") {
+                SectionHeader(R.string.work_section)
+                // Without a schedule yet (Nook updated from a version with pauses only) the usual one is
+                // shown, and saved at the first change
+                val shown = work ?: WorkSchedule.DEFAULT
+                WorkScheduleCard(
+                    schedule = shown,
+                    onDaysChange = { onWorkChange(shown.copy(days = it)) },
+                    onHoursClick = onWorkHours,
+                    active = work != null,
+                    modifier = Modifier.entrance(0),
+                )
+            }
             item(key = "week") {
                 WeekCoverageCard(
-                    coverage = remember(pauses, sleep) { WeekCoverage.of(pauses, sleep) },
-                    modifier = Modifier.entrance(0),
+                    coverage = remember(pauses, sleep, work) { WeekCoverage.of(work?.offWorkPauses().orEmpty() + pauses, sleep) },
+                    modifier = Modifier.padding(top = 8.dp).entrance(1),
                 )
             }
             if (pauses.isNotEmpty()) item(key = "pausesHeader") { SectionHeader(R.string.pauses_section_list) }
@@ -187,13 +228,14 @@ fun PausesContent(
                 // A segmented group, like the system settings: one segment per pause
                 item(key = "pauses") {
                     Column(
-                        modifier = Modifier.entrance(1),
+                        modifier = Modifier.entrance(2),
                         verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
                     ) {
                         pauses.forEachIndexed { index, pause ->
                             PauseRow(
                                 pause = pause,
-                                index = index,
+                                // Slot 0 is the time outside work: the other pauses start at 1, as on Today
+                                index = index + 1,
                                 onClick = { onPauseClick(pause) },
                                 onEnabledChange = { onPauseEnabledChange(pause.id, it) },
                                 isOnNow = pause.id in onNow,
@@ -207,7 +249,7 @@ fun PausesContent(
             item(key = "apps") {
                 SectionHeader(R.string.pauses_section_more)
                 Column(
-                    modifier = Modifier.entrance(2),
+                    modifier = Modifier.entrance(3),
                     verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
                 ) {
                     LinkRow(

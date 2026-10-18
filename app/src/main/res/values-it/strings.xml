@@ -182,7 +182,7 @@
     <string name="week_stretch_until">fino alle %1$s</string>
     <string name="week_no_breaks">Ancora nessuna pausa</string>
     <string name="week_legend_active">Le parti vuote sono le ore in cui le notifiche di lavoro arrivano.</string>
-    <string name="pauses_section_list">Le tue pause</string>
+    <string name="pauses_section_list">Altre pause</string>
     <string name="today_now">Ora: %1$s</string>
     <string name="today_left">ancora %1$s</string>
     <string name="today_until_day">fino a %1$s alle %2$s</string>
@@ -273,11 +273,7 @@
     <string name="onboarding_apps_text">Scegli le app che ti portano lavoro. Durante una pausa Nook ne toglie le notifiche, e non tornano. I messaggi restano nelle app: li trovi quando le apri. Tutto il resto arriva come sempre.</string>
     <string name="onboarding_apps_more">Scegli tra tutte le app</string>
     <string name="onboarding_apps_pick">Scegli le app di lavoro</string>
-    <string name="onboarding_pauses_title">Quando vuoi staccare?</string>
-    <string name="onboarding_pauses_text">Parti da queste. Orari e giorni li cambi quando vuoi.</string>
-    <string name="onboarding_evening">Sera</string>
     <string name="onboarding_lunch">Pranzo</string>
-    <string name="onboarding_weekend">Weekend</string>
     <string name="onboarding_access_title">Accesso alle notifiche</string>
     <string name="onboarding_access_text">Per mettere in pausa le app di lavoro, Nook deve vedere le notifiche che ricevi.</string>
     <string name="onboarding_access_sees">Guarda solo quale app ha mandato ogni notifica.</string>
@@ -302,4 +298,19 @@
     <string name="sleep_bedtime">A letto alle</string>
     <string name="sleep_wake">Sveglia alle</string>
     <string name="sleep_none_hint">Con lo stesso orario due volte non togli niente e tutta la notte conta come tempo libero.</string>
+    <string name="work_section">Quando lavori</string>
+    <string name="work_days_label">Giorni di lavoro</string>
+    <string name="work_hours_label">Orario</string>
+    <string name="work_off_name">Fuori dal lavoro</string>
+    <string name="work_free_all">Nessun giorno di lavoro. È tutto in pausa.</string>
+    <string name="work_free_none">Lavori tutti i giorni. In pausa solo fuori orario.</string>
+    <string name="work_free_days">%1$s: in pausa tutto il giorno.</string>
+    <string name="work_hours_title">Orario di lavoro</string>
+    <string name="work_hours_text">Fuori da questo orario Nook mette in pausa le app di lavoro.</string>
+    <string name="work_hours_start">Inizio</string>
+    <string name="work_hours_end">Fine</string>
+    <string name="work_hours_order">La fine deve venire dopo l\'inizio.</string>
+    <string name="onboarding_work_title">Quando lavori?</string>
+    <string name="onboarding_work_text">Fuori orario e nei giorni liberi Nook mette in pausa le app di lavoro. Puoi cambiarlo quando vuoi.</string>
+    <string name="work_not_set">Non ancora attivo. Tocca un giorno o l\'orario per attivarlo: il resto della settimana andrà in pausa.</string>
 </resources>

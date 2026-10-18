@@ -51,6 +51,7 @@ import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.PeriodStats
 import com.pasquale.notificationblocker.data.SleepWindow
+import com.pasquale.notificationblocker.data.WorkSchedule
 import com.pasquale.notificationblocker.data.StatsRange
 import com.pasquale.notificationblocker.data.SunTimes
 import com.pasquale.notificationblocker.ui.MainViewModel
@@ -185,7 +186,7 @@ fun StatsContent(
                     }
                     if (range != StatsRange.DAY) DaylightRing(period.livedMinutes, period.daylightMinutes)
                 }
-                val colors = pauses.mapIndexed { i, p -> p.id to pauseColor(i) }.toMap()
+                val colors = WorkSchedule.colorSlots(pauses).mapValues { pauseColor(it.value) }
                 when (range) {
                     StatsRange.DAY -> {
                         val day = period.days.first()

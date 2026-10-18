@@ -35,6 +35,7 @@ import com.pasquale.notificationblocker.data.DaysOff
 import com.pasquale.notificationblocker.data.Holiday
 import com.pasquale.notificationblocker.data.Pause
 import com.pasquale.notificationblocker.data.QuickPause
+import com.pasquale.notificationblocker.data.WorkSchedule
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 import java.time.format.TextStyle
@@ -53,6 +54,7 @@ fun pauseName(pause: Pause): String = when {
     QuickPause.isQuick(pause) -> stringResource(R.string.quick_pause_name)
     DaysOff.isHoliday(pause) -> holidayName(runCatching { Holiday.valueOf(pause.name) }.getOrNull())
     DaysOff.isRange(pause) -> stringResource(R.string.days_off_name)
+    WorkSchedule.isOffWork(pause) -> stringResource(R.string.work_off_name)
     else -> pause.name.ifBlank { stringResource(R.string.pause_default_name) }
 }
 

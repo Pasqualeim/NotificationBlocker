@@ -52,7 +52,7 @@ data class MorningReport(val window: String, val total: Int, val apps: List<AppC
 
         /**
          * Show [report] once its window is over: not while still inside it, not after the user
-         * dismissed it ([seenWindow]), and only for a window that started today or yesterday, so an
+         * dismissed it ([seenWindow]), and only for a window that started as many nights ago as it lasts, so an
          * old one never reads as "last night".
          */
         fun shouldShow(
@@ -63,7 +63,8 @@ data class MorningReport(val window: String, val total: Int, val apps: List<AppC
         ): Boolean {
             if (report == null || report.window == seenWindow || report.window == currentWindow) return false
             val start = Occurrence.dateOf(report.window) ?: return false
-            return !start.isBefore(today.minusDays(1)) && !start.isAfter(today)
+            // As far back as that pause lasts: a weekend off work starts on Friday, its report shows on Monday
+            return !start.isBefore(today.minusDays(WorkSchedule.nightsOf(report.window).toLong())) && !start.isAfter(today)
         }
     }
 }

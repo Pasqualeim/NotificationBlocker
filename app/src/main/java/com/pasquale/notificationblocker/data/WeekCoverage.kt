@@ -40,13 +40,14 @@ data class WeekCoverage(
     companion object {
         private const val DAY = OffHours.MINUTES_PER_DAY
 
-        /** [CoverageSegment.pauseIndex] is the pause's place in [pauses], so it matches its color. */
+        /** [CoverageSegment.pauseIndex] is the pause's color slot ([WorkSchedule.colorSlots]). */
         fun of(pauses: List<Pause>, sleep: SleepWindow? = null): WeekCoverage {
+            val slots = WorkSchedule.colorSlots(pauses)
             val days = DayOfWeek.entries.associateWith { day ->
-                val yesterday = day.minus(1)
-                pauses.flatMapIndexed { index, p ->
+                pauses.flatMap { p ->
+                    val index = slots.getValue(p.id)
                     // One-off pauses (a day off, "Pause now") are not part of the usual week
-                    if (!p.enabled || p.date != null) return@flatMapIndexed emptyList()
+                    if (!p.enabled || p.date != null) return@flatMap emptyList()
                     buildList {
                         if (day in p.days) {
                             when {
@@ -55,9 +56,11 @@ data class WeekCoverage(
                                 else -> add(CoverageSegment(p.start, DAY, index))
                             }
                         }
-                        // The morning part of last night's pause
-                        if (yesterday in p.days && !p.isWholeDay && p.start > p.end && p.end > 0) {
-                            add(CoverageSegment(0, p.end, index))
+                        if (!p.isWholeDay && p.start > p.end) {
+                            // The days in between of a pause of several nights (Friday evening to Monday)
+                            for (k in 1 until p.nights) if (day.minus(k.toLong()) in p.days) add(CoverageSegment(0, DAY, index))
+                            // The morning part of the night it ends
+                            if (day.minus(p.nights.toLong()) in p.days && p.end > 0) add(CoverageSegment(0, p.end, index))
                         }
                     }
                 }.sortedBy { it.start }

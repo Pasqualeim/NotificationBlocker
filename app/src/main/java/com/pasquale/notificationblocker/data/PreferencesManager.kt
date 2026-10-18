@@ -55,14 +55,30 @@ class PreferencesManager private constructor(context: Context) {
             listOf(KEY_PAUSES, KEY_START_TIME, KEY_BLOCKING_ENABLED).none { prefs.contains(it) }
 
     /**
-     * Ends the first-launch setup: saves the chosen [pauses] and turns Nook on. An empty list is saved
-     * as such, so the old default window (22:00-07:00) does not appear unasked.
+     * Ends the first-launch setup: saves the [schedule], the extra [pauses] and turns Nook on. An empty
+     * list is saved as such, so the old default window (22:00-07:00) does not appear unasked.
      */
-    fun completeOnboarding(pauses: List<Pause>) = settleThen {
+    fun completeOnboarding(schedule: WorkSchedule, pauses: List<Pause>) = settleThen {
+        putString(KEY_WORK_SCHEDULE, WorkSchedule.encode(schedule))
         putString(KEY_PAUSES, PauseCodec.encode(pauses))
         putBoolean(KEY_BLOCKING_ENABLED, true)
         putBoolean(KEY_ONBOARDING_DONE, true)
     }
+
+    /**
+     * When the user works; the time outside it is paused ([WorkSchedule.offWorkPauses]). Null when it
+     * was never set: Nook updated from a version that had only pauses keeps working on those.
+     */
+    var workSchedule: WorkSchedule?
+        get() = WorkSchedule.decode(prefs.getString(KEY_WORK_SCHEDULE, null))
+        set(value) {
+            if (value == workSchedule) return
+            settleThen {
+                if (value == null) remove(KEY_WORK_SCHEDULE) else putString(KEY_WORK_SCHEDULE, WorkSchedule.encode(value))
+                // A new schedule makes new stretches off work: an old "ended early" must not carry over
+                putStringSet(KEY_PAUSE_ENDED_KEYS, pauseEndedKeys.filterNot { it.substringAfter('#').startsWith(WorkSchedule.OFF_WORK) }.toSet())
+            }
+        }
 
     /** When the user usually sleeps: still held, but left out of the free time (see [SleepWindow]). */
     var sleepWindow: SleepWindow
@@ -81,12 +97,13 @@ class PreferencesManager private constructor(context: Context) {
         set(value) = settleThen { putBoolean(KEY_HOLIDAYS_ENABLED, value) }
 
     /**
-     * Every pause that can be in progress: the regular ones, the one-offs, then the public holidays from
-     * yesterday to a week ahead (as far as [PauseSchedule] looks). Blocking and history use this.
+     * Every pause that can be in progress: the time outside work, the extra ones, the one-offs, then the
+     * public holidays from yesterday to a week ahead (as far as [PauseSchedule] looks). Blocking and
+     * history use this.
      */
     fun allPauses(today: LocalDate = LocalDate.now()): List<Pause> {
         val holidays = if (holidaysEnabled) DaysOff.holidayPauses(today.minusDays(1), today.plusDays(8)) else emptyList()
-        return pauses + oneOffPauses + holidays
+        return workSchedule?.offWorkPauses().orEmpty() + pauses + oneOffPauses + holidays
     }
 
     /** Adds a range of days off from [first] to [last]. */
@@ -158,12 +175,12 @@ class PreferencesManager private constructor(context: Context) {
     val pauseEndedKeys: Set<String>
         get() = prefs.getStringSet(KEY_PAUSE_ENDED_KEYS, emptySet()).orEmpty()
 
-    /** Ends early every pause in progress; keys older than two days are dropped on the way. */
+    /** Ends early every pause in progress; keys older than the longest pause are dropped on the way. */
     @Synchronized
     fun endPausesNow() {
         val now = LocalDateTime.now()
         val keep = pauseEndedKeys.filter { key ->
-            Occurrence.dateOf(key)?.isBefore(now.toLocalDate().minusDays(2)) == false
+            Occurrence.dateOf(key)?.isBefore(now.toLocalDate().minusDays(Pause.MAX_NIGHTS + 1L)) == false
         }
         val active = PauseSchedule.activeAt(allPauses(), now).map { it.key }
         settleThen { putStringSet(KEY_PAUSE_ENDED_KEYS, (keep + active).toSet()) }
@@ -304,6 +321,7 @@ class PreferencesManager private constructor(context: Context) {
         const val KEY_PAUSES = "pauses"
         const val KEY_ONE_OFF_PAUSES = "one_off_pauses"
         const val KEY_HOLIDAYS_ENABLED = "holidays_enabled"
+        const val KEY_WORK_SCHEDULE = "work_schedule"
         const val KEY_SLEEP_START = "sleep_start"
         const val KEY_SLEEP_END = "sleep_end"
         private const val KEY_ONBOARDING_DONE = "onboarding_done"

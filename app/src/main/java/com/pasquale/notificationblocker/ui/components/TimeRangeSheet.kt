@@ -24,19 +24,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
-import com.pasquale.notificationblocker.data.SleepWindow
 import com.pasquale.notificationblocker.ui.screens.TimePickerDialog
 
 /**
- * "When you sleep", from the "More" group of Breaks: bedtime and wake-up time, with one line on what
- * they change (work stays paused, those hours are not counted as free time). Saved with the button, like
- * the pause editor.
+ * A bottom sheet that sets a stretch of the day: [title], one line on what it changes ([text]), two
+ * time boxes and Save, like the pause editor. Used for the work hours and the sleep window. [hint],
+ * when not null for the chosen times, is shown under the boxes; [canSave] false disables Save.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SleepSheet(window: SleepWindow, onSave: (SleepWindow) -> Unit, onDismiss: () -> Unit) {
-    var start by rememberSaveable { mutableIntStateOf(window.start) }
-    var end by rememberSaveable { mutableIntStateOf(window.end) }
+fun TimeRangeSheet(
+    title: String,
+    text: String,
+    startLabel: Int,
+    endLabel: Int,
+    initialStart: Int,
+    initialEnd: Int,
+    onSave: (start: Int, end: Int) -> Unit,
+    onDismiss: () -> Unit,
+    hint: @Composable (start: Int, end: Int) -> String? = { _, _ -> null },
+    canSave: (start: Int, end: Int) -> Boolean = { _, _ -> true },
+) {
+    var start by rememberSaveable { mutableIntStateOf(initialStart) }
+    var end by rememberSaveable { mutableIntStateOf(initialEnd) }
     var picking by rememberSaveable { mutableStateOf<String?>(null) }
 
     ModalBottomSheet(
@@ -51,20 +61,19 @@ fun SleepSheet(window: SleepWindow, onSave: (SleepWindow) -> Unit, onDismiss: ()
                 .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Text(text = stringResource(R.string.sleep_sheet_title), style = MaterialTheme.typography.titleLarge)
+            Text(text = title, style = MaterialTheme.typography.titleLarge)
             Text(
-                text = stringResource(R.string.sleep_sheet_text),
+                text = text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                TimeBox(R.string.sleep_bedtime, start, Modifier.weight(1f)) { picking = "start" }
-                TimeBox(R.string.sleep_wake, end, Modifier.weight(1f)) { picking = "end" }
+                TimeBox(startLabel, start, Modifier.weight(1f)) { picking = "start" }
+                TimeBox(endLabel, end, Modifier.weight(1f)) { picking = "end" }
             }
-            // Two equal times leave no sleep out: say so, or the hours would jump up with no reason
-            if (start == end) {
+            hint(start, end)?.let {
                 Text(
-                    text = stringResource(R.string.sleep_none_hint),
+                    text = it,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -73,7 +82,8 @@ fun SleepSheet(window: SleepWindow, onSave: (SleepWindow) -> Unit, onDismiss: ()
             Row {
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
-                    onClick = { onSave(SleepWindow(start, end)) },
+                    onClick = { onSave(start, end) },
+                    enabled = canSave(start, end),
                     modifier = Modifier.defaultMinSize(minWidth = 120.dp, minHeight = 48.dp),
                 ) {
                     Text(text = stringResource(R.string.pause_save))
