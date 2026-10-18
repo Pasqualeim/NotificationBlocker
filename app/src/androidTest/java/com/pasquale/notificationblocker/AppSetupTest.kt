@@ -21,7 +21,7 @@ class AppSetupTest {
     private val pm = context.packageManager
 
     @Test
-    fun applicationId_isTheFinalOne() = assertEquals("com.pasquale.nook", context.packageName)
+    fun applicationId_isTheFinalOne() = assertEquals("com.pasquale.nook", context.packageName.removeSuffix(".dev"))
 
     @Test
     fun launcherActivity_isResolvable() {

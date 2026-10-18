@@ -7,7 +7,7 @@ set -e
 RAW=${1:?raw dir}
 export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
 E=${ANDROID_SERIAL:-emulator-5554}
-P=com.pasquale.nook
+P=${P:-com.pasquale.nook.dev}   # the debug build ("Nook dev")
 S=$P/com.pasquale.notificationblocker.service.NotificationBlockerService
 A=$P/com.pasquale.notificationblocker.MainActivity
 adb -s $E shell pm grant $P android.permission.POST_NOTIFICATIONS

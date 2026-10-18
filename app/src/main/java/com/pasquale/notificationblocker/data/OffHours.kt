@@ -1,6 +1,7 @@
 package com.pasquale.notificationblocker.data
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -46,4 +47,11 @@ object OffHours {
         calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
 
     fun format(minutes: Int): String = String.format(Locale.ROOT, "%02d:%02d", minutes / 60, minutes % 60)
+
+    /**
+     * [date] with a [DateTimeFormatter] [pattern] in [locale]. Italian day and month names are lowercase
+     * mid-sentence, but Samsung phones give "Ottobre": lowercase them; the caller capitalizes a title.
+     */
+    fun date(pattern: String, date: LocalDate, locale: Locale): String =
+        DateTimeFormatter.ofPattern(pattern, locale).format(date).let { if (locale.language == "it") it.lowercase(locale) else it }
 }

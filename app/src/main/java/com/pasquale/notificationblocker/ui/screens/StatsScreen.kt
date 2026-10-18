@@ -70,7 +70,6 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.theme.sunlight
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /** The "Your time" tab: day, week or month of break time lived, daylight and notifications kept out. */
 @Composable
@@ -248,7 +247,7 @@ fun StatsContent(
 private fun periodTitle(period: PeriodStats): String {
     val locale = LocalConfiguration.current.locales[0]
     fun fmt(pattern: String, date: LocalDate) =
-        DateTimeFormatter.ofPattern(pattern, locale).format(date).replaceFirstChar { it.titlecase(locale) }
+        OffHours.date(pattern, date, locale).replaceFirstChar { it.titlecase(locale) }
     return when (period.range) {
         StatsRange.DAY -> fmt("EEEE d MMMM", period.first)
         StatsRange.WEEK -> stringResource(

@@ -40,6 +40,11 @@ android {
     }
 
     buildTypes {
+        // The development copy installs next to the one from the Play Store ("Nook dev", its own data),
+        // so a phone keeps the real app while updates are tried
+        debug {
+            applicationIdSuffix = ".dev"
+        }
         release {
             signingConfigs.findByName("release")?.let { signingConfig = it }
             optimization {

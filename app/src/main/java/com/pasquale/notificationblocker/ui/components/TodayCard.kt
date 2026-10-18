@@ -41,7 +41,6 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 /** Where one of today's pauses stands. */
@@ -256,7 +255,7 @@ private fun workBackText(back: WorkBack?, nowMinute: Int): String? {
         return if (left > 0) stringResource(R.string.today_left, durationText(left)) else null
     }
     val locale = LocalConfiguration.current.locales[0]
-    val day = if (back.daysAway == 1) stringResource(R.string.today_day_tomorrow) else DateTimeFormatter.ofPattern("EEEE", locale).format(back.day)
+    val day = if (back.daysAway == 1) stringResource(R.string.today_day_tomorrow) else OffHours.date("EEEE", back.day, locale)
     return if (back.minute == null) stringResource(R.string.today_through_day, day)
     else stringResource(R.string.today_until_day, day, OffHours.format(back.minute))
 }

@@ -50,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.data.DaysOff
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.holidayName
@@ -57,7 +58,6 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 /** Days off: the public holidays switch, the ranges of days off, and "Add days" with a range picker. */
 @Composable
@@ -252,13 +252,13 @@ private fun rangeText(first: LocalDate, last: LocalDate): String {
     val locale = LocalConfiguration.current.locales[0]
     if (first == last) return dayText(first)
     val sameMonth = first.month == last.month && first.year == last.year
-    val a = DateTimeFormatter.ofPattern(if (sameMonth) "d" else "d MMM", locale).format(first)
-    return stringResource(R.string.stats_range, a, DateTimeFormatter.ofPattern(if (sameMonth) "d MMMM" else "d MMM", locale).format(last))
+    val a = OffHours.date(if (sameMonth) "d" else "d MMM", first, locale)
+    return stringResource(R.string.stats_range, a, OffHours.date(if (sameMonth) "d MMMM" else "d MMM", last, locale))
 }
 
 @Composable
 private fun dayText(date: LocalDate): String =
-    DateTimeFormatter.ofPattern("d MMMM", LocalConfiguration.current.locales[0]).format(date)
+    OffHours.date("d MMMM", date, LocalConfiguration.current.locales[0])
 
 @Preview(showBackground = true, name = "Days off")
 @Composable

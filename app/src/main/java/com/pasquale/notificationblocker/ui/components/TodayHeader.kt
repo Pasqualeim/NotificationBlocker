@@ -24,10 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pasquale.notificationblocker.R
+import com.pasquale.notificationblocker.data.OffHours
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import com.pasquale.notificationblocker.ui.theme.sunlight
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 /** The greeting of the Today tab's top bar, for the time of day ([minute] from midnight). */
 @Composable
@@ -43,7 +43,7 @@ fun todayGreeting(minute: Int): String = stringResource(
 @Composable
 fun todayDate(date: LocalDate): String {
     val locale = LocalConfiguration.current.locales[0]
-    return DateTimeFormatter.ofPattern("EEEE d MMMM", locale).format(date).replaceFirstChar { it.titlecase(locale) }
+    return OffHours.date("EEEE d MMMM", date, locale).replaceFirstChar { it.titlecase(locale) }
 }
 
 /** The brand mark at the end of the Today top bar: the mug on a primary cookie shape. */

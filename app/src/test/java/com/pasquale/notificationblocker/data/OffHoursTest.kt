@@ -5,6 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
+import java.util.Locale
 
 class OffHoursTest {
 
@@ -64,5 +65,12 @@ class OffHoursTest {
         assertEquals(t(22), OffHours.nextStart(t(22), t(7)))
         assertEquals(t(18), OffHours.nextStart(t(18), t(23)))
         assertEquals(0, OffHours.nextStart(t(12), t(12)))
+    }
+
+    @Test
+    fun dates_inItalian_keepNamesLowercase_inEnglishCapitalized() {
+        val sunday = LocalDate.of(2026, 10, 18)
+        assertEquals("domenica 18 ottobre", OffHours.date("EEEE d MMMM", sunday, Locale.ITALIAN))
+        assertEquals("Sunday 18 October", OffHours.date("EEEE d MMMM", sunday, Locale.ENGLISH))
     }
 }
