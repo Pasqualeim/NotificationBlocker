@@ -162,12 +162,12 @@
     <string name="stats_week">Week</string>
     <string name="stats_month">Month</string>
     <string name="stats_daylight">%1$s in daylight</string>
-    <string name="stats_tile_yours">Free time</string>
-    <string name="stats_tile_daylight">In daylight</string>
     <string name="stats_tile_held">Paused</string>
     <string name="stats_empty">The free time you get from your breaks shows up here, starting with your first break.</string>
     <string name="stats_legend_daylight">In daylight</string>
-    <string name="stats_month_hint">A fuller circle means more free time that day.</string>
+    <string name="stats_month_less">Less</string>
+    <string name="stats_month_more">More free time</string>
+    <string name="week_legend_sleep_short">Sleep, not counted</string>
     <string name="stats_prev">Previous</string>
     <string name="stats_next">Next</string>
     <string name="stats_day_light">Daylight %1$s–%2$s</string>
@@ -193,7 +193,6 @@
     <string name="metric_daylight">In daylight</string>
     <string name="metric_paused">Paused</string>
     <string name="stats_average">Average a day</string>
-    <string name="stats_ring_label">daylight</string>
     <string name="stats_total_label">Free time</string>
     <string name="duration_compact" translatable="false">%1$d h %2$02d</string>
     <string name="quick_pause_action">Pause now</string>

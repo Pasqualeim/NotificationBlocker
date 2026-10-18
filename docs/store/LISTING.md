@@ -9,7 +9,7 @@ Tieni questo file allineato all'app: una nuova funzione, un nuovo permesso o un 
 | Campo | Valore |
 |---|---|
 | Nome del pacchetto (`applicationId`) | `com.pasquale.nook` (definitivo dopo il primo caricamento) |
-| Versione | `versionName` 1.0, `versionCode` 1 (in `app/build.gradle.kts`) |
+| Versione | `versionName` 1.0, `versionCode` 2 (in `app/build.gradle.kts`) |
 | Android minimo | 9 (API 28). `targetSdk` 37 (Play chiede almeno 36 dal 31/08/2026) |
 | File da caricare | `app/build/outputs/bundle/release/app-release.aab` (`./gradlew bundleRelease`) |
 | Categoria | Produttività |

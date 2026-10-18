@@ -161,12 +161,12 @@
     <string name="stats_week">Settimana</string>
     <string name="stats_month">Mese</string>
     <string name="stats_daylight">%1$s con la luce del giorno</string>
-    <string name="stats_tile_yours">Tempo libero</string>
-    <string name="stats_tile_daylight">Con la luce</string>
     <string name="stats_tile_held">Notifiche in pausa</string>
     <string name="stats_empty">Qui compare il tempo libero che ti dai con le pause, a partire dalla prima.</string>
     <string name="stats_legend_daylight">Con la luce del giorno</string>
-    <string name="stats_month_hint">Più il cerchio è pieno, più tempo libero hai avuto quel giorno.</string>
+    <string name="stats_month_less">Meno</string>
+    <string name="stats_month_more">Più tempo libero</string>
+    <string name="week_legend_sleep_short">Sonno, escluso</string>
     <string name="stats_prev">Precedente</string>
     <string name="stats_next">Successivo</string>
     <string name="stats_day_light">Luce %1$s–%2$s</string>
@@ -192,7 +192,6 @@
     <string name="metric_daylight">Con la luce</string>
     <string name="metric_paused">Notifiche in pausa</string>
     <string name="stats_average">Media al giorno</string>
-    <string name="stats_ring_label">di luce</string>
     <string name="stats_total_label">Tempo libero</string>
     <string name="quick_pause_action">Stacca ora</string>
     <string name="quick_pause_title">Stacca ora</string>

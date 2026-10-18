@@ -1,6 +1,6 @@
 # Il personaggio di Nook
 
-Studio per dare a Nook un personaggio suo: riconoscibile, originale, e che non metta mai ansia. Stato: **concept scelto: il riccio** (15/10/2026). Niente è ancora nell'app: il germoglio MVP (`SproutArt`, `SproutCard`, una vecchia `FreeTimeLedger` a totale) non è mai stato committato; lo storico per giorno `FreeTimeLedger` di Nook 2 invece è nel codice e sta in `git stash` (`stash@{0}`). Le bozze A/B/C in [`character/`](character/) sono storia, generate da `tools/character/sketch.py`, che legge `SproutArt.kt`: oggi quel file esiste solo nello stash, quindi lo script non gira sull'albero committato.
+Studio per dare a Nook un personaggio suo: riconoscibile, originale, e che non metta mai ansia. Stato: **concept scelto: il riccio** (15/10/2026). Niente è ancora nell'app: il germoglio MVP (`SproutArt`, `SproutCard`, una vecchia `FreeTimeLedger` a totale) non è mai stato committato; lo storico per giorno `FreeTimeLedger` di Nook 2 invece è nel codice, mentre il germoglio sta in `git stash` (`stash@{0}`). Le bozze A/B/C in [`character/`](character/) sono storia, generate da `tools/character/sketch.py`, che legge `SproutArt.kt`: oggi quel file esiste solo nello stash, quindi lo script non gira sull'albero committato.
 
 ## Il riccio (concept scelto)
 
@@ -68,7 +68,7 @@ Su Home: solo il personaggio e una frase. I numeri stanno in una schermata che a
 | Tempo tuo questa settimana | `FreeTimeLedger` (storico per giorno, già nel codice; `Stats.kt` somma settimane e mesi) | In ore intere |
 | Sere libere | Pause con almeno 1 h vissuta | Un conteggio, non una serie |
 | **Ore di luce vissute in pausa** | Incrocio fra pausa vissuta e ore di sole, già calcolate (`SunTimes`) e nello storico come `daylightMinutes` | Il dato che nessun'altra app ha: "8 h di luce tue questa settimana" |
-| Notifiche di lavoro lasciate fuori | `held` per giorno nello storico | Già contato e mostrato in "Il tempo tuo", nella notifica della pausa e nel resoconto |
+| Notifiche di lavoro lasciate fuori | `held` per giorno nello storico | Già contato e mostrato in "Statistiche", nella notifica della pausa e nel resoconto |
 
 Vista della settimana: sette colonne, ogni giorno con la sua pausa. Un giorno senza pausa è un puntino neutro, mai rosso e mai vuoto con un bordo tratteggiato. Niente media, niente "meglio della settimana scorsa".
 

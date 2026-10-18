@@ -6,20 +6,25 @@ App Android che mette in pausa le notifiche delle app di lavoro quando non stai 
 
 L'idea: abbiamo una vita oltre il lavoro. Non si tratta di dormire tranquilli, ma di riprendersi il tempo che resta (un pomeriggio di sole, una cena, un weekend) senza che il lavoro bussi dal telefono.
 
-Scegli le app di lavoro (Gmail, Teams, Slack…), crea le tue pause (nome, orari, giorni, se vuoi app diverse per ciascuna) e accendi l'interruttore: durante una pausa le notifiche di quelle app vengono tolte appena arrivano, tutte le altre restano.
+Scegli le app di lavoro (Gmail, Teams, Slack…), dici quando lavori (giorni e orari) e accendi l'interruttore: tutto il resto è pausa, e durante una pausa le notifiche di quelle app vengono tolte appena arrivano, tutte le altre restano. Se vuoi, aggiungi altre pause (il pranzo) con nome, orari, giorni e app diverse.
 
 ## Funzionalità
 
-Tre schede in basso: **Oggi**, **Pause**, **Il tempo tuo**.
+Tre schede in basso: **Oggi**, **Pause**, **Statistiche**.
 
-- **Pause** (scheda *Pause*): quante ne vuoi, ognuna con nome (Pranzo, Sera, Weekend), inizio e fine con il time picker (anche a cavallo della mezzanotte; inizio uguale alla fine = tutto il giorno), giorni della settimana e un interruttore proprio. Di norma usano tutte le app di lavoro; per una pausa si possono scegliere app diverse. Le pause possono sovrapporsi.
+- **Quando lavori** (scheda *Pause*): giorni e orari di lavoro (predefinito lun–ven 09:00–18:00, turni di giorno). Fuori dal lavoro Nook mette tutto in pausa, sera e weekend compresi: da venerdì sera a lunedì mattina è una pausa sola, quindi "Termina la pausa", il conteggio e il resoconto valgono per tutto il weekend.
+- **Altre pause** (scheda *Pause*): quante ne vuoi (il pranzo), ognuna con nome, inizio e fine con il time picker (anche a cavallo della mezzanotte; inizio uguale alla fine = tutto il giorno), giorni della settimana e un interruttore proprio. Di norma usano tutte le app di lavoro; per una pausa si possono scegliere app diverse. Le pause possono sovrapporsi.
+- **Stacca ora**: dalla card di stato, una pausa subito per il tempo che scegli, senza crearne una.
+- **Giorni liberi**: ferie o ponti con le date (fino a 62 giorni) e, se vuoi, i festivi italiani, Pasqua e Pasquetta comprese.
 - **App di lavoro**: elenco ricercabile di tutte le app con icona nel launcher, comprese quelle preinstallate. Filtro *Tutte / Selezionate*, skeleton di caricamento e stato vuoto.
 - **Oggi**: card di stato con l'interruttore generale (Spento, Programmato, In pausa ora), la scena animata e le pause di oggi su una barra di 24 ore con il tempo vissuto finora. Se manca l'accesso alle notifiche, una card spiega cosa vede l'app e porta alle impostazioni di sistema (ricontrollato a ogni ritorno nell'app).
-- **Il tempo tuo**: storico per giorno del tempo di pausa vissuto, di quanto è stato con la luce del sole e delle notifiche di lavoro lasciate fuori. Grafici per giorno, settimana e mese, scorrendo ai periodi precedenti.
+- **Statistiche**: storico per giorno del tempo di pausa vissuto, di quanto è stato con la luce del sole e delle notifiche di lavoro lasciate fuori. Grafici per giorno, settimana e mese, scorrendo ai periodi precedenti. In fondo la settimana impostata e il **Sonno**: le ore di sonno restano in pausa ma non contano come tempo libero.
 - **Scena animata**: una scrivania in ufficio con lo skyline mentre lavori, un pontile sul lago in pausa, con la luce reale del giorno, quattro stagioni, pioggia e neve.
 - **Notifica della pausa** (facoltativa, Android 13+): notifica silenziosa e fissa mentre una pausa è attiva, con l'ora in cui finisce e quante notifiche di lavoro sono state messe in pausa. Il pulsante **Termina la pausa** fa arrivare di nuovo le notifiche di lavoro fino alla prossima pausa.
 - **Riquadro "Nook"** nelle Impostazioni rapide: accende e spegne tutto dalla tendina.
-- **Dopo la pausa**: la Home mostra quante notifiche di lavoro sono arrivate e da quali app.
+- **Widget** per la schermata Home: stato, pausa in corso o prossima e "Stacca 1 h".
+- **Dopo la pausa**: la Home mostra quante notifiche di lavoro sono arrivate e da quali app, con "Apri".
+- **Primo avvio**: tre passi (app di lavoro, quando lavori, accesso alle notifiche con le quattro garanzie).
 - **Tema**: aspetto nativo Pixel (Material 3 Expressive) nei colori di Nook, palette calda "Chai" / "Lo-fi night" (niente colori dallo sfondo), font di sistema; edge-to-edge.
 - **Lingue**: italiano e inglese.
 
@@ -32,11 +37,10 @@ Prossimi passi: il personaggio (un riccio, non ancora disegnato), il sito con l'
 
 ## Primo utilizzo
 
-1. Apri Nook e tocca **Apri impostazioni** nella card "Consenti l'accesso alle notifiche", poi attiva *Nook* nell'elenco di sistema e torna indietro.
-2. (Facoltativo, Android 13+) Tocca **Consenti** sulla card *Notifica della pausa* per vedere la pausa nella tendina.
-3. Nella scheda **Pause** modifica la pausa di partenza (predefinita 22:00 → 07:00, ogni giorno) o aggiungine altre.
-4. Nella stessa scheda tocca **App di lavoro** e attiva le app da mettere in pausa.
-5. In **Oggi** accendi l'interruttore nella card di stato.
+1. Apri Nook: il primo avvio ha tre passi. Scegli le **app di lavoro**, poi **quando lavori** (giorni e orari, con il pranzo facoltativo) e infine consenti l'**accesso alle notifiche**: *Consenti l'accesso*, attiva *Nook* nell'elenco di sistema e torna indietro.
+2. (Facoltativo, Android 13+) Toccando *Inizia* Android chiede se Nook può mostrare la *notifica della pausa* nella tendina.
+3. Nella scheda **Pause** puoi cambiare giorni e orari di lavoro, aggiungere altre pause o i giorni liberi e cambiare le app di lavoro (riga *App di lavoro*).
+4. In **Oggi** l'interruttore nella card di stato è già acceso; **Stacca ora** avvia subito una pausa.
 
 > Le notifiche messe in pausa vengono tolte, non rimandate: quando la fascia finisce non ricompaiono. I messaggi restano dentro le rispettive app.
 

@@ -57,7 +57,7 @@ import com.pasquale.notificationblocker.data.SunTimes
 import com.pasquale.notificationblocker.ui.MainViewModel
 import com.pasquale.notificationblocker.ui.components.CountUpText
 import com.pasquale.notificationblocker.ui.components.DayChart
-import com.pasquale.notificationblocker.ui.components.DaylightRing
+import com.pasquale.notificationblocker.ui.components.MonthLegend
 import com.pasquale.notificationblocker.ui.components.entrance
 import com.pasquale.notificationblocker.ui.components.LegendItem
 import com.pasquale.notificationblocker.ui.components.MonthCalendar
@@ -215,7 +215,6 @@ fun StatsContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    if (range != StatsRange.DAY) DaylightRing(period.livedMinutes, period.daylightMinutes)
                 }
                 val colors = WorkSchedule.colorSlots(pauses).mapValues { pauseColor(it.value) }
                 when (range) {
@@ -247,7 +246,10 @@ fun StatsContent(
                             LegendItem(MaterialTheme.colorScheme.sunlight, stringResource(R.string.stats_legend_daylight))
                         }
                     }
-                    StatsRange.MONTH -> MonthCalendar(days = period.days, today = today)
+                    StatsRange.MONTH -> {
+                        MonthCalendar(days = period.days, today = today)
+                        MonthLegend()
+                    }
                 }
             }
         }
@@ -256,25 +258,16 @@ fun StatsContent(
         val since = history.keys.minOrNull() ?: today
         val elapsed = period.days.count { !it.date.isAfter(today) && !it.date.isBefore(since) }
         TotalsRow(
-            livedMinutes = period.livedMinutes,
-            daylightMinutes = period.daylightMinutes,
             held = period.held,
             averageMinutes = if (range != StatsRange.DAY && elapsed > 0) period.livedMinutes / elapsed else null,
             modifier = Modifier.entrance(2),
         )
-        if (range == StatsRange.MONTH) {
-            Text(
-                text = stringResource(R.string.stats_month_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-        }
         // The usual week the pauses make (one-offs left out by WeekCoverage), and the sleep that the
         // numbers above leave out: both explain the totals, so they live here and not in Breaks
         SectionHeader(R.string.stats_section_week)
         WeekCoverageCard(
             coverage = remember(pauses, sleep) { WeekCoverage.of(pauses, sleep) },
+            compact = true,
             modifier = Modifier.entrance(3),
         )
         if (sleep != null) {

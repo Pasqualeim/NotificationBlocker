@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedListItem
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -278,14 +276,13 @@ fun LegendItem(color: Color, label: String, modifier: Modifier = Modifier) {
 
 /** The totals under the chart, as a segmented list: free time, daylight, notifications paused, average a day. */
 @Composable
-fun TotalsRow(livedMinutes: Int, daylightMinutes: Int, held: Int, modifier: Modifier = Modifier, averageMinutes: Int? = null) {
-    val count = if (averageMinutes != null) 4 else 3
+fun TotalsRow(held: Int, modifier: Modifier = Modifier, averageMinutes: Int? = null) {
+    // Free time and daylight are the big figure above: only what it does not say is listed here
+    val count = if (averageMinutes != null) 2 else 1
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-        TotalLine(0, count, painterResource(R.drawable.ic_mug), stringResource(R.string.stats_tile_yours), durationText(livedMinutes))
-        TotalLine(1, count, painterResource(R.drawable.ic_tile_sun), stringResource(R.string.stats_tile_daylight), durationText(daylightMinutes), tint = MaterialTheme.colorScheme.sunlight)
-        TotalLine(2, count, rememberVectorPainter(Icons.Filled.Notifications), stringResource(R.string.stats_tile_held), held.toString())
+        TotalLine(0, count, rememberVectorPainter(Icons.Filled.Notifications), stringResource(R.string.stats_tile_held), held.toString())
         if (averageMinutes != null) {
-            TotalLine(3, count, painterResource(R.drawable.ic_nav_time), stringResource(R.string.stats_average), durationText(averageMinutes))
+            TotalLine(1, count, painterResource(R.drawable.ic_nav_time), stringResource(R.string.stats_average), durationText(averageMinutes))
         }
     }
 }
@@ -316,39 +313,16 @@ private fun TotalLine(
     }
 }
 
-/**
- * Ring of the daylight share: the whole ring is the free time of the period, the warm arc the part
- * of it in daylight, with the percentage inside. The arc sweeps in when a new period shows.
- */
+/** The scale of [MonthCalendar]: emptier to fuller circles, less to more free time. */
 @Composable
-fun DaylightRing(livedMinutes: Int, daylightMinutes: Int, modifier: Modifier = Modifier) {
-    val share = if (livedMinutes > 0) daylightMinutes.toFloat() / livedMinutes else 0f
-    val sweep = remember { Animatable(0f) }
-    LaunchedEffect(share) { sweep.animateTo(share, Motion.standard(Motion.SLOW)) }
-    val track = MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f)
-    val sun = MaterialTheme.colorScheme.sunlight
-    Box(modifier = modifier.size(88.dp), contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val stroke = 10.dp.toPx()
-            val inset = stroke / 2
-            val arcSize = Size(size.width - stroke, size.height - stroke)
-            drawArc(track, 0f, 360f, false, Offset(inset, inset), arcSize, style = androidx.compose.ui.graphics.drawscope.Stroke(stroke))
-            if (sweep.value > 0f) {
-                drawArc(
-                    sun, -90f, 360f * sweep.value, false, Offset(inset, inset), arcSize,
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round),
-                )
-            }
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "${(sweep.value * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, maxLines = 1)
-            Text(
-                text = stringResource(R.string.stats_ring_label),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-            )
-        }
+fun MonthLegend(modifier: Modifier = Modifier) {
+    val sage = MaterialTheme.colorScheme.secondary
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(text = stringResource(R.string.stats_month_less), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Box(modifier = Modifier.size(12.dp).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape))
+        // The same alphas as the calendar's fill: 0.25 at the least, 1 from 11 h
+        for (alpha in listOf(0.25f, 0.6f, 1f)) Box(modifier = Modifier.size(12.dp).background(sage.copy(alpha = alpha), CircleShape))
+        Text(text = stringResource(R.string.stats_month_more), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -376,7 +350,10 @@ fun WeekChartPreview() {
 @Composable
 fun MonthCalendarPreview() {
     NotificationBlockerTheme(darkTheme = true) {
-        MonthCalendar(previewDays(LocalDate.of(2026, 10, 1), 31), previewToday, Modifier.padding(16.dp))
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            MonthCalendar(previewDays(LocalDate.of(2026, 10, 1), 31), previewToday)
+            MonthLegend()
+        }
     }
 }
 
@@ -395,7 +372,7 @@ fun DayChartPreview() {
                 colorOf = { blue },
             )
             LegendItem(MaterialTheme.colorScheme.tertiary, "Sera")
-            TotalsRow(livedMinutes = 130, daylightMinutes = 40, held = 5)
+            TotalsRow(held = 5, averageMinutes = 65)
         }
     }
 }

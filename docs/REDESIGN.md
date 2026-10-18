@@ -82,7 +82,7 @@ Barra in basso Material 3 con tre voci, come le app di benessere digitale; trans
 
 | Voce | Cosa contiene |
 |---|---|
-| **Oggi** | Il riccio nella sua tana (al posto della scena, sempre 2:1, Home in una schermata), lo stato con l'interruttore generale, la pausa in corso o la prossima ("Pranzo fino alle 14:00", "Sera alle 18:30"), una frase con un fatto concreto. Tocco sul riccio: i suoi hobby |
+| **Oggi** | Il riccio nella sua tana (al posto della scena, sempre 2:1), lo stato con l'interruttore generale, la pausa in corso o la prossima ("Pranzo fino alle 14:00", "Sera alle 18:30"), una frase con un fatto concreto. Tocco sul riccio: i suoi hobby |
 | **Pause** | Elenco delle pause come righe in una superficie raggruppata (nome, orari, giorni a pillole, interruttore), "Aggiungi pausa", editor a foglio dal basso. In fondo: "App di lavoro" (la lista unica) |
 | **Statistiche** (era "Il tempo tuo") | Selettore Giorno / Settimana / Mese, grafico grande, frecce o scorrimento per i periodi precedenti, sotto i totali del periodo (ore tue, ore di luce, notifiche lasciate fuori) |
 
@@ -122,4 +122,4 @@ Le fasi 1 e 2 non cambiano l'aspetto dell'app; dalla 3 si vede il nuovo Nook.
 - `./gradlew testDebugUnitTest`: `PauseSchedule` (notte, tutto il giorno, sovrapposte, giorni, terminata, ora legale), migrazione, storico (luce, più pause, nessun doppio conteggio, orologio che torna indietro), punteggio e soglie.
 - `./gradlew lintDebug` a 0 errori.
 - Dall'emulatore: due pause brevi (es. tra 2 e 4 minuti da ora), notifiche di prova da `com.android.shell` (comandi in `CLAUDE.md`), controllo di cosa viene trattenuto, del registro e del resoconto dopo ciascuna.
-- Sul Galaxy A32, build release: Oggi in una schermata (`wm size`, `font_scale`), frame a riposo con la pausa attiva (circa 150 in 5 s, non peggiorare), passaggio fra le tre voci senza scatti.
+- Sul Galaxy A32, build release: Oggi con la scena sempre a 2:1 (`wm size`, `font_scale`), frame a riposo con la pausa attiva (circa 150 in 5 s, non peggiorare), passaggio fra le tre voci senza scatti.

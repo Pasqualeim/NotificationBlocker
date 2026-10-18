@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -46,14 +47,17 @@ import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
 import java.time.DayOfWeek
 
 /**
- * Top of the Breaks tab (and step 2 of the first launch): the awake hours a week without work
+ * Bottom of the Stats tab, under "Planned week" (and step 2 of the first launch): the awake hours a week without work
  * notifications, then one 24 h bar per group of days that look the same ("Lun–ven", "Sab–dom"),
  * every pause in its color, the sleep hours veiled (still paused, not counted), the free times written
  * under it, and a short legend for the empty and the veiled parts. The stretches grow in from the left
  * when the card first shows.
+ *
+ * @param compact under a section title (Stats): no label of its own, and the sleep named by one legend
+ *   dot instead of the sentence the first launch needs
  */
 @Composable
-fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
+fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier, compact: Boolean = false) {
     // Saved, so the card does not grow again when it scrolls back into the list
     var played by rememberSaveable { mutableStateOf(false) }
     val grow = remember { Animatable(if (played) 1f else 0f) }
@@ -70,11 +74,13 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
 
     Surface(modifier = modifier.fillMaxWidth(), shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainer) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                text = stringResource(R.string.week_coverage_label),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (!compact) {
+                Text(
+                    text = stringResource(R.string.week_coverage_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             CountUpText(
                 target = coverage.weeklyMinutes / 60,
                 style = MaterialTheme.typography.displaySmall,
@@ -95,10 +101,17 @@ fun WeekCoverageCard(coverage: WeekCoverage, modifier: Modifier = Modifier) {
                     DayGroupRow(group = group, colors = colors, track = track, sleep = coverage.sleep, veil = veil, grow = { grow.value })
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
             // The colors are the pauses, named by the dots under each bar: only the empty and the veiled
             // parts need a word
             val sleep = coverage.sleep?.takeIf { it.start != it.end }
+            if (compact) {
+                if (sleep != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LegendItem(veil.compositeOver(colors[0]), stringResource(R.string.week_legend_sleep_short))
+                }
+                return@Column
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = if (sleep == null) stringResource(R.string.week_legend_active)
                 else stringResource(R.string.week_legend_sleep, OffHours.format(sleep.start), OffHours.format(sleep.end)),
@@ -205,5 +218,13 @@ fun WeekCoverageCardDarkPreview() {
 fun WeekCoverageCardEmptyPreview() {
     NotificationBlockerTheme {
         WeekCoverageCard(WeekCoverage.of(emptyList()), Modifier.padding(16.dp))
+    }
+}
+
+@Preview(showBackground = true, name = "Week coverage - compact (Stats)")
+@Composable
+fun WeekCoverageCardCompactPreview() {
+    NotificationBlockerTheme {
+        WeekCoverageCard(WeekCoverage.of(previewPauses, SleepWindow.DEFAULT), Modifier.padding(16.dp), compact = true)
     }
 }
