@@ -10,10 +10,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -49,7 +51,6 @@ import com.pasquale.notificationblocker.ui.components.HeroHeader
 import com.pasquale.notificationblocker.ui.components.QuickPauseSheet
 import com.pasquale.notificationblocker.ui.components.quickPauseOptions
 import com.pasquale.notificationblocker.ui.components.TodayMetrics
-import com.pasquale.notificationblocker.ui.components.HomeColumn
 import com.pasquale.notificationblocker.ui.components.MorningReportCard
 import com.pasquale.notificationblocker.ui.components.MorningReportUi
 import com.pasquale.notificationblocker.ui.components.PermissionCard
@@ -60,7 +61,6 @@ import com.pasquale.notificationblocker.ui.components.TodayPause
 import com.pasquale.notificationblocker.ui.components.TodayPauses
 import com.pasquale.notificationblocker.ui.components.WorkBack
 import com.pasquale.notificationblocker.ui.components.ZenNotificationCard
-import com.pasquale.notificationblocker.ui.components.homeScene
 import com.pasquale.notificationblocker.ui.components.rememberCurrentMinutes
 import com.pasquale.notificationblocker.ui.theme.Motion
 import com.pasquale.notificationblocker.ui.theme.NotificationBlockerTheme
@@ -206,11 +206,11 @@ fun MainScreenContent(
     // screen slides over Home: on slower phones the scroll gets the whole frame budget
     val ambientClock = rememberAmbientClock(active = sceneActive && !scrollState.isScrollInProgress)
 
-    // Home fits one screen on every phone, with the scene whole: HomeColumn scales the cards down
-    // before the scene (rule: docs/DESIGN_SYSTEM.md, "Home in una schermata") and reads the viewport
-    // from the min height that fillMaxSize passes through verticalScroll. It scrolls only as a last
-    // resort, e.g. with the largest system font
-    HomeColumn(
+    // A plain column: nothing on Home is resized to fit the screen. The scene keeps one size (full width,
+    // 2:1) whatever card is at the top; a taller page (the permission card, the largest system font)
+    // scrolls instead. Scaling the cards and the scene to fit made them grow and shrink as the top card
+    // changed
+    Column(
         modifier = modifier
             .fillMaxSize()
             // No stretch at the edges: the page is barely taller than the screen, so almost every scroll
@@ -218,9 +218,10 @@ fun MainScreenContent(
             // on a Galaxy A32 against 5 ms without it)
             .verticalScroll(scrollState, overscrollEffect = null)
             .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // One card at the top, the most urgent thing first: an extra card would push the page past the
-        // screen and HomeColumn would shrink every text, then grow it back once the card is gone
+        // One card at the top, the most urgent thing first: a stack of cards would push the rest of Home
+        // below the screen
         val topCard = when {
             !hasListenerPermission -> TopCard.Permission
             showZenPrompt -> TopCard.ZenPrompt
@@ -263,7 +264,7 @@ fun MainScreenContent(
 
         SceneCard(
             isOffWork = isBlockingEnabled && isInOffHoursNow && !isPauseEnded,
-            modifier = Modifier.homeScene().homeEntrance(animatedSceneVisible),
+            modifier = Modifier.fillMaxWidth().aspectRatio(SCENE_ASPECT).homeEntrance(animatedSceneVisible),
             clock = ambientClock,
         )
 
@@ -298,8 +299,7 @@ private sealed interface TopCard {
 
 /**
  * Entrance of one Home block: it fades in and rises into place once [visible]. The block is composed
- * and measured from the first frame, so [HomeColumn] fits the final page and nothing is resized
- * while the blocks come in one after the other.
+ * and laid out from the first frame, so nothing moves while the blocks come in one after the other.
  */
 @Composable
 private fun Modifier.homeEntrance(visible: Boolean): Modifier {
@@ -313,6 +313,9 @@ private fun Modifier.homeEntrance(visible: Boolean): Modifier {
         translationY = (1f - progress) * size.height / 2f
     }
 }
+
+/** The Home scene, full width: one size whatever card sits above it. */
+private const val SCENE_ASPECT = 2f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

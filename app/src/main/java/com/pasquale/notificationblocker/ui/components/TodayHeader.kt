@@ -3,6 +3,9 @@ package com.pasquale.notificationblocker.ui.components
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -70,7 +73,8 @@ fun compactDuration(minutes: Int): String =
 /** Three figures of today under the scene: free time, notifications paused, daylight in a pause. */
 @Composable
 fun TodayMetrics(livedMinutes: Int, held: Int, daylightMinutes: Int, modifier: Modifier = Modifier) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // Same height for the three tiles, so a label on two lines ("Notifiche in pausa") lines up with the rest
+    Row(modifier = modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         val figure = MaterialTheme.typography.titleLarge
         MetricTile(
             icon = painterResource(R.drawable.ic_mug),
@@ -79,7 +83,7 @@ fun TodayMetrics(livedMinutes: Int, held: Int, daylightMinutes: Int, modifier: M
             shapeIndex = 0,
             value = { CountUpText(livedMinutes, figure, format = { compactDuration(it) }) },
             label = stringResource(R.string.metric_free),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).fillMaxHeight(),
         )
         MetricTile(
             icon = painterResource(R.drawable.ic_tile_sun),
@@ -87,7 +91,7 @@ fun TodayMetrics(livedMinutes: Int, held: Int, daylightMinutes: Int, modifier: M
             shapeIndex = 3,
             value = { CountUpText(daylightMinutes, figure, format = { compactDuration(it) }) },
             label = stringResource(R.string.metric_daylight),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).fillMaxHeight(),
         )
         MetricTile(
             icon = rememberVectorPainter(Icons.Filled.Notifications),
@@ -96,7 +100,7 @@ fun TodayMetrics(livedMinutes: Int, held: Int, daylightMinutes: Int, modifier: M
             shapeIndex = 1,
             value = { CountUpText(held, figure) },
             label = stringResource(R.string.metric_paused),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).fillMaxHeight(),
         )
     }
 }

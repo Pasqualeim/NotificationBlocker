@@ -112,7 +112,7 @@ Le bozze usano la palette dell'app (Chai chiaro, Lo-fi night scuro) e il germogl
 - **Luce vera:** la finestra mostra la fase del giorno e la stagione (`ZenEnvironment`), quindi l'angolo cambia da solo senza animazioni continue.
 - **Al lavoro:** come B. La lampada è spenta, il tè non fuma.
 - **Pro:** distinto da tutte le app citate (nessuna ha un personaggio che vive *il tuo tempo libero* e non il tuo lavoro); si porta bene su icona, notifica, sito e store.
-- **Contro:** più disegno (un oggetto per traguardo); la Home deve restare in una schermata, quindi l'angolo prende il posto del germoglio senza crescere in altezza (2:1 come oggi, `HomeColumn`).
+- **Contro:** più disegno (un oggetto per traguardo); la scena della Home ha misura fissa (2:1 a tutta larghezza), quindi l'angolo prende il posto del germoglio senza crescere in altezza.
 - **Checklist:** passa, a patto che gli oggetti non abbiano un "prossimo oggetto a X h" in evidenza su Home.
 
 ## 5. Voce

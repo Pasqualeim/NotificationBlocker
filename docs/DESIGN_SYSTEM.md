@@ -199,50 +199,29 @@ Spaziature su griglia **4dp**: 4 · 8 · 12 · 16 · 20 · 24.
 - Dimensioni: 18–24dp inline e accanto ai titoli delle card, 26dp nel cerchio da 48dp della card di stato.
 - Icone decorative con `contentDescription = null`; quelle interattive con una stringa `cd_*` tradotta.
 
-## Home in una schermata (regola)
+## Home: la scena non cambia misura (regola)
 
-Vale per **ogni telefono**, qualunque altezza, densità e dimensione del font di sistema: all'apertura la Home si vede **intera, senza scorrere**, e **la scena animata non si taglia mai**. Se manca spazio si ridimensiona il resto, non l'animazione. Ordine fisso delle priorità:
+Su **ogni telefono** la scena animata è sempre a tutta larghezza e 2:1 (`SCENE_ASPECT` in `MainScreen`) e non si taglia mai. **Niente si ridimensiona per far entrare la Home**: né il testo, né le card, né la scena. Se la pagina è più alta dello schermo (card del permesso, invito alla notifica, font di sistema molto grande) **scorre**. Una scala automatica era stata provata (`HomeColumn`/`HomeFit`, rimossi): la scena cresceva e si rimpiccioliva a ogni cambio della card in cima.
 
-| Passo | Quando | Cosa succede |
-|---|---|---|
-| 1 | La pagina entra | Tutto a grandezza naturale, scena a tutta larghezza |
-| 2 | Manca altezza | Si riduce **il resto** (titolo, card di stato, orari, spazi) tutto insieme e nella stessa proporzione, fino a **0,8** (`HomeFit.REST_MIN_SCALE`). Il testo più piccolo (12sp) non scende sotto ~9,6sp |
-| 3 | Non basta | Si rimpicciolisce **anche la scena**, sempre intera e centrata (2:1, nessun ritaglio), fino a **0,6** (`HomeFit.SCENE_MIN_SCALE`) |
-| 4 | Ancora non basta (font di sistema molto grande, schermi sotto circa 360×700dp, es. 360×640) | La pagina scorre. Ultima risorsa, mai la prima |
+In cima c'è **un solo posto**: permesso → invito alla notifica della pausa → resoconto del mattino → card di stato con l'interruttore, una alla volta (`TopCard` in `MainScreen`), così la scena non finisce fuori schermo per una pila di card.
 
-**Il testo non cambia grandezza da solo.** Le misure della Home sono compatte apposta (vedi tabella sotto), così sui telefoni comuni tutto entra a grandezza naturale e la scala resta 1. E in cima c'è **un solo posto**: permesso → invito alla notifica della pausa → resoconto del mattino → card di stato con l'interruttore, una alla volta (`TopCard` in `MainScreen`). Una card in più sopra le altre spingeva la pagina oltre lo schermo: tutte le scritte si rimpicciolivano e tornavano grandi appena la card spariva (dopo aver dato l'accesso: +25% di colpo).
-
-Misurato sul codice attuale (card in scala / scena, prima con la card del permesso poi con la card di stato):
-
-| Schermo | Font | Permesso | Stato |
-|---|---|---|---|
-| 411×914dp (1080×2400 @420, come il Galaxy A32) | 1,0 | 1 / intera | 1 / intera |
-| 411×914dp | 1,1 | 1 / intera | 1 / intera |
-| 411×914dp | 1,3 | 0,91 / intera | 1 / intera |
-| 360×780dp | 1,0 | 0,87 / intera | 0,99 / intera |
-| 360×780dp | 1,1 | 0,84 / intera | 0,96 / intera |
-| 360×720dp | 1,0 | 0,8 / 0,88 | 0,87 / intera |
-| 360×640dp | 1,0 | 0,8 / 0,6 + scorre | 0,8 / 0,71 |
-
-Misure compatte della Home (non riaumentarle senza rifare la tabella): intestazione di Oggi nella `LargeFlexibleTopAppBar` (titolo = saluto, sottotitolo = data, `NookBadge` con la tazza; altezza espansa media e `pinnedScrollBehavior`, così il viewport di `HomeColumn` non cambia mai); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
+Misure compatte della Home (tienile così: sui telefoni comuni la maggior parte della pagina si vede senza scorrere): intestazione di Oggi nella `LargeFlexibleTopAppBar` (titolo = saluto, sottotitolo = data, `NookBadge` con la tazza; altezza espansa media e `pinnedScrollBehavior`); card di stato con padding 16dp, campanella 26dp in un cerchio da 48dp, stato `titleLarge`, testi `bodyMedium`; orari 22sp in pillole con padding 14×10dp, badge `labelMedium`, freccia in un cerchio da 28dp; padding 16dp e spazi interni 10–12dp in tutte le card.
 
 Come si rispetta:
 
-- **Non ritagliare la scena** per farla stare: niente `ContentScale.Crop`, niente altezza ridotta con il disegno tagliato. `SceneCard` riempie lo spazio che riceve e `HomeColumn` glielo dà sempre a 2:1 (o più piccolo, mai tagliato).
-- Home = `HomeColumn` in `MainScreen`; la politica è `HomeFit` (pura, testata in `HomeFitTest`). Non reintrodurre `Column` + `verticalArrangement`, `weight`, altezze fisse per le card grandi o `aspectRatio` sulla scena dentro la Home.
-- I blocchi sono composti **dal primo frame**: l'entrata anima solo alpha e offset (`homeEntrance`), mai `AnimatedVisibility`, perché la scala dipende dall'altezza di tutti i blocchi.
-- **Niente card in più impilate sopra le altre**: un avviso o un invito nuovo prende il posto in cima (`TopCard`, dissolvenza con `AnimatedContent`), con la sua priorità. Se proprio deve stare altrove, verifica che con e senza di lui la scala resti la stessa sui 411dp con font 1,1.
-- La pagina resta **ancorata in alto**: se avanza schermo gli spazi tra i blocchi crescono fino a 24dp e il resto resta in fondo. Una pagina più corta del viewport non viene centrata (si sposterebbe su e giù a ogni cambio di altezza della card in cima).
-- **Ogni blocco o riga nuova della Home mangia altezza**: dopo averlo aggiunto rifai la verifica qui sotto. Se per far entrare tutto serve scendere sotto i pavimenti, si accorcia il contenuto (testo, riga duplicata), non si taglia la scena.
-- Il pulsante "App di lavoro" in basso non scala (bersaglio da 56dp) e il padding sotto il contenuto è 0: i 16dp sopra il pulsante sono già nella barra.
-- **Fluidità**: una nuova scala ridispone tutte le card, quindi non insegue le animazioni frame per frame. Mentre le altezze cambiano (cambio di stato, card che si apre) la scala resta ferma e il layout costa quanto una `Column`; cambia una volta sola, quando le altezze sono ferme da 200 ms. Si ingrandisce di nuovo solo se avanzano più di 56dp, così l'interruttore non ridimensiona mai la pagina (resta al più un piccolo spazio in fondo). La scena si rimpicciolisce solo quando le card sono già al minimo, mai durante un'animazione.
+- **Non ritagliare la scena**: niente `ContentScale.Crop`, niente altezza ridotta con il disegno tagliato. `SceneCard` riempie lo spazio che riceve.
+- Home = `Column` con `spacedBy(12.dp)` dentro `verticalScroll` in `MainScreen`, senza `overscrollEffect`. Non reintrodurre scale automatiche, `weight` o altezze calcolate per far stare le card.
+- I blocchi sono composti **dal primo frame**: l'entrata anima solo alpha e offset (`homeEntrance`), mai `AnimatedVisibility`.
+- **Niente card in più impilate sopra le altre**: un avviso o un invito nuovo prende il posto in cima (`TopCard`, dissolvenza con `AnimatedContent`), con la sua priorità.
+- Le `MetricTile` sotto la scena hanno la stessa altezza (`Row` con `IntrinsicSize.Min`) e l'etichetta può andare su due righe ("Notifiche in pausa").
+- Il pulsante "App di lavoro" in basso ha un bersaglio da 56dp e il padding sotto il contenuto è 0: i 16dp sopra il pulsante sono già nella barra.
 
 Verifica sul telefono (ripristina **sempre** alla fine):
 
 ```bash
 adb shell wm size 1080x2340 && adb shell wm density 480       # 360×780dp
 adb shell settings put system font_scale 1.0
-# apri l'app, screenshot, controlla: scena intera, tutto visibile, nessuno scorrimento (swipe verso l'alto: non si muove)
+# apri l'app, screenshot, controlla: scena intera a tutta larghezza e sempre della stessa misura con ogni card in cima; la pagina scorre se è più alta
 adb shell wm size reset && adb shell wm density reset && adb shell settings put system font_scale 1.1   # ripristina i tuoi valori
 ```
 

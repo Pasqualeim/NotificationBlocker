@@ -172,8 +172,8 @@ private fun TabsScreen(
         rememberSaveable(saver = TopAppBarState.Saver) { TopAppBarState(-Float.MAX_VALUE, 0f, 0f) }
     }
     val barState = barStates.getValue(tab)
-    // Today's bar never collapses: HomeColumn fits the page to the space left, and a bar that shrank
-    // while scrolling would resize the cards under the finger
+    // Today's bar never collapses: Home is about one screen tall and scrolls only a little, so a bar that
+    // shrank would move the greeting for a few pixels of scroll
     val scrollBehavior = if (tab == Tab.TODAY) {
         TopAppBarDefaults.pinnedScrollBehavior(barState)
     } else {
@@ -197,7 +197,7 @@ private fun TabsScreen(
                 actions = {
                     if (tab == Tab.TODAY) NookBadge(modifier = Modifier.padding(end = 12.dp))
                 },
-                // Today is one screen with the scene whole (HomeColumn): its bar is the medium height
+                // Today is about one screen with the scene whole: its bar is the medium height
                 expandedHeight = if (tab == Tab.TODAY) {
                     TopAppBarDefaults.MediumFlexibleAppBarWithSubtitleExpandedHeight
                 } else {

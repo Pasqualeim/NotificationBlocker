@@ -190,7 +190,8 @@ fun MetricTile(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
+                // Two lines rather than a cut word: a third of a phone fits about 14 characters
+                maxLines = 2,
             )
         }
     }

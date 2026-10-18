@@ -14,8 +14,8 @@ import com.pasquale.notificationblocker.ui.zen.ZenState
 
 /**
  * The room scene on Home, framed as a card that fills the size it is given: at work the desk, off
- * work the calm scene. On Home that size is whatever the page leaves free (see [HomeColumn]); the
- * scene is drawn to cover it and crops from the bottom, so any proportion works.
+ * work the calm scene. On Home it is full width at 2:1; the scene is drawn to cover the size it gets
+ * and crops from the bottom, so any proportion works.
  */
 @Composable
 fun SceneCard(
