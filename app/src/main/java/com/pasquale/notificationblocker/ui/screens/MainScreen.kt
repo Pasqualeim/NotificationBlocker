@@ -251,7 +251,7 @@ fun MainScreenContent(
                     isBlockingEnabled = isBlockingEnabled,
                     isInOffHoursNow = isInOffHoursNow,
                     onBlockingEnabledChanged = onBlockingEnabledChanged,
-                    // The free-time line does not fit a pause ended early: the card says when the next one starts
+                    // The free-time line does not fit a pause ended early: the Today card below shows the next one
                     // "You switch off at 18:30" only repeats the title, which already says when the pause starts
                     lifeMessage = if (isPauseEnded || lifeMessage is LifeMessage.EveningAfterWork) null else lifeMessage,
                     isPauseEnded = isPauseEnded,

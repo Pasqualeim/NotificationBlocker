@@ -12,8 +12,11 @@ sealed interface LifeMessage {
     /** Blocking is off. */
     data object TurnOn : LifeMessage
 
-    /** Off work with the sun up: [minutes] of daylight left in the window. */
+    /** Off work with the sun up: [minutes] of daylight left in the day, the pause lasting past sunset. */
     data class SunLeft(val minutes: Int) : LifeMessage
+
+    /** Off work with the sun up, and the pause ends before sunset (lunch). */
+    data object SunWholeBreak : LifeMessage
 
     /** Off work after sunset. */
     data object EveningIsYours : LifeMessage
@@ -21,7 +24,7 @@ sealed interface LifeMessage {
     /** Off work before sunrise. */
     data object DayBeginning : LifeMessage
 
-    /** Working: the window starts at [start] with [minutes] of daylight still ahead. */
+    /** Working: the next pause starts at [start] with [minutes] of daylight in it. */
     data class SunAfterWork(val start: Int, val minutes: Int) : LifeMessage
 
     /** Working: by [start] the sun will have set. */
@@ -39,10 +42,14 @@ object LifeCopy {
         val (sunrise, sunset) = ZenEnvironment.sunTimes(now.toLocalDate())
         if (OffHours.isWithin(minute, start, end)) {
             val untilEnd = OffHours.minutesUntilEnd(minute, start, end) ?: OffHours.MINUTES_PER_DAY
+            val length = (end - start + OffHours.MINUTES_PER_DAY - 1) % OffHours.MINUTES_PER_DAY + 1
+            val startedAt = minute - (length - untilEnd)
             return when {
                 minute < sunrise -> LifeMessage.DayBeginning
                 minute >= sunset -> LifeMessage.EveningIsYours
-                else -> LifeMessage.SunLeft(minOf(sunset, minute + untilEnd) - minute)
+                // A short pause in daylight: its minutes are not the daylight left in the day
+                startedAt >= sunrise && minute + untilEnd <= sunset -> LifeMessage.SunWholeBreak
+                else -> LifeMessage.SunLeft(sunset - minute)
             }
         }
         // Only the sun right after work counts here, not the next morning's

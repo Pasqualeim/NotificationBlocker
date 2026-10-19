@@ -29,9 +29,11 @@ class LifeCopyTest {
     }
 
     @Test
-    fun sunshineLeft_isCappedByTheEndOfTheWindow() {
-        // Lunch-break window 12:00-14:00: only 1 h left at 13:00 even if the sun sets much later
-        assertEquals(LifeMessage.SunLeft(60), LifeCopy.message(at(summer, 13), true, 12 * 60, 14 * 60))
+    fun pauseEndingBeforeSunset_isSunnyForTheWholeBreak() {
+        // Lunch 12:00-14:00: its hour of sun is not the daylight left in the day
+        assertEquals(LifeMessage.SunWholeBreak, LifeCopy.message(at(summer, 13), true, 12 * 60, 14 * 60))
+        // Begun before sunrise: the break was not all sunny
+        assertTrue(LifeCopy.message(at(summer, 13), true, 3 * 60, 14 * 60) is LifeMessage.SunLeft)
     }
 
     @Test

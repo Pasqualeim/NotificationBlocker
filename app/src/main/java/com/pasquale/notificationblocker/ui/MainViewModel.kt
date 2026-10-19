@@ -102,7 +102,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val zenPromptDismissed: StateFlow<Boolean> = _zenPromptDismissed.asStateFlow()
 
     private val _lifeMessage = MutableStateFlow(computeLifeMessage())
-    val lifeMessage: StateFlow<LifeMessage> = _lifeMessage.asStateFlow()
+    val lifeMessage: StateFlow<LifeMessage?> = _lifeMessage.asStateFlow()
 
     private val _sunshineMinutes = MutableStateFlow(computeSunshine())
     val sunshineMinutes: StateFlow<Int> = _sunshineMinutes.asStateFlow()
@@ -224,14 +224,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _sunshineMinutes.value = computeSunshine()
     }
 
-    private fun computeLifeMessage(): LifeMessage {
+    private fun computeLifeMessage(): LifeMessage? {
         val pause = focusPause()
-        return LifeCopy.message(
-            now = LocalDateTime.now(),
-            blockingEnabled = preferencesManager.isBlockingEnabled && pause != null,
-            start = pause?.start ?: 0,
-            end = pause?.end ?: 0,
-        )
+        if (!preferencesManager.isBlockingEnabled) return LifeMessage.TurnOn
+        // On, but no pause to talk about: "Turn it on" would contradict the switch
+        return pause?.let { LifeCopy.message(LocalDateTime.now(), true, it.start, it.end) }
     }
 
     private fun computeSunshine() = focusPause()?.let { LifeCopy.sunshineInWindow(LocalDate.now(), it.start, it.end) } ?: 0

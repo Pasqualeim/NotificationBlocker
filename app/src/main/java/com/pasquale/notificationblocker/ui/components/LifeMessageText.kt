@@ -11,14 +11,15 @@ import com.pasquale.notificationblocker.ui.zen.LifeMessage
 fun lifeMessageText(message: LifeMessage): String = when (message) {
     LifeMessage.TurnOn -> stringResource(R.string.life_turn_on)
     is LifeMessage.SunLeft -> stringResource(R.string.life_sun_left, durationText(message.minutes))
+    LifeMessage.SunWholeBreak -> stringResource(R.string.life_sun_whole_break)
     LifeMessage.EveningIsYours -> stringResource(R.string.life_evening_yours)
     LifeMessage.DayBeginning -> stringResource(R.string.life_day_beginning)
-    is LifeMessage.SunAfterWork -> stringResource(R.string.life_sun_after_work, OffHours.format(message.start), durationText(message.minutes))
+    is LifeMessage.SunAfterWork -> stringResource(R.string.life_sun_after_work, durationText(message.minutes))
     is LifeMessage.EveningAfterWork -> stringResource(R.string.life_evening_after_work, OffHours.format(message.start))
 }
 
 /** True when the message is about daylight (sun icon), false for evening and night (moon icon). */
-fun LifeMessage.isSunny(): Boolean = this is LifeMessage.SunLeft || this is LifeMessage.SunAfterWork || this == LifeMessage.TurnOn
+fun LifeMessage.isSunny(): Boolean = this is LifeMessage.SunLeft || this == LifeMessage.SunWholeBreak || this is LifeMessage.SunAfterWork || this == LifeMessage.TurnOn
 
 /** "3 h 20 min", "3 h" or "45 min". */
 @Composable

@@ -288,7 +288,8 @@ private fun HeroHeaderContent(
                                 // "Until then" needs a pause to come
                                 HeroStatus.ACTIVE_OUTSIDE -> stringResource(if (nextPauseStart >= 0) R.string.hero_subtitle_outside else R.string.hero_subtitle_no_next)
                                 HeroStatus.ACTIVE_INSIDE -> stringResource(R.string.hero_subtitle_inside)
-                                HeroStatus.PAUSE_ENDED -> stringResource(R.string.pause_ended_text, OffHours.format(nextPauseStart.coerceAtLeast(0)))
+                                // No time here: the next pause may be tomorrow, or none at all
+                                HeroStatus.PAUSE_ENDED -> stringResource(R.string.pause_ended_text)
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = animatedContentColor,

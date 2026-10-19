@@ -17,7 +17,7 @@
     <string name="hero_subtitle_no_next">No break coming up: work notifications come through as usual.</string>
     <string name="hero_subtitle_inside">Notifications from your work apps are paused.</string>
     <string name="status_ended">Pause ended</string>
-    <string name="pause_ended_text">Work notifications come through again. Your next pause starts at %1$s.</string>
+    <string name="pause_ended_text">Work notifications come through again.</string>
     <string name="hero_pause_again">Pause again</string>
 
     <!-- Simple Greetings -->
@@ -105,9 +105,10 @@
     <!-- Life copy: daylight and free time left in the day -->
     <string name="life_turn_on">Turn it on to pause work notifications outside work hours.</string>
     <string name="life_sun_left">%1$s of daylight left.</string>
+    <string name="life_sun_whole_break">The sun is out for the whole break.</string>
     <string name="life_evening_yours">Enjoy your evening.</string>
     <string name="life_day_beginning">Nothing from work for now.</string>
-    <string name="life_sun_after_work">You stop at %1$s, with %2$s of daylight still left.</string>
+    <string name="life_sun_after_work">%1$s of daylight in that break.</string>
     <string name="life_evening_after_work">You stop at %1$s.</string>
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>

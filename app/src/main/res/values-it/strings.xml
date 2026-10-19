@@ -14,7 +14,7 @@
     <string name="hero_subtitle_no_next">Nessuna pausa in arrivo: le notifiche di lavoro arrivano come sempre.</string>
     <string name="hero_subtitle_inside">Le notifiche delle app di lavoro sono in pausa.</string>
     <string name="status_ended">Pausa finita</string>
-    <string name="pause_ended_text">Le notifiche di lavoro arrivano di nuovo. La prossima pausa inizia alle %1$s.</string>
+    <string name="pause_ended_text">Le notifiche di lavoro arrivano di nuovo.</string>
     <string name="hero_pause_again">Rimetti in pausa</string>
 
     <!-- Simple Greetings -->
@@ -101,9 +101,10 @@
     <!-- Testi "vita": luce e tempo libero rimasti nella giornata -->
     <string name="life_turn_on">Attivalo per mettere in pausa le notifiche di lavoro fuori orario.</string>
     <string name="life_sun_left">Ti restano %1$s di luce.</string>
+    <string name="life_sun_whole_break">Per tutta la pausa c’è il sole.</string>
     <string name="life_evening_yours">Buona serata.</string>
     <string name="life_day_beginning">Niente lavoro, per ora.</string>
-    <string name="life_sun_after_work">Stacchi alle %1$s e ti restano %2$s di luce.</string>
+    <string name="life_sun_after_work">In quella pausa hai %1$s di luce.</string>
     <string name="life_evening_after_work">Stacchi alle %1$s.</string>
     <string name="life_duration_hours">%1$d h</string>
     <string name="life_duration_minutes">%1$d min</string>
