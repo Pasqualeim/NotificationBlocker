@@ -75,6 +75,14 @@ for label, cont, accent, text in [("ACTIVE_INSIDE", "PrimaryContainer", "Primary
     failures += [label for v in vals if v < 4.5]
     out.append(f"- `{label}`: {vals[0]:.2f} in Chai, {vals[1]:.2f} in Lo-fi night")
 
+# Daylight bars and the sun icon: graphics only, 3:1 (WCAG 1.4.11). Reported, not failed: the same
+# daylight is always written as text too (big figure, "Light 07:23-18:28")
+out += ["", "`sunlight`, solo grafica (soglia 3:1; in grassetto i valori sotto):", "",
+        "| Contro | Chai | Lo-fi night |", "|---|---|---|"]
+for s in ["Background", "Surface", "SurfaceContainer", "SurfaceContainerHighest", "Secondary"]:
+    vals = [ratio(c(t, "Sunlight"), c(t, s)) for t in ("Light", "Dark")]
+    out.append(f"| `{s[0].lower() + s[1:]}` | " + " | ".join(cell([v], 3) for v in vals) + " |")
+
 sat = lambda t, r: colorsys.rgb_to_hls(*c(t, r))[2]
 out += ["", "Saturazione HSL degli accenti (Chai / Lo-fi night): " + ", ".join(
     f"`{r.lower()}` {sat('Light', r):.2f} / {sat('Dark', r):.2f}" for r in ("Primary", "Secondary", "Tertiary"))]
