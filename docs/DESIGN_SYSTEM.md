@@ -120,11 +120,11 @@ Card di stato, caso peggiore (gradiente al 6% verso l'accento, sottotitolo con a
 
 | Contro | Chai | Lo-fi night |
 |---|---|---|
-| `background` | **1.99** | 9.18 |
-| `surface` | **2.09** | 8.79 |
-| `surfaceContainer` | **1.83** | 7.89 |
-| `surfaceContainerHighest` | **1.63** | 5.91 |
-| `secondary` | **2.72** | **1.07** |
+| `background` | 3.77 | 5.15 |
+| `surface` | 3.96 | 4.93 |
+| `surfaceContainer` | 3.46 | 4.43 |
+| `surfaceContainerHighest` | 3.08 | 3.32 |
+| `secondary` | **1.44** | **1.92** |
 
 Saturazione HSL degli accenti (Chai / Lo-fi night): `primary` 0.50 / 0.65, `secondary` 0.17 / 0.21, `tertiary` 0.26 / 0.38
 
@@ -137,7 +137,7 @@ Bianco su `primary`: 5.93 in Chai (è `onPrimary`); in Lo-fi night il testo su `
 - La card di stato ha un gradiente verso `primary`/`secondary` al **6%**: più forte, il sottotitolo (alpha 0.85) nel tema scuro scende verso 4.5. Casi peggiori nella tabella sopra.
 - Indicatore "ora" (era della `Timeline24h`, rimossa con la fase 3; regola valida per un futuro indicatore sul binario): anello `onSurface` con centro `surface`, alone `onSurface` al 12%. Il centro si vede sulla fascia `primary` (5.61 / 10.25), l'anello sul binario (10.59 / 9.12). Non usare `secondary`: ha la stessa luminanza di `primary` (1:1) e sparisce sulla fascia.
 - `FilterChip` selezionati (lista app): `primaryContainer` / `onPrimaryContainer`, non il default M3 `secondaryContainer` (salvia).
-- **`sunlight`** (barre della luce nei grafici, sole dell'intestazione di Oggi): solo grafica, mai testo. In Chai sta sotto 3:1 su ogni superficie (1.6-2.1) e in Lo-fi night ha la luminanza della salvia `secondary` (1.07: nella colonna di `WeekChart` le due parti si separano solo per tinta). Accettato per ora perché la luce è sempre scritta anche in testo (cifra grande, "Luce 07:23–18:28"); lo script lo segnala senza bocciare. Non usarlo per un'informazione che esiste solo nel grafico.
+- **`sunlight`** (barre della luce nei grafici, sole dell'intestazione di Oggi): solo grafica, mai testo. Stessa tinta di prima, luminosità spostata il 19/10/2026: in Chai `#A67126` (era `#D9A55B`, 1.6-2.1 sul fondo) regge ≥ 3:1 su ogni superficie; in Lo-fi night `#BB7D25` (era `#E2B26E`, stessa luminanza della salvia, 1.07) è più scuro della salvia chiara (1.92), così le due parti della colonna di `WeekChart` si separano anche senza distinguere le tinte. In Chai salvia e luce sono ora vicine in luminanza (1.44): si separano per tinta, e la luce resta sempre scritta anche in testo. Non usarlo per un'informazione che esiste solo nel grafico.
 - Se cambi un esadecimale in `Color.kt`, ricalcola le tabelle qui sopra con `python3 tools/palette/contrast.py` per entrambi i temi.
 - `dynamicColor` è `false` di proposito: l'aspetto nativo viene da componenti, font e forme Material 3 Expressive, i colori restano la palette Chai / Lo-fi night di `Color.kt` (il proprietario ha provato i colori dallo sfondo, Material You, e ha scelto quelli di Unclock). Le tabelle di contrasto qui sopra valgono per tutti. Splash e widget replicano `Color.kt` in `res/values[-night]/colors.xml`.
 - L'errore (`error`) si usa solo per veri errori, non per il permesso mancante (quello è un avviso: `tertiaryContainer`).

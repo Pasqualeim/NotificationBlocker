@@ -73,9 +73,10 @@ val DarkTertiaryContainer = Color(0xFF384C64)
 val DarkOnTertiaryContainer = Color(0xFFD9E5F3)
 
 // The daylight part of the charts ("Your time"): warm, between the sun of the scenes and the terracotta.
-// Only for bars and dots (not text), next to the sage of the break time
-val LightSunlight = Color(0xFFD9A55B)
-val DarkSunlight = Color(0xFFE2B26E)
+// Only for bars and dots (not text), next to the sage of the break time. Same hue as before, lightness
+// moved for 3:1 on every surface; in Lo-fi night darker than the light sage, so the two parts separate
+val LightSunlight = Color(0xFFA67126)
+val DarkSunlight = Color(0xFFBB7D25)
 
 /** Daylight color for the current scheme (it has no Material role). */
 val ColorScheme.sunlight: Color
