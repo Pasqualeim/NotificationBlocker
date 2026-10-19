@@ -15,10 +15,10 @@ Prima di andare su Google Play, il prodotto si valida con un test indipendente. 
 | 1b | `sunlight` nei controlli di contrasto | Claude | Aggiungere `LightSunlight`/`DarkSunlight` a `tools/palette/contrast.py` e alle tabelle di `DESIGN_SYSTEM.md` (oggi assente: barre non testuali, serve il rapporto col fondo) |
 | 1c | Screenshot dell'app per il sito | Claude | Fatto il 19/10/2026: `home`, `apps`, `breaks`, `stats`, `dark`, `report` da Nook 2 con `tools/store/capture_screenshots.sh` (dati demo in `tools/store/demo_prefs.py`). Da rifare a ogni cambio visibile dell'app |
 | 2 | Il sito presenta il prodotto finale | Claude / Pasquale | Fatto per la home (19/10/2026: schermate di Nook 2, sezioni `#tempo` ed `#extra`, privacy aggiornata; `~/Documents/Developer/nook-site`). Da rivedere dopo ogni cambio visibile dell'app |
-| 3 | Iscrizione al sito con email | Claude / Pasquale | Già nel sito: tabella D1 `signups` (email, `community` telegram o email). Chi si iscrive riceve il link per scaricare l'APK e l'invito al canale Telegram (novità, consigli) |
+| 3 | Iscrizione al sito con email | Claude / Pasquale | Fatto nel codice (19/10/2026): chi si iscrive riceve subito una mail (Resend, `functions/api/signup.js`) con il link al gruppo Google dei tester, la pagina del test chiuso su Play e, se l'ha scelto, il canale Telegram. Il test chiuso è solo lo strumento per far installare l'app ai tester, non la pubblicazione |
 | 3a | Deploy del sito | Pasquale | Non ancora online: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio |
-| 3b | Invio del link all'APK | Pasquale | Per email a chi si iscrive; serve un APK firmato da distribuire |
-| 3c | Canale Telegram | Pasquale | Aggiornamenti e consigli; i feedback dei tester entrano nel punto 1 |
+| 3b | Configurare l'invio della mail | Pasquale | Gruppo Google aperto, test chiuso in Play Console con quel gruppo come tester, Resend con il dominio, variabili d'ambiente: passi in `nook-site/README.md`, "Access email". Serve prima il dominio (3a) |
+| 3c | Canale Telegram | Pasquale | Canale a senso unico (novità e consigli); il link d'invito va in `TELEGRAM_URL`. I feedback arrivano rispondendo alla mail ed entrano nel punto 1 |
 
 ## 1. Fondamenta (prima di tutto il resto)
 
