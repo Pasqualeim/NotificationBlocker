@@ -37,7 +37,7 @@ Il nome dell'app si cambia facilmente fino alla pubblicazione, dopo molto meno. 
 3. Guarda le **classi 9** (software, app) e **42** (servizi software). Un marchio identico in queste classi è un rischio concreto; in classi diverse (per esempio abbigliamento) di solito no.
 4. Se trovi un conflitto: aggiungi una parola che ti distingue ("Unclock: stacca dal lavoro") o cambia nome. Un consulente in proprietà industriale può darti un parere definitivo; per un'app gratuita e personale la ricerca qui sopra è il minimo sensato.
 
-> **Per Unclock.** Ricerca web del 19/10/2026: nessuna app "Unclock" su Play e nessun marchio "Unclock" trovato (solo marchi "Unlock" in altri settori; il gioco "Unlock!" di Asmodee compare nella ricerca di Play). Resta da fare la ricerca su EUIPO, UIBM e USPTO, classi 9 e 42. Nomi scartati e riserve: `DESIGN_SYSTEM.md`, "Nome". Se cambi nome, dimmelo **prima** del primo caricamento: devo cambiare anche l'`applicationId`.
+> **Per Unclock.** Ricerca web del 19/10/2026: nessuna app "Unclock" su Play e il gioco "Unlock!" di Asmodee compare nella ricerca di Play. Ricerca marchi del 19/10/2026 su TMview (EUIPO, UIBM, USPTO, WIPO e gli altri uffici): nessun marchio "Unclock" nelle classi 9 e 42. Unico "unclock" registrato: Grecia (OBI N274661, 2022), classe 16 (carta), non in conflitto. Il rischio vero sono i marchi verbali "UNLOCK" in classe 9/42 all'EUIPO (IAM S.r.l. 018965664; Mindshift AS 018715526, anche classe 44; Unlock Technologies 018603987; Ledger Leopard 018227619): una lettera di differenza, quindi un'opposizione a un nostro deposito "UNCLOCK" è possibile. A favore: "unlock" è una parola comune e debole nel software (oltre 100 marchi che la contengono convivono) e "clock" cambia il senso. Parere di un consulente in marchi prima di depositare. Nomi scartati e riserve: `DESIGN_SYSTEM.md`, "Nome". Se cambi nome, dimmelo **prima** del primo caricamento: devo cambiare anche l'`applicationId`.
 
 ---
 
@@ -412,7 +412,7 @@ Copiala in un file nuovo e spunta man mano.
 | Testi, icona, feature graphic, screenshot, risposte ai moduli | Claude | Fatto (`store/LISTING.md`) |
 | Informativa privacy online | Pasquale (Pages) + Claude (testo) | Fatto |
 | Backup di keystore e password | Pasquale | **Da fare** |
-| Verifica del marchio "Unclock" | Pasquale | **Da fare** |
+| Verifica del marchio "Unclock" | Pasquale | Ricerca fatta (19/10/2026, TMview); resta il parere di un consulente sui marchi "UNLOCK" |
 | Account Play Console, verifica identità | Pasquale | **Da fare**: dimmelo quando è attivo |
 | Tester, Google Gruppo, inviti | Pasquale | **Da fare**, parti subito |
 | Caricare AAB e compilare Play Console | Pasquale, con i testi pronti | Dopo l'account |

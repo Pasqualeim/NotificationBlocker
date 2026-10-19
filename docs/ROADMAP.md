@@ -58,7 +58,7 @@ Si fa alla fine, dopo la fase di test indipendente (sezione 0). Guida passo pass
 
 | Voce | Chi | Note |
 |---|---|---|
-| Verifica del marchio "Unclock" | Pasquale | Prima di tutto: EUIPO, UIBM e USPTO, classi 9 e 42 (la ricerca web del 19/10/2026 non ha trovato marchi "Unclock", solo "Unlock" in altri settori). Vedi `PUBLISHING.md`, passo 1 |
+| Verifica del marchio "Unclock" | Pasquale | Ricerca fatta il 19/10/2026 su TMview: nessun "Unclock" in classe 9/42; rischio dai marchi verbali "UNLOCK" dell'EUIPO in classe 9/42 (dettagli in `DESIGN_SYSTEM.md`, "Nome"). Resta: parere di un consulente in marchi, poi eventuale deposito. Vedi `PUBLISHING.md`, passo 1 |
 | Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
 | Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
 | Sito (deploy e dominio) | Claude / Pasquale | Nella fase di test (sezione 0). Pronto in locale (`~/Documents/Developer/nook-site`, IT/EN, provato su iPhone). Mancano: account Cloudflare, chiave Turnstile, repo GitHub, deploy, poi il dominio. Con il dominio: spostare lì l'informativa (`privacy_policy_url`, `LISTING.md`) |
