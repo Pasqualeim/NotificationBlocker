@@ -1,6 +1,6 @@
 ---
 name: android-reviewer
-description: Read-only reviewer for diffs in the Nook Android app. Checks the change against the project rules and looks for bugs. Use after every app change, before commit.
+description: Read-only reviewer for diffs in the Unclock Android app. Checks the change against the project rules and looks for bugs. Use after every app change, before commit.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

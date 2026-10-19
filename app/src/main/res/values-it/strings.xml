@@ -24,7 +24,7 @@
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Consenti l\'accesso alle notifiche</string>
-    <string name="permission_warning_text">Per mettere in pausa le app di lavoro, Nook deve vedere le notifiche che ricevi. Controlla solo quale app le ha inviate. Non legge e non salva cosa c\'è scritto, e niente esce dal telefono. Puoi disattivarlo quando vuoi dalle Impostazioni.</string>
+    <string name="permission_warning_text">Per mettere in pausa le app di lavoro, Unclock deve vedere le notifiche che ricevi. Controlla solo quale app le ha inviate. Non legge e non salva cosa c\'è scritto, e niente esce dal telefono. Puoi disattivarlo quando vuoi dalle Impostazioni.</string>
     <string name="permission_warning_button">Apri impostazioni</string>
     <string name="privacy_policy_link">Privacy</string>
 
@@ -90,7 +90,7 @@
     <string name="zen_until">Fino alle %1$s</string>
     <string name="zen_all_day">Tutto il giorno</string>
     <string name="zen_permission_title">Notifica della pausa</string>
-    <string name="zen_permission_text">Nook può mostrare una notifica silenziosa mentre le app di lavoro sono in pausa, con l\'ora in cui finisce la pausa.</string>
+    <string name="zen_permission_text">Unclock può mostrare una notifica silenziosa mentre le app di lavoro sono in pausa, con l\'ora in cui finisce la pausa.</string>
     <string name="zen_permission_allow">Consenti</string>
     <string name="zen_permission_later">Non ora</string>
 
@@ -201,7 +201,7 @@
     <string name="quick_pause_start">Avvia</string>
     <string name="quick_pause_name">Pausa al volo</string>
     <string name="days_off_title">Giorni liberi</string>
-    <string name="days_off_intro">Ferie, ponti e festivi: Nook tiene fuori il lavoro tutto il giorno, senza toccare le tue pause.</string>
+    <string name="days_off_intro">Ferie, ponti e festivi: Unclock tiene fuori il lavoro tutto il giorno, senza toccare le tue pause.</string>
     <string name="days_off_holidays">Festivi nazionali</string>
     <string name="days_off_holidays_text">Italia, 12 giorni l\'anno, aggiunti da soli</string>
     <string name="days_off_holidays_next">Prossimo: %1$s, %2$s</string>
@@ -254,7 +254,7 @@
         <item quantity="other">e altre %1$d app</item>
     </plurals>
     <string name="widget_description">Stato e prossima pausa a colpo d\'occhio, con Stacca 1 h.</string>
-    <string name="widget_title_off">Nook è spento</string>
+    <string name="widget_title_off">Unclock è spento</string>
     <string name="widget_title_paused">In pausa</string>
     <string name="widget_title_work">Notifiche di lavoro attive</string>
     <string name="widget_sub_off">Le notifiche arrivano tutte.</string>
@@ -268,20 +268,20 @@
     <string name="widget_preview_sub">Prossima: Pranzo alle 13:00</string>
     <string name="onboarding_step">Passo %1$d di %2$d</string>
     <string name="onboarding_apps_title">Quali app sono di lavoro?</string>
-    <string name="onboarding_apps_text">Scegli le app che ti portano lavoro. Durante una pausa Nook ne toglie le notifiche, e non tornano. I messaggi restano nelle app: li trovi quando le apri. Tutto il resto arriva come sempre.</string>
+    <string name="onboarding_apps_text">Scegli le app che ti portano lavoro. Durante una pausa Unclock ne toglie le notifiche, e non tornano. I messaggi restano nelle app: li trovi quando le apri. Tutto il resto arriva come sempre.</string>
     <string name="onboarding_apps_more">Scegli tra tutte le app</string>
     <string name="onboarding_apps_pick">Scegli le app di lavoro</string>
     <string name="onboarding_lunch">Pranzo</string>
     <string name="onboarding_access_title">Accesso alle notifiche</string>
-    <string name="onboarding_access_text">Per mettere in pausa le app di lavoro, Nook deve vedere le notifiche che ricevi.</string>
+    <string name="onboarding_access_text">Per mettere in pausa le app di lavoro, Unclock deve vedere le notifiche che ricevi.</string>
     <string name="onboarding_access_sees">Guarda solo quale app ha mandato ogni notifica.</string>
     <string name="onboarding_access_reads_nothing">Non legge e non salva cosa c\'è scritto.</string>
     <string name="onboarding_access_stays">Niente esce dal telefono.</string>
     <string name="onboarding_access_revocable">Puoi toglierlo quando vuoi, dalle Impostazioni.</string>
     <string name="onboarding_access_button">Consenti l\'accesso</string>
-    <string name="onboarding_access_how">Si apre una pagina di Android con l\'interruttore di Nook. Attivalo e torna qui. L\'avviso che vedrai è lo stesso per tutte le app con questo accesso: Nook fa solo quello che c\'è scritto qui sopra.</string>
+    <string name="onboarding_access_how">Si apre una pagina di Android con l\'interruttore di Unclock. Attivalo e torna qui. L\'avviso che vedrai è lo stesso per tutte le app con questo accesso: Unclock fa solo quello che c\'è scritto qui sopra.</string>
     <string name="onboarding_access_done">Accesso attivo. È tutto pronto.</string>
-    <string name="onboarding_notification_note">Quando premi Inizia, Android ti chiede se Nook può mandarti notifiche. Ne usa una sola, silenziosa, con l\'ora in cui finisce la pausa. Se dici di no, Nook funziona lo stesso.</string>
+    <string name="onboarding_notification_note">Quando premi Inizia, Android ti chiede se Unclock può mandarti notifiche. Ne usa una sola, silenziosa, con l\'ora in cui finisce la pausa. Se dici di no, Unclock funziona lo stesso.</string>
     <string name="onboarding_skip">Lo faccio dopo</string>
     <string name="onboarding_back">Indietro</string>
     <string name="onboarding_next">Continua</string>
@@ -305,11 +305,11 @@
     <string name="work_free_none">Lavori tutti i giorni. In pausa solo fuori orario.</string>
     <string name="work_free_days">%1$s: in pausa tutto il giorno.</string>
     <string name="work_hours_title">Orario di lavoro</string>
-    <string name="work_hours_text">Fuori da questo orario Nook mette in pausa le app di lavoro.</string>
+    <string name="work_hours_text">Fuori da questo orario Unclock mette in pausa le app di lavoro.</string>
     <string name="work_hours_start">Inizio</string>
     <string name="work_hours_end">Fine</string>
     <string name="work_hours_order">La fine deve venire dopo l\'inizio.</string>
     <string name="onboarding_work_title">Quando lavori?</string>
-    <string name="onboarding_work_text">Fuori orario e nei giorni liberi Nook mette in pausa le app di lavoro. Puoi cambiarlo quando vuoi.</string>
+    <string name="onboarding_work_text">Fuori orario e nei giorni liberi Unclock mette in pausa le app di lavoro. Puoi cambiarlo quando vuoi.</string>
     <string name="work_not_set">Non ancora attivo. Tocca un giorno o l\'orario per attivarlo: il resto della settimana andrà in pausa.</string>
 </resources>

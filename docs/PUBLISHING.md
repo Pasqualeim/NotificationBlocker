@@ -1,6 +1,6 @@
 # Pubblicare un'app su Google Play: la guida passo passo
 
-Guida per la parte che non si può automatizzare: account, moduli, tester, invio in revisione. È scritta per Nook ma vale per qualsiasi app Android: dove c'è un valore specifico di Nook lo trovi in un riquadro **Per Nook**.
+Guida per la parte che non si può automatizzare: account, moduli, tester, invio in revisione. È scritta per Unclock ma vale per qualsiasi app Android: dove c'è un valore specifico di Unclock lo trovi in un riquadro **Per Unclock**.
 
 Ultima verifica delle regole di Google: settembre 2026. Le regole cambiano spesso: prima di ogni nuova app ricontrolla i link ufficiali in fondo.
 
@@ -35,9 +35,9 @@ Il nome dell'app si cambia facilmente fino alla pubblicazione, dopo molto meno. 
    - [UIBM](https://uibm.mise.gov.it/) (marchi italiani)
    - [USPTO](https://tmsearch.uspto.gov/) (Stati Uniti, se pubblichi anche lì)
 3. Guarda le **classi 9** (software, app) e **42** (servizi software). Un marchio identico in queste classi è un rischio concreto; in classi diverse (per esempio abbigliamento) di solito no.
-4. Se trovi un conflitto: aggiungi una parola che ti distingue ("Nook: stacca dal lavoro") o cambia nome. Un consulente in proprietà industriale può darti un parere definitivo; per un'app gratuita e personale la ricerca qui sopra è il minimo sensato.
+4. Se trovi un conflitto: aggiungi una parola che ti distingue ("Unclock: stacca dal lavoro") o cambia nome. Un consulente in proprietà industriale può darti un parere definitivo; per un'app gratuita e personale la ricerca qui sopra è il minimo sensato.
 
-> **Per Nook.** NOOK è un marchio di Barnes & Noble (lettori di e-book, app "NOOK" su Play nella categoria Libri). Nook è in un'altra categoria, ma verifica prima di tutto il resto. Riserve già valutate: *Tempo Mio*, *Dopo*, *Riva* (vedi `DESIGN_SYSTEM.md`, "Nome"). Se cambi nome, dimmelo **prima** del primo caricamento: devo cambiare anche l'`applicationId`.
+> **Per Unclock.** Ricerca web del 19/10/2026: nessuna app "Unclock" su Play e nessun marchio "Unclock" trovato (solo marchi "Unlock" in altri settori; il gioco "Unlock!" di Asmodee compare nella ricerca di Play). Resta da fare la ricerca su EUIPO, UIBM e USPTO, classi 9 e 42. Nomi scartati e riserve: `DESIGN_SYSTEM.md`, "Nome". Se cambi nome, dimmelo **prima** del primo caricamento: devo cambiare anche l'`applicationId`.
 
 ---
 
@@ -84,7 +84,7 @@ Ogni build va firmata. Con Play esistono due chiavi:
 
 Se perdi la chiave di caricamento, Google può reimpostarla (richiesta dal pannello "Integrità dell'app"). Se invece gestissi tu la chiave dell'app e la perdessi, non potresti più aggiornare l'app. Quindi: **accetta Play App Signing** e fai comunque il backup del keystore.
 
-> **Per Nook.** Keystore e password sono in `~/keystores/notificationblocker-upload.jks` e `~/keystores/notificationblocker-signing.properties`. **Copia entrambi** in un posto sicuro fuori dal Mac (password manager o cloud cifrato) prima di caricare la prima build. Mai nella repo.
+> **Per Unclock.** Keystore e password sono in `~/keystores/notificationblocker-upload.jks` e `~/keystores/notificationblocker-signing.properties`. **Copia entrambi** in un posto sicuro fuori dal Mac (password manager o cloud cifrato) prima di caricare la prima build. Mai nella repo.
 
 ### Creare l'app
 
@@ -98,7 +98,7 @@ Attenzione: "Senza costi" non si può più cambiare in "a pagamento" per quell'a
 
 Il file da caricare è un **Android App Bundle** (`.aab`), non un APK.
 
-> **Per Nook.** Nel terminale, dalla cartella del progetto:
+> **Per Unclock.** Nel terminale, dalla cartella del progetto:
 > ```bash
 > export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 > ./gradlew bundleRelease
@@ -116,7 +116,7 @@ Regole che valgono per sempre:
 
 In Play Console, la **Dashboard** dell'app mostra un elenco di attività ("Configura l'app"): segui quello, in ordine.
 
-> **Per Nook.** Tutti i testi, le immagini e le risposte sono pronti in [`store/LISTING.md`](store/LISTING.md): copia e incolla. Immagini in `docs/store/`.
+> **Per Unclock.** Tutti i testi, le immagini e le risposte sono pronti in [`store/LISTING.md`](store/LISTING.md): copia e incolla. Immagini in `docs/store/`.
 
 ### Scheda principale dello store
 
@@ -171,7 +171,7 @@ Obbligatorio per gli account personali. Senza, il pulsante per la produzione res
 - Il conteggio parte quando i tester si iscrivono e installano, non quando crei il test.
 - Se qualcuno si disiscrive prima del giorno 14, i conti possono ripartire. **Recluta almeno 15–20 persone** per avere margine.
 - Google guarda anche se l'app viene usata e se ricevi feedback: chiedi ai tester di aprirla qualche volta e di scriverti cosa ne pensano.
-- I tester devono avere un account Google e un telefono Android (la versione minima dell'app: per Nook Android 9).
+- I tester devono avere un account Google e un telefono Android (la versione minima dell'app: per Unclock Android 9).
 
 ### Trovare i tester
 
@@ -207,13 +207,13 @@ Adattali alla tua app. Scritti per essere brevi e chiari: le persone li leggono 
 **Invito (email o WhatsApp), italiano**
 
 ```
-Ciao! Sto per pubblicare la mia prima app Android, Nook: mette in pausa le notifiche delle app di lavoro quando stacchi.
+Ciao! Sto per pubblicare la mia prima app Android, Unclock: mette in pausa le notifiche delle app di lavoro quando stacchi.
 
 Prima di pubblicarla Google chiede che almeno 12 persone la provino per 14 giorni. Mi daresti una mano? Ci vogliono due minuti:
 
 1. Iscriviti al gruppo dei tester: [LINK GRUPPO]
 2. Apri questo link dal telefono Android e tocca "Diventa un tester": [LINK TEST]
-3. Installa Nook da Google Play (dallo stesso link) e aprila almeno una volta.
+3. Installa Unclock da Google Play (dallo stesso link) e aprila almeno una volta.
 
 L'unica cosa importante: tienila installata per 14 giorni, fino al [DATA]. Se ti va, usala davvero e dimmi cosa ne pensi, anche due righe.
 
@@ -223,13 +223,13 @@ L'app non raccoglie dati e non usa internet. Grazie!
 **Invito, inglese**
 
 ```
-Hi! I'm about to publish my first Android app, Nook: it pauses notifications from your work apps when you switch off.
+Hi! I'm about to publish my first Android app, Unclock: it pauses notifications from your work apps when you switch off.
 
 Before it goes public, Google asks for at least 12 people to test it for 14 days. Could you help? It takes two minutes:
 
 1. Join the testers group: [GROUP LINK]
 2. Open this link on your Android phone and tap "Become a tester": [TEST LINK]
-3. Install Nook from Google Play (same link) and open it at least once.
+3. Install Unclock from Google Play (same link) and open it at least once.
 
 The one thing that matters: keep it installed for 14 days, until [DATE]. If you feel like it, use it for real and tell me what you think, even a couple of lines.
 
@@ -239,19 +239,19 @@ The app collects no data and doesn't use the internet. Thanks!
 **Promemoria a metà (giorno 7)**
 
 ```
-Ciao! Siamo a metà del test di Nook, grazie per esserci. Tienila installata ancora una settimana, fino al [DATA]. Hai notato qualcosa che non va o che cambieresti? Anche una frase mi aiuta molto.
+Ciao! Siamo a metà del test di Unclock, grazie per esserci. Tienila installata ancora una settimana, fino al [DATA]. Hai notato qualcosa che non va o che cambieresti? Anche una frase mi aiuta molto.
 ```
 
 **Ultimo promemoria (giorno 12–13)**
 
 ```
-Ciao! Mancano due giorni alla fine del test di Nook. Per favore non disinstallarla prima del [DATA]: se qualcuno esce prima, il conteggio di Google riparte da zero. Grazie davvero!
+Ciao! Mancano due giorni alla fine del test di Unclock. Per favore non disinstallarla prima del [DATA]: se qualcuno esce prima, il conteggio di Google riparte da zero. Grazie davvero!
 ```
 
 **Ringraziamento (a test finito)**
 
 ```
-Il test di Nook è finito, grazie! Ora chiedo a Google di pubblicarla. Puoi tenerla o disinstallarla, come preferisci. Quando sarà sullo store ti mando il link: se ti è piaciuta, una recensione sincera mi aiuta tantissimo.
+Il test di Unclock è finito, grazie! Ora chiedo a Google di pubblicarla. Puoi tenerla o disinstallarla, come preferisci. Quando sarà sullo store ti mando il link: se ti è piaciuta, una recensione sincera mi aiuta tantissimo.
 ```
 
 ### Raccogliere il feedback
@@ -294,7 +294,7 @@ Testers set their own off-work hours and chose their work apps (mostly email, ch
 
 **A chi si rivolge l'app? Cosa la rende utile?**
 ```
-People who get work notifications on their personal phone and want to switch off after work without silencing the whole phone. Nook pauses only the apps they choose, during the hours they choose, and everything stays on the device.
+People who get work notifications on their personal phone and want to switch off after work without silencing the whole phone. Unclock pauses only the apps they choose, during the hours they choose, and everything stays on the device.
 ```
 
 **L'app è pronta per la produzione? Cosa hai fatto per renderla pronta?**
@@ -315,7 +315,7 @@ Risposta di solito entro **7 giorni**. Se viene rifiutata, la mail spiega perch�
 
 Nello stesso momento:
 
-- Crea un **tag git** della versione pubblicata (per Nook lo faccio io: `v1.0.0`).
+- Crea un **tag git** della versione pubblicata (per Unclock lo faccio io: `v1.0.0`).
 - Salva il file `.aab` caricato insieme al tag, se vuoi poterlo ritrovare.
 
 ---
@@ -327,7 +327,7 @@ Nello stesso momento:
 - **Qualità → Android vitals**: crash e ANR (app bloccata). Google penalizza nella visibilità le app sopra l'1,09% di crash o lo 0,47% di ANR.
 - **Recensioni**: rispondi a tutte, soprattutto alle negative, con calma e in modo concreto. Esempio:
   ```
-  Grazie per averla provata! Mi dispiace per il problema. Nook toglie solo le notifiche delle app che scegli in "App di lavoro": se una notifica arriva comunque, controlla che l'accesso alle notifiche sia ancora attivo nelle impostazioni. Se il problema resta scrivimi a [EMAIL], così lo sistemo.
+  Grazie per averla provata! Mi dispiace per il problema. Unclock toglie solo le notifiche delle app che scegli in "App di lavoro": se una notifica arriva comunque, controlla che l'accesso alle notifiche sia ancora attivo nelle impostazioni. Se il problema resta scrivimi a [EMAIL], così lo sistemo.
   ```
 - Le **email di Google** (policy, avvisi): leggile sempre. Spesso danno una scadenza.
 
@@ -348,12 +348,12 @@ Google alza il `targetSdk` minimo. Le app che restano indietro spariscono per gl
 - Link diretto alla scheda: `https://play.google.com/store/apps/details?id=` seguito dal nome del pacchetto. Risponde "non trovato" finché l'app non è pubblicata in produzione: usalo solo dopo.
 - Un messaggio breve e personale funziona meglio di un annuncio generico: a chi ti conosce, spiega in una frase a cosa serve e perché l'hai fatta.
 - Chiedi recensioni **senza incentivi**: offrire premi, sconti o scambi in cambio di recensioni è vietato dalle regole di Google e può far rimuovere l'app.
-- Se hai un profilo LinkedIn o un blog, raccontare il perché dell'app (per Nook: il diritto a staccare) interessa più delle funzioni.
+- Se hai un profilo LinkedIn o un blog, raccontare il perché dell'app (per Unclock: il diritto a staccare) interessa più delle funzioni.
 
 Messaggio di lancio pronto (adattalo):
 
 ```
-Ho pubblicato Nook, la mia prima app Android. Mette in pausa le notifiche delle app di lavoro quando stacchi, e lascia arrivare tutto il resto. Niente account, niente pubblicità, nessun dato che esce dal telefono.
+Ho pubblicato Unclock, la mia prima app Android. Mette in pausa le notifiche delle app di lavoro quando stacchi, e lascia arrivare tutto il resto. Niente account, niente pubblicità, nessun dato che esce dal telefono.
 
 La trovi qui: https://play.google.com/store/apps/details?id=com.pasquale.nook   (da mandare solo a pubblicazione avvenuta)
 
@@ -404,7 +404,7 @@ Copiala in un file nuovo e spunta man mano.
 
 ---
 
-## Chi fa cosa, per Nook
+## Chi fa cosa, per Unclock
 
 | Cosa | Chi | Stato |
 |---|---|---|
@@ -412,7 +412,7 @@ Copiala in un file nuovo e spunta man mano.
 | Testi, icona, feature graphic, screenshot, risposte ai moduli | Claude | Fatto (`store/LISTING.md`) |
 | Informativa privacy online | Pasquale (Pages) + Claude (testo) | Fatto |
 | Backup di keystore e password | Pasquale | **Da fare** |
-| Verifica del marchio "Nook" | Pasquale | **Da fare** |
+| Verifica del marchio "Unclock" | Pasquale | **Da fare** |
 | Account Play Console, verifica identità | Pasquale | **Da fare**: dimmelo quando è attivo |
 | Tester, Google Gruppo, inviti | Pasquale | **Da fare**, parti subito |
 | Caricare AAB e compilare Play Console | Pasquale, con i testi pronti | Dopo l'account |

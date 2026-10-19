@@ -21,7 +21,7 @@
             android:background="@drawable/widget_badge"
             android:contentDescription="@null"
             android:padding="7dp"
-            android:src="@drawable/ic_mug"
+            android:src="@drawable/ic_logo"
             android:tint="@color/widget_on_badge" />
 
         <LinearLayout

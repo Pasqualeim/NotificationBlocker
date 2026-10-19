@@ -1,6 +1,6 @@
 # Motion
 
-Linee guida per le animazioni di Nook. Per colori e componenti vedi [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md).
+Linee guida per le animazioni di Unclock. Per colori e componenti vedi [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md).
 
 ## Principi
 
@@ -56,11 +56,11 @@ Le transizioni con spec di default (`fadeIn()`, `expandVertically()` senza argom
 | `ZenScene` | Scena animata nella Home, con la luce reale del giorno (alba, sole, tramonto, notte), la stagione e il meteo. Al lavoro: scrivania in un ufficio in alto, il codice che si scrive da solo sul monitor, vetrata sullo skyline. Fuori orario: un pontile di legno su un lago calmo, con barca a remi, anatre, ramo e canne | Livelli vettoriali in `ui/zen` (2:1, 30 fps su `AmbientClock`); livelli fermi in texture GPU. Cambio di stato = `Crossfade` `SLOW` (1200 ms), niente altro; con "Rimuovi animazioni" frame fermo e cambio istantaneo |
 | Notifica della pausa (tendina / blocco schermo) | Il pontile sul lago della Home in miniatura, per fase del giorno: riflessi che scorrono, barca che dondola, canne al vento; di giorno l'alone del sole e una nuvola, al tramonto il sole grande sui colli, di notte stelle che brillano e il lampione acceso | `AnimatedVectorDrawable` (`avd_zen_*`) in un `ProgressBar` indeterminato nelle RemoteViews; loop lenti (2–24 s), l'animazione la gestisce SystemUI (si ferma quando la tendina è chiusa) |
 | Messaggio "vita" (`HeroHeader`) | La frase su sole e tempo libero cambia con dissolvenza | `AnimatedContent` fade-in `LONG` / fade-out `SHORT`, ricalcolo al minuto solo con l'app in primo piano (`rememberCurrentMinutes()`: `repeatOnLifecycle(STARTED)`, rilegge l'orologio a ogni ritorno in primo piano) |
-| Riquadro "Nook" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
+| Riquadro "Unclock" | Icona foglia → sole → lanterna secondo la fase | Nessuna animazione propria: la transizione di stato del riquadro è di sistema |
 
 ## Regole di implementazione
 
-- **`MotionScheme.expressive()`**: `QuietHoursTheme` è un `MaterialExpressiveTheme`, quindi i componenti Material (barre, bottoni, elenchi, sheet) si muovono con le spring espressive del tema. I token di `Motion.kt` restano per le animazioni di Nook; non duplicare nei componenti Material quello che il tema già fa.
+- **`MotionScheme.expressive()`**: `QuietHoursTheme` è un `MaterialExpressiveTheme`, quindi i componenti Material (barre, bottoni, elenchi, sheet) si muovono con le spring espressive del tema. I token di `Motion.kt` restano per le animazioni di Unclock; non duplicare nei componenti Material quello che il tema già fa.
 - **Barra ondulata di Oggi** (`LinearWavyProgressIndicator` in `TodayCard`): sempre `waveSpeed = 0.dp`. Un'onda che si muove ridisegnerebbe la finestra a ogni frame (stessa regola degli anelli infiniti qui sotto). La barra si riempie solo con l'`Animatable` `SLOW` del catalogo.
 - **Durate, easing e spring da `Motion`** (`ui/theme/Motion.kt`), mai numeri inline; le eccezioni di un singolo componente sono costanti private con nome, elencate nel catalogo.
 - **`label =`** su ogni `animate*AsState`, `Transition` e `InfiniteTransition` (servono all'Animation Inspector di Android Studio).

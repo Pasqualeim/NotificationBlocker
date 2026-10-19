@@ -96,7 +96,7 @@ Ogni fase finisce con test, lint, review `android-reviewer` e commit su `main`.
 3. **[Fatta] Navigazione e schermate.** Barra in basso, Pause con editor, Statistiche (prima "Il tempo tuo") con i tre grafici, Oggi rifatta; poi restyling Material 3 nativo: `TopAppBar` condivisa, icona Home, righe `ListItem`. Prima i mockup (SVG come quelli di `docs/mockups/`), poi il codice. Controllo di Home in una schermata e dei frame sul Galaxy A32.
 4. **[Fatta per l'app] Testi e documenti.** `copywriter` per tutte le stringhe IT/EN, `docs-keeper` per `CLAUDE.md`, `MOTION.md`, `DESIGN_SYSTEM.md`, store e sito.
 
-Le fasi 1 e 2 non cambiano l'aspetto dell'app; dalla 3 si vede il nuovo Nook.
+Le fasi 1 e 2 non cambiano l'aspetto dell'app; dalla 3 si vede il nuovo Unclock.
 
 ## Verifica
 

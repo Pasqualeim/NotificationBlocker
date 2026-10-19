@@ -321,7 +321,7 @@ private fun AccessStep(onOpenAccess: () -> Unit, hasAccess: Boolean, willAskNoti
                 modifier = Modifier.padding(start = 12.dp),
             )
         }
-        // Without this the system prompt that follows ("Allow Nook to send you notifications?")
+        // Without this the system prompt that follows ("Allow Unclock to send you notifications?")
         // read as a contradiction in an app that pauses notifications
         if (willAskNotification) {
             Text(

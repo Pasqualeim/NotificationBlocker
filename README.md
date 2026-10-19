@@ -1,10 +1,10 @@
-# Nook
+# Unclock
 
 *Prima si chiamava NotificationBlocker: la repo e il package Kotlin mantengono il vecchio nome.*
 
 App Android che mette in pausa le notifiche delle app di lavoro quando non stai lavorando.
 
-La domanda da cui nasce: perché esistono app che ti premiano e ti mostrano statistiche solo per quanto tempo ti concentri e lavori, mentre non esiste niente per il tempo libero e la salute personale? Nook conta il tempo che ti riprendi (vedi [`docs/IDEA.md`](docs/IDEA.md)).
+La domanda da cui nasce: perché esistono app che ti premiano e ti mostrano statistiche solo per quanto tempo ti concentri e lavori, mentre non esiste niente per il tempo libero e la salute personale? Unclock conta il tempo che ti riprendi (vedi [`docs/IDEA.md`](docs/IDEA.md)).
 
 Abbiamo una vita oltre il lavoro. Non si tratta di dormire tranquilli, ma di riprendersi il tempo che resta (un pomeriggio di sole, una cena, un weekend) senza che il lavoro bussi dal telefono.
 
@@ -14,7 +14,7 @@ Scegli le app di lavoro (Gmail, Teams, Slack…), dici quando lavori (giorni e o
 
 Tre schede in basso: **Oggi**, **Pause**, **Statistiche**.
 
-- **Quando lavori** (scheda *Pause*): giorni e orari di lavoro (predefinito lun–ven 09:00–18:00, turni di giorno). Fuori dal lavoro Nook mette tutto in pausa, sera e weekend compresi: da venerdì sera a lunedì mattina è una pausa sola, quindi "Termina la pausa", il conteggio e il resoconto valgono per tutto il weekend.
+- **Quando lavori** (scheda *Pause*): giorni e orari di lavoro (predefinito lun–ven 09:00–18:00, turni di giorno). Fuori dal lavoro Unclock mette tutto in pausa, sera e weekend compresi: da venerdì sera a lunedì mattina è una pausa sola, quindi "Termina la pausa", il conteggio e il resoconto valgono per tutto il weekend.
 - **Altre pause** (scheda *Pause*): quante ne vuoi (il pranzo), ognuna con nome, inizio e fine con il time picker (anche a cavallo della mezzanotte; inizio uguale alla fine = tutto il giorno), giorni della settimana e un interruttore proprio. Di norma usano tutte le app di lavoro; per una pausa si possono scegliere app diverse. Le pause possono sovrapporsi.
 - **Stacca ora**: dalla card di stato, una pausa subito per il tempo che scegli, senza crearne una.
 - **Giorni liberi**: ferie o ponti con le date (fino a 62 giorni) e, se vuoi, i festivi italiani, Pasqua e Pasquetta comprese.
@@ -23,11 +23,11 @@ Tre schede in basso: **Oggi**, **Pause**, **Statistiche**.
 - **Statistiche**: storico per giorno del tempo di pausa vissuto, di quanto è stato con la luce del sole e delle notifiche di lavoro lasciate fuori. Grafici per giorno, settimana e mese, scorrendo ai periodi precedenti. In fondo la settimana impostata e il **Sonno**: le ore di sonno restano in pausa ma non contano come tempo libero.
 - **Scena animata**: una scrivania in ufficio con lo skyline mentre lavori, un pontile sul lago in pausa, con la luce reale del giorno, quattro stagioni, pioggia e neve.
 - **Notifica della pausa** (facoltativa, Android 13+): notifica silenziosa e fissa mentre una pausa è attiva, con l'ora in cui finisce e quante notifiche di lavoro sono state messe in pausa. Il pulsante **Termina la pausa** fa arrivare di nuovo le notifiche di lavoro fino alla prossima pausa.
-- **Riquadro "Nook"** nelle Impostazioni rapide: accende e spegne tutto dalla tendina.
+- **Riquadro "Unclock"** nelle Impostazioni rapide: accende e spegne tutto dalla tendina.
 - **Widget** per la schermata Home: stato, pausa in corso o prossima e "Stacca 1 h".
 - **Dopo la pausa**: la Home mostra quante notifiche di lavoro sono arrivate e da quali app, con "Apri".
 - **Primo avvio**: tre passi (app di lavoro, quando lavori, accesso alle notifiche con le quattro garanzie).
-- **Tema**: aspetto nativo Pixel (Material 3 Expressive) nei colori di Nook, palette calda "Chai" / "Lo-fi night" (niente colori dallo sfondo), font di sistema; edge-to-edge.
+- **Tema**: aspetto nativo Pixel (Material 3 Expressive) nei colori di Unclock, palette calda "Chai" / "Lo-fi night" (niente colori dallo sfondo), font di sistema; edge-to-edge.
 - **Lingue**: italiano e inglese.
 
 Prossimi passi: il sito con l'iscrizione al test, poi Google Play.
@@ -39,8 +39,8 @@ Prossimi passi: il sito con l'iscrizione al test, poi Google Play.
 
 ## Primo utilizzo
 
-1. Apri Nook: il primo avvio ha tre passi. Scegli le **app di lavoro**, poi **quando lavori** (giorni e orari, con il pranzo facoltativo) e infine consenti l'**accesso alle notifiche**: *Consenti l'accesso*, attiva *Nook* nell'elenco di sistema e torna indietro.
-2. (Facoltativo, Android 13+) Toccando *Inizia* Android chiede se Nook può mostrare la *notifica della pausa* nella tendina.
+1. Apri Unclock: il primo avvio ha tre passi. Scegli le **app di lavoro**, poi **quando lavori** (giorni e orari, con il pranzo facoltativo) e infine consenti l'**accesso alle notifiche**: *Consenti l'accesso*, attiva *Unclock* nell'elenco di sistema e torna indietro.
+2. (Facoltativo, Android 13+) Toccando *Inizia* Android chiede se Unclock può mostrare la *notifica della pausa* nella tendina.
 3. Nella scheda **Pause** puoi cambiare giorni e orari di lavoro, aggiungere altre pause o i giorni liberi e cambiare le app di lavoro (riga *App di lavoro*).
 4. In **Oggi** l'interruttore nella card di stato è già acceso; **Stacca ora** avvia subito una pausa.
 
@@ -91,7 +91,7 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 | [`CLAUDE.md`](CLAUDE.md) | Architettura, regole e convenzioni (anche per assistenti AI) |
 | [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Stile visivo: colori, tipografia, forme, componenti, tono dei testi |
 | [`docs/MOTION.md`](docs/MOTION.md) | Linee guida sulle animazioni |
-| [`docs/IDEA.md`](docs/IDEA.md) | La domanda da cui nasce Nook, le quattro regole e la checklist anti-stress |
+| [`docs/IDEA.md`](docs/IDEA.md) | La domanda da cui nasce Unclock, le quattro regole e la checklist anti-stress |
 | [`docs/REDESIGN.md`](docs/REDESIGN.md) | Piano di Nook 2 (pause, storico, tre schede) |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Stato del progetto: fase di test, miglioramenti, pubblicazione, cosa è fatto |
 | [`docs/PUBLISHING.md`](docs/PUBLISHING.md) | Guida passo passo per pubblicare su Google Play (riutilizzabile per altre app) |

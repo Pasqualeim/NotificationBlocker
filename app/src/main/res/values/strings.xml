@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name" translatable="false">Nook</string>
-    <string name="service_label" translatable="false">Nook</string>
+    <string name="app_name" translatable="false">Unclock</string>
+    <string name="service_label" translatable="false">Unclock</string>
 
     <!-- Main Screen -->
-    <string name="main_title" translatable="false">Nook</string>
+    <string name="main_title" translatable="false">Unclock</string>
 
     <!-- Hero Statuses -->
     <string name="status_disabled">Off</string>
@@ -27,7 +27,7 @@
 
     <!-- Permission Warning -->
     <string name="permission_warning_title">Allow notification access</string>
-    <string name="permission_warning_text">To pause your work apps, Nook needs to see the notifications you receive. It only checks which app sent each one. It doesn\'t read or save what they say, and nothing leaves your phone. You can turn this off anytime in Settings.</string>
+    <string name="permission_warning_text">To pause your work apps, Unclock needs to see the notifications you receive. It only checks which app sent each one. It doesn\'t read or save what they say, and nothing leaves your phone. You can turn this off anytime in Settings.</string>
     <string name="permission_warning_button">Open settings</string>
     <string name="privacy_policy_link">Privacy policy</string>
     <string name="privacy_policy_url" translatable="false">https://pasqualeim.github.io/NotificationBlocker/</string>
@@ -91,14 +91,14 @@
     <string name="zen_until">Until %1$s</string>
     <string name="zen_all_day">All day</string>
     <string name="zen_permission_title">Break notification</string>
-    <string name="zen_permission_text">Nook can show a silent notification while your work apps are paused, with the time your break ends.</string>
+    <string name="zen_permission_text">Unclock can show a silent notification while your work apps are paused, with the time your break ends.</string>
     <string name="zen_permission_allow">Allow</string>
     <string name="zen_permission_later">Not now</string>
 
     <!-- Quick Settings tile -->
-    <string name="tile_name" translatable="false">Nook</string>
-    <string name="tile_label_day" translatable="false">Nook</string>
-    <string name="tile_label_evening" translatable="false">Nook</string>
+    <string name="tile_name" translatable="false">Unclock</string>
+    <string name="tile_label_day" translatable="false">Unclock</string>
+    <string name="tile_label_evening" translatable="false">Unclock</string>
     <string name="tile_subtitle_off">Off</string>
     <string name="tile_subtitle_from">From %1$s</string>
 
@@ -203,7 +203,7 @@
     <string name="quick_pause_start">Start</string>
     <string name="quick_pause_name">Quick break</string>
     <string name="days_off_title">Days off</string>
-    <string name="days_off_intro">Time off, long weekends and public holidays: Nook keeps work out all day, without touching your breaks.</string>
+    <string name="days_off_intro">Time off, long weekends and public holidays: Unclock keeps work out all day, without touching your breaks.</string>
     <string name="days_off_holidays">Public holidays</string>
     <string name="days_off_holidays_text">Italy, 12 days a year, added automatically</string>
     <string name="days_off_holidays_next">Next: %1$s, %2$s</string>
@@ -251,7 +251,7 @@
         <item quantity="other">and %1$d more apps</item>
     </plurals>
     <string name="widget_description">Your status and next break at a glance, with Pause 1 h.</string>
-    <string name="widget_title_off">Nook is off</string>
+    <string name="widget_title_off">Unclock is off</string>
     <string name="widget_title_paused">On a break</string>
     <string name="widget_title_work">Work notifications on</string>
     <string name="widget_sub_off">All notifications come through.</string>
@@ -265,20 +265,20 @@
     <string name="widget_preview_sub">Next: Lunch at 13:00</string>
     <string name="onboarding_step">Step %1$d of %2$d</string>
     <string name="onboarding_apps_title">Which apps are work?</string>
-    <string name="onboarding_apps_text">Pick the apps that bring you work. During a break Nook clears their notifications, and they don\'t come back. The messages stay in the apps, so you\'ll find them when you open them. Everything else comes through as usual.</string>
+    <string name="onboarding_apps_text">Pick the apps that bring you work. During a break Unclock clears their notifications, and they don\'t come back. The messages stay in the apps, so you\'ll find them when you open them. Everything else comes through as usual.</string>
     <string name="onboarding_apps_more">Choose from all apps</string>
     <string name="onboarding_apps_pick">Choose your work apps</string>
     <string name="onboarding_lunch">Lunch</string>
     <string name="onboarding_access_title">Notification access</string>
-    <string name="onboarding_access_text">To pause your work apps, Nook needs to see the notifications you get.</string>
+    <string name="onboarding_access_text">To pause your work apps, Unclock needs to see the notifications you get.</string>
     <string name="onboarding_access_sees">It only checks which app sent each one.</string>
     <string name="onboarding_access_reads_nothing">It doesn\'t read or save what they say.</string>
     <string name="onboarding_access_stays">Nothing leaves your phone.</string>
     <string name="onboarding_access_revocable">You can turn it off anytime in Settings.</string>
     <string name="onboarding_access_button">Allow access</string>
-    <string name="onboarding_access_how">Android opens a page with Nook\'s switch. Turn it on, then come back here. The warning you\'ll see is the same for every app with this access: Nook only does what\'s listed above.</string>
+    <string name="onboarding_access_how">Android opens a page with Unclock\'s switch. Turn it on, then come back here. The warning you\'ll see is the same for every app with this access: Unclock only does what\'s listed above.</string>
     <string name="onboarding_access_done">Access on. You\'re all set.</string>
-    <string name="onboarding_notification_note">When you tap Start, Android asks if Nook can send you notifications. It uses just one, silent, with the time your break ends. If you say no, Nook still works.</string>
+    <string name="onboarding_notification_note">When you tap Start, Android asks if Unclock can send you notifications. It uses just one, silent, with the time your break ends. If you say no, Unclock still works.</string>
     <string name="onboarding_skip">Do it later</string>
     <string name="onboarding_back">Back</string>
     <string name="onboarding_next">Continue</string>
@@ -302,11 +302,11 @@
     <string name="work_free_none">You work every day. Only the hours outside work are paused.</string>
     <string name="work_free_days">%1$s: paused all day.</string>
     <string name="work_hours_title">Work hours</string>
-    <string name="work_hours_text">Outside these hours Nook pauses your work apps.</string>
+    <string name="work_hours_text">Outside these hours Unclock pauses your work apps.</string>
     <string name="work_hours_start">Start</string>
     <string name="work_hours_end">End</string>
     <string name="work_hours_order">The end has to come after the start.</string>
     <string name="onboarding_work_title">When do you work?</string>
-    <string name="onboarding_work_text">Outside these hours and on your free days, Nook pauses your work apps. You can change this any time.</string>
+    <string name="onboarding_work_text">Outside these hours and on your free days, Unclock pauses your work apps. You can change this any time.</string>
     <string name="work_not_set">Not in use yet. Tap a day or the hours to start: the rest of the week will be paused.</string>
 </resources>

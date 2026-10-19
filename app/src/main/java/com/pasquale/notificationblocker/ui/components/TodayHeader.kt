@@ -49,7 +49,7 @@ fun todayDate(date: LocalDate): String {
     return OffHours.date("EEEE d MMMM", date, locale).replaceFirstChar { it.titlecase(locale) }
 }
 
-/** The brand mark at the end of the Today top bar: the mug on a primary cookie shape. */
+/** The brand mark at the end of the Today top bar: the padlock on a primary cookie shape. */
 @Composable
 fun NookBadge(modifier: Modifier = Modifier) {
     Box(
@@ -57,7 +57,7 @@ fun NookBadge(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_mug),
+            painter = painterResource(R.drawable.ic_logo),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.size(24.dp),
@@ -77,7 +77,7 @@ fun TodayMetrics(livedMinutes: Int, held: Int, daylightMinutes: Int, modifier: M
     Row(modifier = modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         val figure = MaterialTheme.typography.titleLarge
         MetricTile(
-            icon = painterResource(R.drawable.ic_mug),
+            icon = painterResource(R.drawable.ic_logo),
             tint = MaterialTheme.colorScheme.onSecondaryContainer,
             container = MaterialTheme.colorScheme.secondaryContainer,
             shapeIndex = 0,

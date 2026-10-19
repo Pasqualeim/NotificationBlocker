@@ -4,9 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-**Nook** (formerly NotificationBlocker): Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps when the user is not working: the user sets WHEN THEY WORK (days and hours, default Mon-Fri 09:00-18:00) and everything outside it is a pause; extra pauses (lunch...) have name, days and optionally their own apps.
+**Unclock** (formerly Nook, formerly NotificationBlocker; renamed 2026-10-19, `docs/DESIGN_SYSTEM.md` "Nome"; the code keeps `Nook*` identifiers such as `NookBadge`, `NookWidgetProvider`, `nook_widget_info.xml`, `ic_notification_nook`, and `applicationId` `com.pasquale.nook` stays because it is fixed forever once published): Android app (Kotlin + Jetpack Compose) that silently dismisses notifications from user-selected "work" apps when the user is not working: the user sets WHEN THEY WORK (days and hours, default Mon-Fri 09:00-18:00) and everything outside it is a pause; extra pauses (lunch...) have name, days and optionally their own apps.
 
-The question behind the app (`docs/IDEA.md`): why do apps reward you and show statistics only for the time you focus and work, while nothing exists for free time and personal health? Nook counts the time you get back.
+The question behind the app (`docs/IDEA.md`): why do apps reward you and show statistics only for the time you focus and work, while nothing exists for free time and personal health? Unclock counts the time you get back.
 
 Purpose: we have a life beyond work. "Off-hours" means any time you are not working (an afternoon, an evening, a whole day), not "night and sleep". Copy, scenes and icon celebrate the free time you get back, never rest-as-a-reward or the work you are missing. Single module `:app`. `applicationId` is `com.pasquale.nook` (fixed forever once published); the Kotlin namespace stays `com.pasquale.notificationblocker`, so class names in `adb` commands need the full path. Naming and color rationale: `docs/DESIGN_SYSTEM.md`.
 
@@ -20,7 +20,7 @@ Related docs (read before UI work):
 - `docs/DESIGN_SYSTEM.md`: colors, type, shapes, components, copy tone
 - `docs/MOTION.md`: animation tokens and rules
 - `docs/ROADMAP.md`: project status (publishing, open items, done); update it when you ship or drop an item
-- `docs/IDEA.md`: the question behind Nook, the four rules and the anti-stress checklist every new idea (statistics, rewards, copy) must pass. Read before designing anything that counts or rewards free time
+- `docs/IDEA.md`: the question behind Unclock, the four rules and the anti-stress checklist every new idea (statistics, rewards, copy) must pass. Read before designing anything that counts or rewards free time
 - `docs/REDESIGN.md`: the Nook 2 plan (done: pauses, history, three tabs)
 - `docs/PUBLISHING.md`: the owner's step-by-step Google Play checklist (manual steps: accounts, testing, forms)
 - `docs/store/LISTING.md`: store texts IT/EN, screenshots in `docs/store/screenshots/`, Play Console form answers. Keep it in sync with the app (a new permission, data flow or feature changes the Data safety answers)
@@ -41,7 +41,7 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 
 Release: `./gradlew bundleRelease` (AAB for Play) or `assembleRelease`. Signing reads `keystore.properties` in the repo root (git-ignored; keys `storeFile`, `storePassword`, `keyAlias`, `keyPassword`); the upload keystore lives outside the repo in `~/keystores/`. Without that file the release build is unsigned, so CI and fresh clones still build.
 
-Install and run on emulator or phone: `adb install -r app/build/outputs/apk/debug/app-debug.apk`. The debug build is **"Nook dev"**, package `com.pasquale.nook.dev` (`applicationIdSuffix`, name from `app/src/debug/res`): it installs next to the Nook from the Play Store with its own data, so the owner's phone keeps the real app while updates are tried. The copy from Play is signed by Google (Play App Signing), not with the upload key, so a locally built release can never update it; a new version reaches it only through the Play Console.
+Install and run on emulator or phone: `adb install -r app/build/outputs/apk/debug/app-debug.apk`. The debug build is **"Unclock dev"**, package `com.pasquale.nook.dev` (`applicationIdSuffix`, name from `app/src/debug/res`): it installs next to the Unclock from the Play Store with its own data, so the owner's phone keeps the real app while updates are tried. The copy from Play is signed by Google (Play App Signing), not with the upload key, so a locally built release can never update it; a new version reaches it only through the Play Console.
 
 ### Testing the blocking end-to-end without UI
 
@@ -83,10 +83,10 @@ app/src/main/java/com/pasquale/notificationblocker/
 │   └── NookWidgetProvider.kt        # RemoteViews widget (no Glance), redrawn from ZenNotificationManager.refresh only when its text changes; private QuickPauseReceiver (not exported) starts the 1 h pause
 ├── tile/
 │   ├── ZenTileState.kt              # pure: tile icon/label/subtitle (unit tested)
-│   └── ZenTileService.kt            # Quick Settings tile "Nook": toggles blocking
+│   └── ZenTileService.kt            # Quick Settings tile "Unclock": toggles blocking
 └── ui/
     ├── MainViewModel.kt             # AndroidViewModel shared by all screens (StateFlows)
-    ├── Permissions.kt               # listener access / post-notifications checks, openNotificationAccess (Nook's own switch)
+    ├── Permissions.kt               # listener access / post-notifications checks, openNotificationAccess (Unclock's own switch)
     ├── screens/
     │   ├── MainScreen.kt            # Today tab: own header (no TopAppBar), staggered entrance of top card, scene, TodayMetrics, TodayCard; one top card at a time (TopCard); also holds TimePickerDialog
     │   ├── PausesScreen.kt          # Breaks tab: "When you work" (WorkScheduleCard), "What gets paused" (one Work apps row, opens the app list), then the "Other breaks" segmented group: weekly PauseRows, "Days off" row; the "Add a break" FAB bottom right opens PauseEditorSheet (the owner wants it there). `LinkRow` and `SectionHeader` are internal, shared with Stats
@@ -97,7 +97,7 @@ app/src/main/java/com/pasquale/notificationblocker/
     ├── components/
     │   ├── HeroHeader.kt            # status card (4 HeroStatus states: off, break at hh:mm, break in progress, pause ended) + master Switch
     │   ├── MutedBellIcon.kt         # bell that shakes, then gets slashed when blocking turns on
-    │   ├── TodayHeader.kt               # todayGreeting, todayDate, NookBadge (mug), compactDuration and TodayMetrics (free today, daylight, paused); no header composable, the top app bar of Today shows them
+    │   ├── TodayHeader.kt               # todayGreeting, todayDate, NookBadge (the padlock, `ic_logo`), compactDuration and TodayMetrics (free today, daylight, paused); no header composable, the top app bar of Today shows them
     │   ├── Visuals.kt                   # PauseAvatar (time-of-day icon), expressiveShape(index) (MaterialShapes cookie/clover/burst), segmentColors() (segments on surfaceContainer), Modifier.entrance, CountUpText, MetricTile; PauseAvatar and MetricTile use the expressive shapes
     │   ├── WeekCoverageCard.kt      # "Planned week" at the bottom of Stats and onboarding step 2 (redrawn as templates are ticked; onboarding uses the default sleep window): hours a week without work notifications, sleep excluded (sleep hours drawn faded on the bars, the legend names the sleep window; `compact` (Stats): no inner "Every week" label and one legend dot "Sleep, not counted" instead of the sentence, onboarding keeps the full card), one 24 h bar per group of alike days ("Lun–ven", "Sab–dom": never "Weekend", which is a preset pause name) with the free times written under it ("fino alle 08:30 · 13:00–14:00 · dalle 18:30"), a one-line legend (data/WeekCoverage.kt groups/merge)
     │   ├── TodayCard.kt                 # "Today" on Home as a segmented list (segment shapes from `ListItemDefaults.segmentedShapes`; compact custom rows, not `SegmentedListItem`, whose minimum height ate the scene's room): first segment = now/next line with a LinearWavyProgressIndicator (waveSpeed = 0.dp) and the day bar, then one segment per pause with state chips (TodayPauses, unit tested), hours lived
@@ -125,7 +125,7 @@ app/src/main/java/com/pasquale/notificationblocker/
                                      # Shape (default Shapes()), Theme (MaterialExpressiveTheme), ZenPalette (scene colors)
 ```
 
-The app has two themes: `QuietHoursTheme` (used by `MainActivity`, a `MaterialExpressiveTheme` with `MotionScheme.expressive()`) and `NotificationBlockerTheme` (a thin alias used by previews). `dynamicColor` defaults to `false` on purpose: the native look comes from the Expressive components, type and shapes, while the colors stay Nook's own Chai / Lo-fi night palette (the owner tried the wallpaper colors, Material You, and chose the brand palette).
+The app has two themes: `QuietHoursTheme` (used by `MainActivity`, a `MaterialExpressiveTheme` with `MotionScheme.expressive()`) and `NotificationBlockerTheme` (a thin alias used by previews). `dynamicColor` defaults to `false` on purpose: the native look comes from the Expressive components, type and shapes, while the colors stay Unclock's own Chai / Lo-fi night palette (the owner tried the wallpaper colors, Material You, and chose the brand palette).
 
 ### Blocking rule (single source of truth)
 
@@ -149,7 +149,7 @@ Apps come from `queryIntentActivities(ACTION_MAIN + CATEGORY_LAUNCHER)`, matched
 
 ### Permissions
 
-Only notification listener access is required, granted by the user in system settings: `ui/Permissions.kt` (`openNotificationAccess`) opens Nook's own switch (`ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS`, Android 11+; the full list `ACTION_NOTIFICATION_LISTENER_SETTINGS` is the fallback), and holds the two permission checks. The Today tab (`MainScreen`) re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ the first-launch setup asks for it when it ends (only if the listener access was given; step 3 says so first, or the system prompt reads as a contradiction); `ZenNotificationCard` on Today asks once for whoever skipped it or updated from an older version, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
+Only notification listener access is required, granted by the user in system settings: `ui/Permissions.kt` (`openNotificationAccess`) opens Unclock's own switch (`ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS`, Android 11+; the full list `ACTION_NOTIFICATION_LISTENER_SETTINGS` is the fallback), and holds the two permission checks. The Today tab (`MainScreen`) re-checks it on `ON_RESUME` and shows `PermissionCard` in place of the status card while it is missing. `POST_NOTIFICATIONS` is optional: it only enables the zen status notification. On Android 13+ the first-launch setup asks for it when it ends (only if the listener access was given; step 3 says so first, or the system prompt reads as a contradiction); `ZenNotificationCard` on Today asks once for whoever skipped it or updated from an older version, in place of the status card right after the listener permission; denying it changes nothing else. The app uses no alarms, so `SCHEDULE_EXACT_ALARM` is intentionally absent.
 
 ### Sprout MVP (parked, not in the code)
 
@@ -159,7 +159,7 @@ A pixel-art sprout that grew with the break time (`SproutCard`, `SproutArt`, an 
 
 User-facing name: "notifica della pausa" / "break notification" ("zen" survives only in code and resource names).
 
-Silent ongoing notification (channel `zen_status`, `IMPORTANCE_LOW`, `DecoratedCustomViewStyle`, small icon `ic_notification_nook`, the mug) shown **only while Nook really holds work notifications**: blocking on, a pause in progress, that occurrence not ended early, at least one app to silence and the notification access granted (`ZenNotificationState.resolve`); never between pauses. Title "Work paused until 07:00" (or "all day"); text how many were paused and from which apps (names left out of the public version on a locked screen; copy says "paused", never "waiting": held notifications do not come back). Expanded: the lake pier in miniature for the phase of the day (`avd_zen_day/sunset/night`, generated by `tools/notification/zen_art.py`, hosted by an indeterminate `ProgressBar` because RemoteViews do not start animated vectors in an `ImageView`) and a calm line. Action "End the pause" (`EndPauseReceiver`) writes the occurrences in progress to `pause_ended_keys`: `shouldBlock` lets work through until the next pause, Home shows "Pause ended" with "Pause again", the tile says when the next one starts. No confirmation notification: the break notification just goes away (a second one with "Undo" confused users). Still no alarms: the system removes it at the pause end via `setTimeoutAfter`; `ZenNotificationManager.refresh()` runs from the app (toggle, times, resume), from the listener service on each posted notification, and from a receiver the service registers at runtime for `TIME_TICK` (screen on only), `SCREEN_ON`, `USER_PRESENT` and time/zone changes. It re-posts only when the visible content changes (`contentKey`). Swiped away → hidden until the next pause (or until blocking is turned on again).
+Silent ongoing notification (channel `zen_status`, `IMPORTANCE_LOW`, `DecoratedCustomViewStyle`, small icon `ic_notification_nook`, the Unclock padlock) shown **only while Unclock really holds work notifications**: blocking on, a pause in progress, that occurrence not ended early, at least one app to silence and the notification access granted (`ZenNotificationState.resolve`); never between pauses. Title "Work paused until 07:00" (or "all day"); text how many were paused and from which apps (names left out of the public version on a locked screen; copy says "paused", never "waiting": held notifications do not come back). Expanded: the lake pier in miniature for the phase of the day (`avd_zen_day/sunset/night`, generated by `tools/notification/zen_art.py`, hosted by an indeterminate `ProgressBar` because RemoteViews do not start animated vectors in an `ImageView`) and a calm line. Action "End the pause" (`EndPauseReceiver`) writes the occurrences in progress to `pause_ended_keys`: `shouldBlock` lets work through until the next pause, Home shows "Pause ended" with "Pause again", the tile says when the next one starts. No confirmation notification: the break notification just goes away (a second one with "Undo" confused users). Still no alarms: the system removes it at the pause end via `setTimeoutAfter`; `ZenNotificationManager.refresh()` runs from the app (toggle, times, resume), from the listener service on each posted notification, and from a receiver the service registers at runtime for `TIME_TICK` (screen on only), `SCREEN_ON`, `USER_PRESENT` and time/zone changes. It re-posts only when the visible content changes (`contentKey`). Swiped away → hidden until the next pause (or until blocking is turned on again).
 
 The Quick Settings tile (`ZenTileService`, active tile: no polling) toggles `blocking_enabled` directly; `MainViewModel` follows preference changes with an `OnSharedPreferenceChangeListener`, and calls `ZenTileService.requestUpdate()` after changes made in the app. Details and diagrams: `docs/MOTION.md` ("Live Notification: architettura").
 
