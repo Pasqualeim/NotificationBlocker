@@ -97,7 +97,7 @@ Installazione su emulatore: `adb install -r app/build/outputs/apk/debug/app-debu
 | [`docs/PUBLISHING.md`](docs/PUBLISHING.md) | Guida passo passo per pubblicare su Google Play (riutilizzabile per altre app) |
 | [`docs/store/LISTING.md`](docs/store/LISTING.md) | Scheda dello store: testi IT/EN, screenshot, risposte ai moduli di Play Console |
 
-Il sito dell'app (presentazione e iscrizione al test chiuso) è in un repository separato, `nook-site`: HTML statico su Cloudflare Pages, iscrizioni in Cloudflare D1.
+Il sito dell'app (presentazione e iscrizione al test chiuso) è in un repository separato, `nook-site`: HTML statico su Netlify, iscrizioni con Netlify Forms.
 
 ## Privacy
 
