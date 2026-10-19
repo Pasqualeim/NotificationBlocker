@@ -198,6 +198,14 @@ The owner wants to be told when a request is not the most useful thing to do now
 
 If the request sits clearly below an open item above (e.g. new scenes, nice-to-have features while the testing phase is still open), say so **before** doing it, in two or three lines: what it is, why it can wait, what should come first. Then do what the owner decides; it is a warning, never a refusal. Do not warn on quick questions, bug fixes, things that unblock the testing phase, or when the owner already said they want to do it anyway in this conversation. Warn once per topic, not at every turn.
 
+### Trello board
+
+The owner follows progress on the Trello board "Unclock" (https://trello.com/b/B0iwIzXW/unclock, Trello MCP tools). `docs/ROADMAP.md` stays the source of truth; the board is its quick view and must not drift from it.
+
+- **Read** it when picking what to do next or when the owner asks about progress: the owner may have moved or added cards there (a card in "🔨 In corso" is what they are working on; a new card is a request to weigh against the priorities above).
+- **Update** it in the same session whenever a ROADMAP item is done, added, reordered or dropped: move the card, or add a dated card on top of "✅ Fatto (diario, dal più recente)" (title `YYYY-MM-DD · what changed`, a few bullets, marked done). Lists: "🔨 In corso", "🎯 Fase di test (priorità)" (ROADMAP section 0, in order), "💡 Dopo" (sections 2-4), "🚀 Pubblicazione Play" (section 5), "✅ Fatto". Titles start with `[Claude]` or `[Pasquale]` for who does it.
+- Subagents have no Trello tools: the main session does it, after `docs-keeper` has updated the ROADMAP.
+
 ### Antigravity for side work
 
 To save Claude's tokens, suggest doing **side tasks that do not touch the code** in Antigravity: image generation (Gemini), moodboards, store graphic drafts, web research. When suggesting it, give a ready-to-paste prompt for Antigravity with the constraints from the docs (palette, `docs/IDEA.md` rules, sizes). Claude keeps everything that ends up in the repo as code or project docs: Kotlin, scripts in `tools/`, importing and converting assets, tests, docs, commits.
