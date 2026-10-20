@@ -10,7 +10,7 @@ RAW=${1:?raw dir}
 D=$(cd "$(dirname "$0")" && pwd)
 export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
 E=${ANDROID_SERIAL:-emulator-5554}
-P=${P:-com.pasquale.nook.dev}   # the debug build ("Nook dev")
+P=${P:-com.pasquale.freetime.dev}   # the debug build ("Unclock dev")
 S=$P/com.pasquale.notificationblocker.service.NotificationBlockerService
 A=$P/com.pasquale.notificationblocker.MainActivity
 GM=com.google.android.gm; CAL=com.google.android.calendar; DOCS=com.google.android.apps.docs

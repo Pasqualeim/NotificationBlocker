@@ -355,7 +355,7 @@ Messaggio di lancio pronto (adattalo):
 ```
 Ho pubblicato Unclock, la mia prima app Android. Mette in pausa le notifiche delle app di lavoro quando stacchi, e lascia arrivare tutto il resto. Niente account, niente pubblicità, nessun dato che esce dal telefono.
 
-La trovi qui: https://play.google.com/store/apps/details?id=com.pasquale.nook   (da mandare solo a pubblicazione avvenuta)
+La trovi qui: https://play.google.com/store/apps/details?id=com.pasquale.freetime   (da mandare solo a pubblicazione avvenuta)
 
 Se la provi, mi fa piacere sapere cosa ne pensi.
 ```

@@ -19,10 +19,10 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.pasquale.nook"
+        applicationId = "com.pasquale.freetime"
         minSdk = 28
         targetSdk = 37
-        versionCode = 2
+        versionCode = 3
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
