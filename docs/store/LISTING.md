@@ -16,8 +16,8 @@ Tieni questo file allineato all'app: una nuova funzione, un nuovo permesso o un 
 | Tag (fino a 5) | Produttività, Strumenti, Benessere (scegli tra quelli proposti da Play Console) |
 | Prezzo | Gratis, senza acquisti in app né pubblicità |
 | Email di contatto | pasquale.ercolino98@gmail.com (pubblica sulla scheda: puoi usarne una dedicata) |
-| Sito web | https://pasqualeim.github.io/NotificationBlocker/ (facoltativo) |
-| Informativa sulla privacy | https://pasqualeim.github.io/NotificationBlocker/ |
+| Sito web | https://pasqualeim.github.io/unclock/ (facoltativo) |
+| Informativa sulla privacy (URL da inserire in Play Console) | https://unclock.netlify.app/it/privacy/ (dal 20/10/2026; la copia GitHub Pages resta per l'app fino alla prossima release) |
 | Lingua predefinita della scheda | Inglese (Stati Uniti) – en-US, con traduzione Italiano – it-IT |
 
 ## Testi della scheda
@@ -163,7 +163,7 @@ Manrope: `Manrope[wght].ttf` da https://github.com/google/fonts/tree/main/ofl/ma
 Risposte basate sul codice attuale (nessun permesso `INTERNET`, nessuna libreria di analisi o pubblicità, dati solo in `SharedPreferences`). Se il codice cambia, ricontrollale.
 
 ### Norme sulla privacy
-URL: `https://pasqualeim.github.io/NotificationBlocker/`
+URL: `https://unclock.netlify.app/it/privacy/`
 
 ### Accesso all'app
 **Tutte le funzionalità sono disponibili senza restrizioni di accesso** (niente login). Nel campo delle istruzioni, facoltativo ma utile ai revisori, incolla:
