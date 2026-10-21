@@ -3,10 +3,11 @@
 
 Background: a frame of the off-work scene, rendered by the unit tests
 (`./gradlew testDebugUnitTest --tests '*ZenSceneTest*'` writes app/build/zen-previews/).
-On the left, the brand terracotta fading into the scene, the mug from the launcher icon, the name and a line.
+On the left, the brand terracotta fading into the scene, the padlock from the launcher icon, the name and a line.
+Type as on the site (Fraunces 600 for the name, Inter for the line), read from the site repo's self-hosted fonts.
 
-Usage: python3 tools/store/feature_graphic.py path/to/Manrope[wght].ttf
-(Manrope: https://github.com/google/fonts/tree/main/ofl/manrope). Writes docs/store/feature-graphic-{it,en}.png.
+Usage: python3 tools/store/feature_graphic.py [path/to/nook-site]   (default: ../nook-site next to this repo)
+Writes docs/store/feature-graphic-{it,en}.png.
 """
 import sys
 from pathlib import Path
@@ -18,34 +19,35 @@ sys.path.insert(0, str(ROOT / "tools/icon"))
 import launcher_icon as icon  # noqa: E402
 
 W, H = 1024, 500
-SCENE = ROOT / "app/build/zen-previews/nature_autumn_1700_golden_hour.png"
+SCENE = ROOT / "app/build/zen-previews/nature_winter_1700_golden_hour.png"
 TERRACOTTA = (164, 90, 61)
 CREAM = (248, 239, 227)
-TEXT = {"it": "Il lavoro può aspettare", "en": "Work can wait"}
+TEXT = {"it": "Il tempo che ti torna", "en": "The time you get back"}
 
 
-def font(path, size, weight):
-    f = ImageFont.truetype(path, size)
-    f.set_variation_by_name(weight)
+def font(path, size, **axes):
+    f = ImageFont.truetype(str(path), size)
+    if axes:
+        names = [a["name"].decode() for a in f.get_variation_axes()]
+        f.set_variation_by_axes([axes.get(n, a["default"]) for n, a in zip(names, f.get_variation_axes())])
     return f
 
 
-def mug(size):
-    """The launcher glyph in cream on transparent, [size] px, centered like the icon."""
+def padlock(height):
+    """The launcher glyph in cream on transparent, the glyph [height] px tall, centered like the icon."""
     ss = 4
-    big = size * ss
-    img = Image.new("RGBA", (big, big), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
     mx, my, bx, by = icon.glyph_center()
-    cx, cy = mx, (my + by) / 2
-    scale = big / 60  # the glyph spans ~42 units: leave a margin
-    for shape in icon.SHAPES.values():
-        pts = [((x - cx) * scale + big / 2, (y - cy) * scale + big / 2) for x, y in icon.flatten(shape, 1)]
-        d.polygon(pts, fill=CREAM + (255,))
-    return img.resize((size, size), Image.LANCZOS)
+    icon.DX, icon.DY = 54 - mx, 54 - (my + by) / 2
+    big = round(height * ss * 108 / 58)  # the glyph spans 58 of the 108 viewport units
+    m = icon.mask(big, icon.DX, icon.DY)
+    img = Image.new("RGBA", (big, big), CREAM + (0,))
+    img.putalpha(m)
+    img = img.crop(m.getbbox())
+    return img.resize((round(img.width / ss), round(img.height / ss)), Image.LANCZOS)
 
 
-def main(font_path):
+def main(site):
+    fonts = Path(site) / "public/assets/fonts"
     scene = Image.open(SCENE).convert("RGB")
     scene = scene.resize((W, int(scene.height * W / scene.width)), Image.LANCZOS)
     top = (scene.height - H) // 2
@@ -60,17 +62,17 @@ def main(font_path):
         od.line([(x, 0), (x, H)], fill=TERRACOTTA + (int(255 * a ** 1.4),))
     base = Image.alpha_composite(base.convert("RGBA"), overlay)
 
-    m = mug(150)
+    m = padlock(140)
     for lang, line in TEXT.items():
         img = base.copy()
-        img.alpha_composite(m, (64, 100))
+        img.alpha_composite(m, (76, 104))
         d = ImageDraw.Draw(img)
-        d.text((72, 270), "Nook", font=font(font_path, 104, "ExtraBold"), fill=CREAM)
-        d.text((76, 392), line, font=font(font_path, 38, "SemiBold"), fill=CREAM)
+        d.text((70, 268), "Unclock", font=font(fonts / "fraunces-normal.woff2", 104, Weight=600, **{"Optical Size": 144}), fill=CREAM)
+        d.text((76, 392), line, font=font(fonts / "inter-normal.woff2", 36, Weight=600), fill=CREAM)
         out = ROOT / f"docs/store/feature-graphic-{lang}.png"
         img.convert("RGB").save(out, optimize=True)
         print(out)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1] if len(sys.argv) > 1 else ROOT.parent / "nook-site")

@@ -131,7 +131,7 @@ Tutti i file sono già nelle dimensioni richieste da Play.
 | Elemento | File | Specifiche Play |
 |---|---|---|
 | Icona | `icon-512.png` | 512×512, PNG a 32 bit, meno di 1 MB (è 10 KB) |
-| Feature graphic | `feature-graphic-it.png`, `feature-graphic-en.png` | 1024×500, PNG a 24 bit senza trasparenza. Obbligatoria |
+| Feature graphic | `feature-graphic-it.png`, `feature-graphic-en.png` | 1024×500, PNG a 24 bit senza trasparenza. Obbligatoria. Rifatta il 21/10/2026: lucchetto, "Unclock" in Fraunces, "Il tempo che ti torna" / "The time you get back" in Inter (i font del sito), pontile al tramonto d'inverno |
 | Screenshot telefono | `screenshots/it/*.png`, `screenshots/en/*.png` | 1080×1920 (9:16), da 2 a 8. Caricali in ordine di nome. Didascalia in alto e telefono con cornice che esce dal bordo basso |
 
 Gli screenshot, nell'ordine (elenco del 05/10/2026: `capture_screenshots.sh` ora scrive i file di Nook 2, ma `compose_screenshots.py` e questa tabella vanno ancora aggiornati):
@@ -151,7 +151,7 @@ Come rifarli (dopo un cambio di interfaccia o delle scene):
 tools/store/capture_screenshots.sh /tmp/nook-raw          # emulatore acceso, testo e tema di default; LANGS=it-IT per una lingua sola. Scrive 1_break, 2_shade, 3_apps, 4_report, 5_dark, 6_breaks, 7_stats (dati demo: tools/store/demo_prefs.py)
 python3 tools/store/compose_screenshots.py /tmp/nook-raw path/to/Manrope.ttf
 ./gradlew testDebugUnitTest --tests '*ZenSceneTest*'     # scene per la feature graphic
-python3 tools/store/feature_graphic.py path/to/Manrope.ttf
+python3 tools/store/feature_graphic.py                    # legge i font da ../nook-site/public/assets/fonts
 python3 tools/icon/launcher_icon.py                     # icona 512
 ```
 
@@ -215,6 +215,6 @@ Unclock only reads the package name of each notification to decide whether to re
 | Voce | Stato |
 |---|---|
 | Testi IT/EN | Pronti |
-| Icona, feature graphic, 5 screenshot IT + 5 EN | Pronti ma vecchi (05/10/2026: Home con orari e pulsante in basso, prima delle tre schede): da rifare prima della pubblicazione |
+| Icona e feature graphic pronte (21/10/2026). 5 screenshot IT + 5 EN | Vecchi (05/10/2026: Home con orari e pulsante in basso, prima delle tre schede): da rifare prima della pubblicazione |
 | Risposte ai moduli | Pronte, da ricontrollare in Play Console |
 | Verifica marchio "Unclock" | Da fare (Pasquale) |
