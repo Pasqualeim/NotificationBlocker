@@ -16,9 +16,9 @@ Tieni questo file allineato all'app: una nuova funzione, un nuovo permesso o un 
 | Tag (fino a 5) | Produttività, Strumenti, Benessere (scegli tra quelli proposti da Play Console) |
 | Prezzo | Gratis, senza acquisti in app né pubblicità |
 | Email di contatto | pasquale.ercolino98@gmail.com (pubblica sulla scheda: puoi usarne una dedicata) |
-| Sito web | https://pasqualeim.github.io/unclock/ (facoltativo) |
+| Sito web | https://unclock.netlify.app/it/ (facoltativo) |
 | Informativa sulla privacy (URL da inserire in Play Console) | https://unclock.netlify.app/it/privacy/ (dal 20/10/2026; la copia GitHub Pages resta per l'app fino alla prossima release) |
-| Lingua predefinita della scheda | Inglese (Stati Uniti) – en-US, con traduzione Italiano – it-IT |
+| Lingua predefinita della scheda | Italiano – it-IT (scelta alla creazione della nuova app, 21/10/2026), con traduzione Inglese (Stati Uniti) – en-US |
 
 ## Testi della scheda
 
@@ -32,37 +32,43 @@ Scritti con le regole di `DESIGN_SYSTEM.md` ("Testi e tono"): frasi semplici, fa
 Unclock: stacca dal lavoro
 ```
 
-**Descrizione breve** (72/80)
+**Descrizione breve** (78/80)
 
 ```
-Metti in pausa le notifiche di lavoro quando stacchi. Le altre arrivano.
+Le notifiche di lavoro in pausa quando stacchi. Le altre arrivano come sempre.
 ```
 
-**Descrizione completa** (2123/4000)
+**Descrizione completa** (1902/4000)
 
 ```
-Unclock mette in pausa le notifiche delle app di lavoro quando stacchi. Scegli le app (per esempio la mail, la chat e il calendario dell'ufficio) e crea le tue pause. Durante una pausa le loro notifiche spariscono appena arrivano. Tutte le altre, dai messaggi di famiglia alle chiamate, arrivano come sempre.
-
-PERCHÉ
-Abbiamo una vita oltre il lavoro: un pomeriggio libero, una cena, un weekend. Unclock serve a non farsi raggiungere dal lavoro in quei momenti, senza spegnere tutto il telefono.
+Unclock mette in pausa le notifiche delle app di lavoro quando non lavori. Scegli le app e dici quando lavori: sera, weekend e giorni liberi sono tempo tuo. Messaggi di famiglia, amici e chiamate arrivano come sempre.
 
 COSA FA
-• Scegli quali app sono di lavoro. Le altre non vengono toccate.
-• Dici quando lavori (giorni e orari): fuori da lì Unclock mette in pausa le app di lavoro, sera e weekend compresi. Se vuoi, aggiungi altre pause (il pranzo) con nome, orari e giorni; una pausa può avere app sue.
-• "Pausa subito" per staccare adesso, per il tempo che scegli, senza creare una pausa.
-• Giorni liberi: ferie o ponti con le date, e i festivi italiani in automatico, se vuoi.
-• Un interruttore accende e spegne tutte le pause. C'è anche un riquadro nelle Impostazioni rapide e un widget per la schermata Home.
-• Una notifica silenziosa ti ricorda che la pausa è attiva e fino a che ora. Se ti serve, la termini da lì con un tocco. È facoltativa.
-• Quando torni, Unclock ti dice quante notifiche di lavoro sono arrivate e da quali app, e puoi aprirle da lì.
-• "Statistiche": quante ore di pausa hai vissuto (il sonno non conta), quante con la luce del sole e quante notifiche sono rimaste fuori, per giorno, settimana e mese. Restano sul telefono.
-• Una piccola scena animata segue la luce vera del giorno e le stagioni: una scrivania mentre lavori, un giardino quando stacchi.
+• Scegli le app di lavoro. Le altre non vengono toccate.
+• Dici quando lavori. Tutto quello che sta fuori da giorni e orari è pausa, sera e weekend compresi.
+• Aggiungi altre pause, per esempio il pranzo, con nome, giorni e orari. Se vuoi, ognuna ha le sue app.
+• "Pausa subito" per staccare adesso, per il tempo che scegli.
+• Giorni liberi con le date e, se vuoi, i festivi italiani.
+
+CONTROLLO
+• Un interruttore accende e spegne tutte le pause. Lo trovi anche nelle Impostazioni rapide e in un widget per la schermata Home.
+• Durante una pausa puoi avere una notifica silenziosa che dice fino a che ora dura. Con "Termina la pausa" la chiudi con un tocco. È facoltativa.
+• Finita la pausa, un riepilogo dice quante notifiche di lavoro sono arrivate e da quali app, con il tasto Apri.
+
+STATISTICHE
+• Le ore di tempo libero che hai vissuto. Il sonno non conta.
+• Quante di quelle ore hanno avuto la luce del giorno, e quante notifiche sono rimaste fuori.
+• Per giorno, settimana e mese. Restano sul telefono.
+
+ASPETTO
+• Una scena animata segue la luce vera del giorno e le stagioni: una scrivania mentre lavori, un pontile sul lago quando stacchi.
 • Tema chiaro e scuro, in italiano e in inglese.
 
 PRIVACY
-Unclock ha bisogno dell'accesso alle notifiche, che dai tu dalle impostazioni di Android. L'app guarda solo quale app ha inviato ogni notifica. Non legge e non salva il contenuto, non ha account, pubblicità o statistiche e non usa internet, quindi niente esce dal telefono. Puoi togliere l'accesso quando vuoi.
+Unclock chiede solo l'accesso alle notifiche, che dai tu dalle impostazioni di Android. Vede solo quale app ha inviato ogni notifica. Non legge e non salva il contenuto. Non ha account, pubblicità o tracciamento e non usa internet, quindi niente esce dal telefono. Puoi togliere l'accesso quando vuoi.
 
 DA SAPERE
-Le notifiche messe in pausa vengono tolte, non rimandate. Quando la pausa finisce non ricompaiono. I messaggi restano nelle rispettive app.
+Le notifiche messe in pausa vengono tolte, non rimandate. Quando la pausa finisce non ricompaiono. I messaggi restano nelle rispettive app, dove li ritrovi.
 ```
 
 **Note di rilascio 1.0** (101/500)
@@ -85,7 +91,7 @@ Unclock: Work-Life Balance
 Pause work notifications when you're off. Everything else still comes in.
 ```
 
-**Full description** (2068/4000)
+**Full description** (2128/4000)
 
 ```
 Unclock pauses notifications from your work apps when you're off. Pick the apps (your work email, chat and calendar, for example) and set up your breaks. During a break their notifications disappear as soon as they arrive. Everything else, from family messages to calls, comes in as usual.
@@ -102,7 +108,7 @@ WHAT IT DOES
 • A silent notification reminds you that the break is on and when it ends. If you need to, you can end it from there with one tap. It's optional.
 • When you're back, Unclock tells you how many work notifications came in and from which apps, and you can open them from there.
 • "Stats": how many hours of break you lived (sleep not counted), how many in daylight and how many notifications were kept out, by day, week and month. It stays on your phone.
-• A small animated scene follows the real daylight and the seasons: a desk while you work, a garden when you're off.
+• A small animated scene follows the real daylight and the seasons: a desk while you work, a lake pier when you're off.
 • Light and dark theme, in English and Italian.
 
 PRIVACY
