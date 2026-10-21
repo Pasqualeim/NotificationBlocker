@@ -62,7 +62,7 @@ Si fa alla fine, dopo la fase di test indipendente (sezione 0). Guida passo pass
 | Account Play Console + verifica identità | Pasquale | 25 $ una tantum, qualche giorno di attesa |
 | Test chiuso: 12 tester per 14 giorni | Pasquale | Obbligatorio per gli account personali creati dopo il 13/11/2023 |
 | Sito (deploy e dominio) | Claude / Pasquale | Nella fase di test (sezione 0). Online su https://unclock.netlify.app dal 19/10/2026 (`~/Documents/Developer/nook-site`, IT/EN). Mancano il dominio e le variabili d'ambiente della mail (3b). Con il dominio: spostare lì l'informativa (`privacy_policy_url`, `LISTING.md`) |
-| Scheda dello store | Testi pronti; immagini da rifare | Testi IT/EN pronti. Icona, feature graphic e 5 screenshot IT/EN sono del 02-05/10/2026 (telefono con cornice) e mostrano la Home vecchia: da rifare solo quando si prepara la pubblicazione (`compose_screenshots.py` ha ancora i nomi e le didascalie vecchie; le catture nuove le scrive già `capture_screenshots.sh`), vedi `LISTING.md`, "Grafica" |
+| Scheda dello store | Testi e immagini pronti (21/10/2026) | Testi IT pronti (riscritti il 21/10/2026), EN da allineare al tono. Icona, feature graphic e 6 screenshot IT/EN rifatti il 21/10/2026 per la nuova app `com.pasquale.freetime` (nome Unclock, font del sito, didascalie sul tempo libero). Da rifare a ogni cambio visibile dell'app (`LISTING.md`, "Grafica") |
 | Tag `v1.0.0` | Claude | Quando l'AAB caricato in produzione è quello definitivo |
 
 ## Dipendenze da valutare

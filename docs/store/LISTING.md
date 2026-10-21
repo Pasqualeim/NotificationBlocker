@@ -134,22 +134,25 @@ Tutti i file sono già nelle dimensioni richieste da Play.
 | Feature graphic | `feature-graphic-it.png`, `feature-graphic-en.png` | 1024×500, PNG a 24 bit senza trasparenza. Obbligatoria. Rifatta il 21/10/2026: lucchetto, "Unclock" in Fraunces, "Il tempo che ti torna" / "The time you get back" in Inter (i font del sito), pontile al tramonto d'inverno |
 | Screenshot telefono | `screenshots/it/*.png`, `screenshots/en/*.png` | 1080×1920 (9:16), da 2 a 8. Caricali in ordine di nome. Didascalia in alto e telefono con cornice che esce dal bordo basso |
 
-Gli screenshot, nell'ordine (elenco del 05/10/2026: `capture_screenshots.sh` ora scrive i file di Nook 2, ma `compose_screenshots.py` e questa tabella vanno ancora aggiornati):
+Gli screenshot, nell'ordine (rifatti il 21/10/2026 su emulatore con i dati demo; titoli in Fraunces, sottotitoli in Inter, i font del sito). La tendina con la notifica della pausa (`2_shade`) è esclusa: nella build di prova mostra il nome "Unclock dev".
 
-| File | Didascalia IT | Didascalia EN |
-|---|---|---|
-| `01_pausa` | Il lavoro può aspettare | Work can wait |
-| `02_app` | Scegli le app di lavoro | Pick your work apps |
-| `03_notifica` | Sai che la pausa è attiva | Always know it's on |
-| `04_resoconto` | Poi vedi cosa è arrivato | See what you missed |
-| `05_scuro` | Chiaro e scuro | Light or dark, your call |
+| File | Schermata | Didascalia IT | Didascalia EN |
+|---|---|---|---|
+| `01_oggi` | Oggi, mercoledì alle 18:15 | La sera è tua | The evening is yours |
+| `02_pause` | Pause (quando lavori, pranzo, giorni liberi) | Decidi tu quando lavori | You set when you work |
+| `03_app` | App di lavoro | Scegli le app di lavoro | Pick your work apps |
+| `04_statistiche` | Statistiche, settimana intera | Le tue ore libere | Your free hours |
+| `05_resoconto` | Resoconto del lunedì mattina | Il resoconto del lunedì | Monday's summary |
+| `06_scuro` | Oggi, tema scuro | Chiaro o scuro | Light or dark |
+
+I sottotitoli sono in `tools/store/compose_screenshots.py` (`SHOTS`).
 
 Come rifarli (dopo un cambio di interfaccia o delle scene):
 
 ```bash
 ./gradlew assembleDebug && adb install -r app/build/outputs/apk/debug/app-debug.apk
 tools/store/capture_screenshots.sh /tmp/nook-raw          # emulatore acceso, testo e tema di default; LANGS=it-IT per una lingua sola. Scrive 1_break, 2_shade, 3_apps, 4_report, 5_dark, 6_breaks, 7_stats (dati demo: tools/store/demo_prefs.py)
-python3 tools/store/compose_screenshots.py /tmp/nook-raw path/to/Manrope.ttf
+python3 tools/store/compose_screenshots.py /tmp/nook-raw   # legge i font da ../nook-site/public/assets/fonts
 ./gradlew testDebugUnitTest --tests '*ZenSceneTest*'     # scene per la feature graphic
 python3 tools/store/feature_graphic.py                    # legge i font da ../nook-site/public/assets/fonts
 python3 tools/icon/launcher_icon.py                     # icona 512
@@ -162,7 +165,6 @@ Cose da sapere sulla cattura (`capture_screenshots.sh`, ~4 minuti):
 - Cambia da solo la lingua di Unclock e di `com.android.systemui` (data nella tendina) e le rimette a "predefinita" alla fine. "Silent" e "Mobile data" nella tendina restano in inglese anche nel set italiano: le stringhe non sono tradotte nell'immagine dell'emulatore.
 - Scrive le preferenze solo a processo fermo e con il listener spento: un processo Unclock vivo le riscrive con i valori vecchi.
 
-Manrope: `Manrope[wght].ttf` da https://github.com/google/fonts/tree/main/ofl/manrope.
 
 ## Risposte ai moduli di Play Console ("Contenuti dell'app")
 
@@ -215,6 +217,6 @@ Unclock only reads the package name of each notification to decide whether to re
 | Voce | Stato |
 |---|---|
 | Testi IT/EN | Pronti |
-| Icona e feature graphic pronte (21/10/2026). 5 screenshot IT + 5 EN | Vecchi (05/10/2026: Home con orari e pulsante in basso, prima delle tre schede): da rifare prima della pubblicazione |
+| Icona, feature graphic e 6 screenshot IT + 6 EN | Pronti (21/10/2026): Nook 2 con nome e icona Unclock. Da rifare a ogni cambio visibile dell'app |
 | Risposte ai moduli | Pronte, da ricontrollare in Play Console |
 | Verifica marchio "Unclock" | Da fare (Pasquale) |

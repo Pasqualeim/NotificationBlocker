@@ -5,7 +5,9 @@ Google Play rejects raw phone captures whose long side is more than twice the sh
 (1080 x 2400 is 2.22), so every capture is framed here, inside a phone bezel that bleeds off the bottom edge. Captions follow the copy rules of
 docs/DESIGN_SYSTEM.md ("Testi e tono").
 
-Usage: python3 tools/store/compose_screenshots.py RAW_DIR path/to/Manrope[wght].ttf
+Type as on the site: Fraunces 600 for the titles, Inter for the subtitles, from the site repo's fonts.
+
+Usage: python3 tools/store/compose_screenshots.py RAW_DIR [path/to/nook-site]   (default: ../nook-site)
 RAW_DIR holds it-IT/ and en-US/ with the captures written by tools/store/capture_screenshots.sh.
 Writes docs/store/screenshots/{it,en}/.
 """
@@ -14,28 +16,32 @@ import os, sys
 from pathlib import Path
 ROOT=str(Path(__file__).resolve().parents[2] / 'docs/store/screenshots')
 RAW=sys.argv[1]
-FONT=sys.argv[2]
+FONTS=Path(sys.argv[2] if len(sys.argv)>2 else Path(__file__).resolve().parents[3]/'nook-site')/'public/assets/fonts'
 W,H=1080,1920
-def font(size, weight):
-    f=ImageFont.truetype(FONT,size); f.set_variation_by_name(weight); return f
+def font(name, size, **axes):
+    f=ImageFont.truetype(str(FONTS/name),size)
+    ax=f.get_variation_axes(); f.set_variation_by_axes([axes.get(a['name'].decode(),a['default']) for a in ax]); return f
 LIGHT=dict(bg=(235,205,188), bg2=(246,226,212), title=(58,43,34), sub=(101,80,63))
 DARK=dict(bg=(27,23,20), bg2=(46,38,33), title=(242,231,221), sub=(214,197,184))
 SHOTS=[
- ('01_pausa','1_break',None,LIGHT,
-  ("Il lavoro può aspettare","Finito l'orario, le notifiche di lavoro tacciono. Il resto del telefono resta com'è."),
-  ("Work can wait","When you're off, work notifications go quiet. The rest of your phone stays as it is.")),
- ('02_app','3_apps',None,LIGHT,
-  ("Scegli le app di lavoro","La mail dell'ufficio, la chat, il calendario. Le altre non vengono toccate."),
-  ("Pick your work apps","Office email, chat, calendar. Nothing else gets touched.")),
- ('03_notifica','2_shade',None,LIGHT,
-  ("Sai che la pausa è attiva","Una notifica discreta ti dice fino a che ora dura."),
-  ("Always know it's on","One quiet notification shows when your break ends.")),
- ('04_resoconto','4_report',None,LIGHT,
-  ("Poi vedi cosa è arrivato","Quando torni, vedi quante notifiche ci sono state e da quali app."),
-  ("See what you missed","When you're back, see how many came in and from which apps.")),
- ('05_scuro','5_dark',None,DARK,
-  ("Chiaro e scuro","La scena segue l'ora e le stagioni."),
-  ("Light or dark, your call","The scene changes with the time of day and the seasons.")),
+ ('01_oggi','1_break',None,LIGHT,
+  ("La sera è tua","Finito il lavoro, la pausa parte da sola. La sera è già cominciata."),
+  ("The evening is yours","When work ends, the break starts on its own. The evening has begun.")),
+ ('02_pause','6_breaks',None,LIGHT,
+  ("Decidi tu quando lavori","Imposta giorni e orari, poi aggiungi pranzo e giorni liberi. Il resto è pausa."),
+  ("You set when you work","Pick your days and hours, then add lunch and days off. Everything else is a break.")),
+ ('03_app','3_apps',None,LIGHT,
+  ("Scegli le app di lavoro","Solo quelle restano in pausa. Il resto del telefono non cambia."),
+  ("Pick your work apps","Only those get paused. The rest of your phone stays as it is.")),
+ ('04_statistiche','7_stats',None,LIGHT,
+  ("Le tue ore libere","Ore libere al giorno, quante con la luce e quante notifiche in pausa."),
+  ("Your free hours","Free hours each day, how many in daylight, and how many notifications were paused.")),
+ ('05_resoconto','4_report',None,LIGHT,
+  ("Il resoconto del lunedì","Cosa è arrivato nel weekend, app per app. I messaggi restano nelle loro app."),
+  ("Monday's summary","What came in over the weekend, app by app. The messages stay in their own apps.")),
+ ('06_scuro','5_dark',None,DARK,
+  ("Chiaro o scuro","La scena segue l'ora del giorno e le stagioni."),
+  ("Light or dark","The scene follows the time of day and the seasons.")),
 ]
 def wrap(d, text, f, maxw):
     words=text.split(); lines=[]; cur=''
@@ -52,7 +58,7 @@ for lang,folder in (('it','it-IT'),('en','en-US')):
         img=Image.new('RGB',(W,H),pal['bg']); d=ImageDraw.Draw(img)
         for yy in range(H):  # vertical gradient, lighter towards the bottom
             t=yy/H; d.line((0,yy,W,yy),fill=tuple(int(pal['bg'][i]+(pal['bg2'][i]-pal['bg'][i])*t) for i in range(3)))
-        ft=font(78,'ExtraBold'); fs=font(40,'Medium')
+        ft=font('fraunces-normal.woff2',80,Weight=600,**{'Optical Size':144}); fs=font('inter-normal.woff2',40,Weight=500)
         y=120
         for line in wrap(d,title,ft,W-160):
             d.text((W//2,y),line,font=ft,fill=pal['title'],anchor='ma'); y+=94
