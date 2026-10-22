@@ -37,7 +37,7 @@ Il nome dell'app si cambia facilmente fino alla pubblicazione, dopo molto meno. 
 3. Guarda le **classi 9** (software, app) e **42** (servizi software). Un marchio identico in queste classi è un rischio concreto; in classi diverse (per esempio abbigliamento) di solito no.
 4. Se trovi un conflitto: aggiungi una parola che ti distingue ("Unclock: stacca dal lavoro") o cambia nome. Un consulente in proprietà industriale può darti un parere definitivo; per un'app gratuita e personale la ricerca qui sopra è il minimo sensato.
 
-> **Per Unclock.** Ricerca web del 19/10/2026: nessuna app "Unclock" su Play e il gioco "Unlock!" di Asmodee compare nella ricerca di Play. Ricerca marchi del 19/10/2026 su TMview (EUIPO, UIBM, USPTO, WIPO e gli altri uffici): nessun marchio "Unclock" nelle classi 9 e 42. Unico "unclock" registrato: Grecia (OBI N274661, 2022), classe 16 (carta), non in conflitto. Il rischio vero sono i marchi verbali "UNLOCK" in classe 9/42 all'EUIPO (IAM S.r.l. 018965664; Mindshift AS 018715526, anche classe 44; Unlock Technologies 018603987; Ledger Leopard 018227619): una lettera di differenza, quindi un'opposizione a un nostro deposito "UNCLOCK" è possibile. A favore: "unlock" è una parola comune e debole nel software (oltre 100 marchi che la contengono convivono) e "clock" cambia il senso. Parere di un consulente in marchi prima di depositare. Nomi scartati e riserve: `DESIGN_SYSTEM.md`, "Nome". L'app è già caricata in un test interno della Play Console, quindi l'`applicationId` resta `com.pasquale.nook` per sempre: il nome mostrato si cambia liberamente, il package no (gli utenti non lo vedono).
+> **Per Unclock.** Ricerca web del 19/10/2026: nessuna app "Unclock" su Play e il gioco "Unlock!" di Asmodee compare nella ricerca di Play. Ricerca marchi del 19/10/2026 su TMview (EUIPO, UIBM, USPTO, WIPO e gli altri uffici): nessun marchio "Unclock" nelle classi 9 e 42. Unico "unclock" registrato: Grecia (OBI N274661, 2022), classe 16 (carta), non in conflitto. Il rischio vero sono i marchi verbali "UNLOCK" in classe 9/42 all'EUIPO (IAM S.r.l. 018965664; Mindshift AS 018715526, anche classe 44; Unlock Technologies 018603987; Ledger Leopard 018227619): una lettera di differenza, quindi un'opposizione a un nostro deposito "UNCLOCK" è possibile. A favore: "unlock" è una parola comune e debole nel software (oltre 100 marchi che la contengono convivono) e "clock" cambia il senso. Parere di un consulente in marchi prima di depositare. Nomi scartati e riserve: `DESIGN_SYSTEM.md`, "Nome". L'app `com.pasquale.freetime` è caricata in Play Console (test interno e chiuso), quindi l'`applicationId` resta quello per sempre (scelto senza il nome del marchio): il nome mostrato si cambia liberamente, il package no. La prima app `com.pasquale.nook` è abbandonata.
 
 ---
 
@@ -186,7 +186,7 @@ In ordine di affidabilità:
 
 Invece di inserire le email una per una:
 
-1. Crea un gruppo su [groups.google.com](https://groups.google.com), per esempio `nook-tester@googlegroups.com`, impostato in modo che chiunque abbia il link possa iscriversi.
+1. Crea un gruppo su [groups.google.com](https://groups.google.com), per esempio `unclock-tester@googlegroups.com`, impostato in modo che chiunque abbia il link possa iscriversi.
 2. In Play Console, nel test chiuso, scegli **Google Gruppi** e inserisci l'indirizzo del gruppo.
 3. Ai tester mandi due link: quello per **iscriversi al gruppo** e quello per **partecipare al test**.
 
@@ -413,9 +413,9 @@ Copiala in un file nuovo e spunta man mano.
 | Informativa privacy online | Pasquale (Pages) + Claude (testo) | Fatto |
 | Backup di keystore e password | Pasquale | **Da fare** |
 | Verifica del marchio "Unclock" | Pasquale | Ricerca fatta (19/10/2026, TMview); resta il parere di un consulente sui marchi "UNLOCK" |
-| Account Play Console, verifica identità | Pasquale | **Da fare**: dimmelo quando è attivo |
-| Tester, Google Gruppo, inviti | Pasquale | **Da fare**, parti subito |
-| Caricare AAB e compilare Play Console | Pasquale, con i testi pronti | Dopo l'account |
+| Account Play Console, verifica identità | Pasquale | Fatto (22/10/2026) |
+| Tester, Google Gruppo, inviti | Pasquale | Gruppo `unclock-tester` impostato come tester del test chiuso e le 8 persone di "Tester Nook" dentro (22/10/2026); resta la prova da un altro account, poi gli inviti |
+| Caricare AAB e compilare Play Console | Pasquale, con i testi pronti | Fatto (22/10/2026): AAB versionCode 3, test interno e chiuso creati, moduli compilati; test chiuso inviato in revisione, approvazione da confermare |
 | Aggiornamenti dopo i feedback | Claude | Quando arrivano |
 | Tag `v1.0.0` | Claude | Alla pubblicazione |
 
