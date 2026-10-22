@@ -7,6 +7,7 @@ Writes:
   app/src/main/res/drawable/ic_logo.xml                  (the same padlock as a tintable 32dp in-app icon)
   app/src/main/res/drawable/ic_notification_nook.xml     (the same padlock, white, for the status bar)
   docs/store/icon-512.png                                (Play Store icon, full bleed square)
+  docs/store/telegram-group.png                          (Telegram discussion group: the icon plus a speech bubble)
 
 Edit the shapes here, not the generated files. Shapes are drawn on a 256 grid and scaled into the
 108 x 108 adaptive-icon viewport; the glyph stays inside the central 66dp safe zone. The clock hands
@@ -191,15 +192,49 @@ def rgb(h):
 
 def write_png(size=512, ss=4):
     big = size * ss
+    img = gradient(big)
+    img.paste(Image.new("RGB", (big, big), rgb(CREAM)), mask=mask(big, DX, DY))
+    # Play wants a 32-bit PNG: RGBA, fully opaque
+    img.resize((size, size), Image.LANCZOS).convert("RGBA").save(ROOT / "docs/store/icon-512.png")
+
+
+def gradient(big):
     img = Image.new("RGB", (big, big))
     top, bottom = rgb(BG_TOP), rgb(BG_BOTTOM)
     draw = ImageDraw.Draw(img)
     for y in range(big):
         t = y / (big - 1)
         draw.line([(0, y), (big, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(top, bottom)))
+    return img
+
+
+def write_telegram_group(size=640, ss=4):
+    """Avatar of the Telegram discussion group: the icon with a speech bubble at the top right, so it
+    reads as "here we talk" next to the channel (plain icon). Telegram crops it to a circle, so the
+    bubble stays inside it; a band of background keeps it apart from the shackle."""
+    big = size * ss
+    img = gradient(big)
     img.paste(Image.new("RGB", (big, big), rgb(CREAM)), mask=mask(big, DX, DY))
-    # Play wants a 32-bit PNG: RGBA, fully opaque
-    img.resize((size, size), Image.LANCZOS).convert("RGBA").save(ROOT / "docs/store/icon-512.png")
+    u = big / 108
+    cx, cy, r = 82 * u, 24 * u, 11.5 * u
+
+    def bubble(grow):
+        m = Image.new("L", (big, big), 0)
+        draw = ImageDraw.Draw(m)
+        g = grow * u
+        draw.ellipse([cx - r - g, cy - r - g, cx + r + g, cy + r + g], fill=255)
+        # tail at the bottom left, pointing at the padlock
+        draw.polygon([(cx - 8 * u - g, cy + 4 * u), (cx - 2 * u, cy + 9 * u + g), (cx - 10 * u - g, cy + 12 * u + g)],
+                     fill=255)
+        return m
+
+    img.paste(gradient(big), mask=bubble(3))
+    img.paste(Image.new("RGB", (big, big), rgb(CREAM)), mask=bubble(0))
+    draw = ImageDraw.Draw(img)
+    for k in (-1, 0, 1):  # three dots: someone is typing
+        x, d = cx + k * 5.5 * u, 2 * u
+        draw.ellipse([x - d, cy - d, x + d, cy + d], fill=rgb(BG_TOP))
+    img.resize((size, size), Image.LANCZOS).save(ROOT / "docs/store/telegram-group.png")
 
 
 if __name__ == "__main__":
@@ -210,4 +245,5 @@ if __name__ == "__main__":
     write_logo_icon()
     write_notification_icon()
     write_png()
+    write_telegram_group()
     print("ok")
