@@ -6,7 +6,7 @@ App Android che mette in pausa le notifiche delle app di lavoro quando non stai 
 
 La domanda da cui nasce: perché esistono app che ti premiano e ti mostrano statistiche solo per quanto tempo ti concentri e lavori, mentre non esiste niente per il tempo libero e la salute personale? Unclock conta il tempo che ti riprendi (vedi [`docs/IDEA.md`](docs/IDEA.md)).
 
-Abbiamo una vita oltre il lavoro. Non si tratta di dormire tranquilli, ma di riprendersi il tempo che resta (un pomeriggio di sole, una cena, un weekend) senza che il lavoro bussi dal telefono.
+Abbiamo una vita oltre il lavoro: un pomeriggio di sole, una cena, un weekend. Unclock serve a riprendersi quel tempo senza che il lavoro bussi dal telefono.
 
 Scegli le app di lavoro (Gmail, Teams, Slack…), dici quando lavori (giorni e orari) e accendi l'interruttore: tutto il resto è pausa, e durante una pausa le notifiche di quelle app vengono tolte appena arrivano, tutte le altre restano. Se vuoi, aggiungi altre pause (il pranzo) con nome, orari, giorni e app diverse.
 
@@ -30,7 +30,7 @@ Tre schede in basso: **Oggi**, **Pause**, **Statistiche**.
 - **Tema**: aspetto nativo Pixel (Material 3 Expressive) nei colori di Unclock, palette calda "Chai" / "Lo-fi night" (niente colori dallo sfondo), font di sistema; edge-to-edge.
 - **Lingue**: italiano e inglese.
 
-Prossimi passi: il sito con l'iscrizione al test, poi Google Play.
+Prossimi passi: il test con chi si iscrive dal sito ([unclock.netlify.app](https://unclock.netlify.app)), poi la pubblicazione su Google Play.
 
 ## Requisiti
 

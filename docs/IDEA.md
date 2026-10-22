@@ -10,10 +10,10 @@ Ogni scelta dell'app (funzioni, testi, grafici, premi futuri) si misura su quest
 
 ## Le quattro regole
 
-1. **Unclock non chiede mai niente.** Niente notifiche sue per farsi aprire, niente "ci manchi", niente da mantenere in vita.
-2. **Il tempo libero si vive, non si avvia.** La pausa parte da sola fuori dall'orario di lavoro: nessun timer da far partire, nessuna sessione da completare.
-3. **Nessuna punizione.** Una sera di lavoro o un weekend senza pausa non tolgono niente: semplicemente quel giorno non si aggiunge nulla.
-4. **Ricordi, non gare.** Quello che Unclock mostra racconta il tempo ripreso; non è un numero da battere.
+1. Unclock non chiede mai niente: nessuna notifica sua per farsi aprire, nessun "ci manchi", niente da tenere in vita.
+2. La pausa parte da sola fuori dall'orario di lavoro. Non ci sono timer da avviare né sessioni da completare.
+3. Una sera di lavoro o un weekend senza pausa non tolgono niente. Quel giorno non si aggiunge nulla, e basta.
+4. Quello che Unclock mostra racconta il tempo ripreso, senza numeri da battere né gare.
 
 ## Checklist anti-stress
 
